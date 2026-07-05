@@ -8,9 +8,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Rajdhani',sans-serif}
-html,body{height:100%}
-body{background:#000;color:#0ff;width:100%}
-canvas{position:fixed;top:0;left:0;pointer-events:none}
+html{height:100%}
+body{background:#000;color:#0ff;width:100%;min-height:100%;overflow-y:auto;overflow-x:hidden}
+canvas{position:fixed;top:0;left:0;pointer-events:none;z-index:0}
 .orbitron{font-family:'Orbitron',sans-serif}
 .glow{text-shadow:0 0 8px #0ff,0 0 16px #0ff,0 0 32px #08f}
 
@@ -24,12 +24,9 @@ canvas{position:fixed;top:0;left:0;pointer-events:none}
 @keyframes earTwitchR{0%,80%,100%{transform:rotate(0)}82%{transform:rotate(12deg)}84%{transform:rotate(-6deg)}86%{transform:rotate(3deg)}88%{transform:rotate(0)}}
 @keyframes mouthTalk{0%,100%{transform:scaleY(.3)}25%{transform:scaleY(1)}50%{transform:scaleY(.5)}75%{transform:scaleY(.8)}}
 @keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-@keyframes flicker{0%,100%{opacity:1}50%{opacity:.7}}
 @keyframes ringExpand{0%{transform:scale(.8);opacity:1}100%{transform:scale(1.5);opacity:0}}
 @keyframes modalIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
 @keyframes cardIn{from{opacity:0;transform:translateY(20px) scale(.92)}to{opacity:1;transform:translateY(0) scale(1)}}
-@keyframes dataScroll{0%{transform:translateY(0)}100%{transform:translateY(-50%)}}
-@keyframes coreGlow{0%,100%{filter:drop-shadow(0 0 8px #0ff)}50%{filter:drop-shadow(0 0 20px #0ff)}}
 
 .boot{position:fixed;inset:0;background:#000;z-index:100;display:flex;align-items:center;justify-content:center;flex-direction:column}
 .boot-text{color:#0ff;font-family:'Orbitron';font-size:13px;letter-spacing:2px;opacity:0;animation:fadeIn .5s forwards}
@@ -43,26 +40,41 @@ canvas{position:fixed;top:0;left:0;pointer-events:none}
 .hud-bl{bottom:6px;left:6px;border-right:none;border-top:none}
 .hud-br{bottom:6px;right:6px;border-left:none;border-top:none}
 
-.hud{position:relative;z-index:10;width:100%;min-height:100dvh;display:flex;flex-direction:column;padding:6px 8px}
-.top-bar{display:flex;justify-content:space-between;align-items:center;width:100%;padding:4px 6px;flex-shrink:0;gap:8px;flex-wrap:wrap}
-.main-grid{display:grid;grid-template-columns:1fr;gap:10px;padding:4px}
+/* MOBILE FIRST - natural flow, scrollable */
+.hud{position:relative;z-index:10;width:100%;min-height:100vh;display:flex;flex-direction:column;padding:8px 10px}
+.top-bar{display:flex;justify-content:space-between;align-items:center;width:100%;padding:4px 0;flex-shrink:0;gap:8px;flex-wrap:wrap}
+.main-grid{display:grid;grid-template-columns:1fr;gap:10px;padding:4px 0;flex:1}
 .col{display:flex;flex-direction:column;gap:10px}
+
+/* TABLET: 2 columns - side panels side by side, center full width */
+@media(min-width:600px) and (max-width:899px){
+.main-grid{grid-template-columns:1fr 1fr;gap:10px}
+.col-left{grid-column:1;grid-row:1}
+.col-center{grid-column:1/3;grid-row:2}
+.col-right{grid-column:2;grid-row:1}
+}
+
+/* DESKTOP: 3 columns, fixed height, no scroll */
 @media(min-width:900px){
-body{overflow:hidden}
-.hud{height:100vh;overflow:hidden}
+html,body{height:100%;overflow:hidden}
+.hud{height:100vh;overflow:hidden;padding:6px 8px}
 .main-grid{grid-template-columns:240px 1fr 240px;flex:1;min-height:0;overflow:hidden}
 .col{min-height:0;overflow:hidden}
 }
-.module{background:rgba(0,20,40,.45);border:1px solid rgba(0,255,255,.2);border-radius:10px;backdrop-filter:blur(8px);padding:12px;position:relative;overflow:hidden;flex-shrink:0}
-.module.flex-1{min-height:140px}
-@media(min-width:900px){.module.flex-1{flex:1;min-height:0}}
+
+.module{background:rgba(0,20,40,.45);border:1px solid rgba(0,255,255,.2);border-radius:10px;backdrop-filter:blur(8px);padding:12px;position:relative;overflow:visible}
 .module::before{content:'';position:absolute;top:0;left:0;width:100%;height:1px;background:linear-gradient(90deg,transparent,#0ff,transparent);animation:scan 4s linear infinite}
+@media(min-width:900px){.module{overflow:hidden}}
+.module.flex-1{min-height:120px}
+@media(min-width:900px){.module.flex-1{flex:1;min-height:0;overflow:hidden}}
+
 .label{font-family:'Orbitron';font-size:10px;letter-spacing:1.5px;color:rgba(0,255,255,.65);text-transform:uppercase}
-.data-stream{font-family:'Orbitron';font-size:9px;color:rgba(0,255,255,.35);white-space:pre;line-height:1.3;overflow:hidden}
+.data-stream{font-family:'Orbitron';font-size:9px;color:rgba(0,255,255,.35);white-space:pre;line-height:1.3;overflow:hidden;max-height:80px}
+@media(min-width:900px){.data-stream{max-height:none;flex:1}}
 .bar-fill{height:100%;background:linear-gradient(90deg,#0ff,#0af);box-shadow:0 0 6px #0ff;transition:width .5s}
 
-/* ===== ROBOT FACE ===== */
-.robot-container{position:relative;width:min(160px,40vw);height:min(160px,40vw);display:flex;align-items:center;justify-content:center;animation:floatY 4s ease-in-out infinite}
+/* ROBOT */
+.robot-container{position:relative;width:min(160px,42vw);height:min(160px,42vw);display:flex;align-items:center;justify-content:center;animation:floatY 4s ease-in-out infinite;flex-shrink:0}
 @media(min-width:900px){.robot-container{width:min(200px,45vw);height:min(200px,45vw)}}
 .robot-svg{width:100%;height:100%;filter:drop-shadow(0 0 12px rgba(0,255,255,.4))}
 .eye-l{transform-origin:35px 50px;animation:blink 4s infinite}
@@ -74,53 +86,55 @@ body{overflow:hidden}
 .orbit-ring{position:absolute;border:1px solid rgba(0,255,255,.2);border-radius:50%;animation:spin linear infinite}
 .pulse-ring{position:absolute;border:2px solid rgba(0,255,255,.4);border-radius:50%;animation:ringExpand 2s ease-out infinite}
 
-.center-hud{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
-@media(min-width:900px){.center-hud{min-height:0;flex:1}}
-.robot-status{font-family:'Orbitron';font-size:11px;color:#0ff;text-shadow:0 0 8px #0ff;letter-spacing:2px;margin-top:2px}
+.center-hud{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:10px 0}
+@media(min-width:900px){.center-hud{min-height:0;flex:1;gap:8px}}
 
-.chat-box{width:100%;max-width:460px;display:flex;flex-direction:column;min-height:260px}
+.robot-status{font-family:'Orbitron';font-size:11px;color:#0ff;text-shadow:0 0 8px #0ff;letter-spacing:2px}
+
+/* CHAT - always visible, never collapsed */
+.chat-box{width:100%;max-width:460px;display:flex;flex-direction:column;min-height:240px}
 @media(min-width:900px){.chat-box{flex:1;min-height:0}}
-.chat-log{flex:1;min-height:120px;max-height:200px;overflow-y:auto;padding:4px 0}
+.chat-log{flex:1;min-height:100px;max-height:220px;overflow-y:auto;padding:4px 0;-webkit-overflow-scrolling:touch}
 @media(min-width:900px){.chat-log{min-height:0;max-height:none}}
 .chat-msg{max-width:85%;padding:8px 14px;border-radius:10px;margin:4px 0;font-size:14px;animation:fadeIn .3s;word-wrap:break-word}
 .chat-ai{background:rgba(0,255,255,.1);border:1px solid rgba(0,255,255,.3);color:#0ff;align-self:flex-start;border-radius:10px 10px 10px 0}
 .chat-user{background:rgba(0,150,255,.15);border:1px solid rgba(0,150,255,.3);color:#aef;align-self:flex-end;border-radius:10px 10px 0 10px}
-.chat-input-row{display:flex;gap:6px;align-items:center;flex-shrink:0;margin-top:4px}
+.chat-input-row{display:flex;gap:6px;align-items:center;flex-shrink:0;margin-top:6px}
 
-input{background:rgba(0,20,40,.6);border:1px solid rgba(0,255,255,.3);color:#0ff;padding:8px 14px;border-radius:8px;outline:none;font-family:'Rajdhani';font-size:14px;width:100%}
+input{background:rgba(0,20,40,.6);border:1px solid rgba(0,255,255,.3);color:#0ff;padding:10px 14px;border-radius:8px;outline:none;font-family:'Rajdhani';font-size:15px;width:100%;min-width:0}
 input:focus{border-color:#0ff;box-shadow:0 0 10px rgba(0,255,255,.3)}
 
-.mic-btn{width:38px;height:38px;border-radius:50%;border:2px solid #0ff;background:rgba(0,255,255,.1);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;flex-shrink:0}
+.mic-btn{width:40px;height:40px;border-radius:50%;border:2px solid #0ff;background:rgba(0,255,255,.1);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;flex-shrink:0}
 .mic-btn:hover{background:rgba(0,255,255,.2);box-shadow:0 0 15px #0ff}
 .mic-active{background:rgba(255,50,50,.2);border-color:#f44;box-shadow:0 0 15px #f44;animation:pulse 1s infinite}
 
-.btn-hud{background:rgba(0,255,255,.1);border:1px solid rgba(0,255,255,.4);color:#0ff;padding:7px 6px;border-radius:6px;cursor:pointer;font-family:'Orbitron';font-size:10px;letter-spacing:.5px;transition:all .2s;white-space:normal;word-break:break-word;line-height:1.3;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:40px}
+.btn-hud{background:rgba(0,255,255,.1);border:1px solid rgba(0,255,255,.4);color:#0ff;padding:8px 6px;border-radius:6px;cursor:pointer;font-family:'Orbitron';font-size:10px;letter-spacing:.5px;transition:all .2s;white-space:normal;word-break:break-word;line-height:1.3;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:42px}
 .btn-hud .sub{font-family:'Rajdhani',sans-serif;font-size:8px;color:rgba(0,255,255,.55);letter-spacing:.2px;text-transform:none}
 .btn-hud:hover{background:rgba(0,255,255,.2);box-shadow:0 0 10px rgba(0,255,255,.3)}
 
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .flex{display:flex}.justify-between{justify-content:space-between}.items-center{align-items:center}.justify-center{justify-content:center}.text-center{text-align:center}.w-full{width:100%}
 
-/* ===== CREDIT BAR ===== */
-.credit-bar{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:1200px;margin:0 auto;padding:6px 10px;flex-shrink:0;background:rgba(0,15,30,.5);border:1px solid rgba(0,255,255,.2);border-radius:10px;backdrop-filter:blur(8px);position:relative;overflow:hidden}
+/* CREDIT BAR - always visible, wraps on mobile */
+.credit-bar{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:1200px;margin:6px auto 0;padding:8px 12px;flex-shrink:0;background:rgba(0,15,30,.5);border:1px solid rgba(0,255,255,.2);border-radius:10px;backdrop-filter:blur(8px);position:relative;flex-wrap:wrap;gap:6px}
 .credit-bar::before{content:'';position:absolute;top:0;left:0;width:100%;height:1px;background:linear-gradient(90deg,transparent,#0ff,transparent);animation:scan 5s linear infinite}
-.credit-avatar{width:32px;height:32px;border-radius:50%;border:2px solid #0ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 8px rgba(0,255,255,.3);background:rgba(0,20,40,.6)}
+.credit-avatar{width:34px;height:34px;border-radius:50%;border:2px solid #0ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 8px rgba(0,255,255,.3);background:rgba(0,20,40,.6)}
 .credit-info{display:flex;flex-direction:column;gap:0}
 .credit-name{font-family:'Orbitron';font-size:11px;color:#0ff;text-shadow:0 0 6px rgba(0,255,255,.5);letter-spacing:1px}
 .credit-role{font-family:'Rajdhani';font-size:9px;color:rgba(0,255,255,.5)}
 .credit-links{display:flex;gap:6px;flex-wrap:wrap}
-.clink{display:inline-flex;align-items:center;gap:4px;font-family:'Orbitron';font-size:9px;text-decoration:none;padding:4px 10px;border-radius:6px;transition:all .2s;white-space:nowrap}
+.clink{display:inline-flex;align-items:center;gap:4px;font-family:'Orbitron';font-size:9px;text-decoration:none;padding:5px 10px;border-radius:6px;transition:all .2s;white-space:nowrap}
 .clink:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.3)}
 .clink i{font-size:11px}
 
-/* ===== APPS MODAL ===== */
-.apps-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,5,15,.93);backdrop-filter:blur(15px);display:none;align-items:center;justify-content:center;flex-direction:column;padding:20px}
+/* APPS MODAL */
+.apps-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,5,15,.93);backdrop-filter:blur(15px);display:none;align-items:center;justify-content:center;flex-direction:column;padding:16px}
 .apps-overlay.active{display:flex;animation:fadeIn .3s}
-.apps-header{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:800px;margin-bottom:14px;animation:modalIn .4s}
-.apps-title{font-family:'Orbitron';font-size:clamp(16px,3vw,22px);color:#0ff;text-shadow:0 0 12px #0ff;letter-spacing:3px}
-.apps-close{width:34px;height:34px;border-radius:50%;border:2px solid rgba(255,80,80,.5);background:rgba(255,50,50,.1);color:#f66;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.apps-header{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:800px;margin-bottom:14px;animation:modalIn .4s;flex-shrink:0}
+.apps-title{font-family:'Orbitron';font-size:clamp(15px,3vw,22px);color:#0ff;text-shadow:0 0 12px #0ff;letter-spacing:3px}
+.apps-close{width:34px;height:34px;border-radius:50%;border:2px solid rgba(255,80,80,.5);background:rgba(255,50,50,.1);color:#f66;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
 .apps-close:hover{background:rgba(255,50,50,.2);box-shadow:0 0 12px rgba(255,50,50,.4)}
-.apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;width:100%;max-width:800px;overflow-y:auto;max-height:68vh;padding:4px}
+.apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;width:100%;max-width:800px;overflow-y:auto;max-height:72vh;padding:4px;-webkit-overflow-scrolling:touch}
 .app-card{background:rgba(0,20,40,.6);border:1px solid rgba(0,255,255,.25);border-radius:10px;padding:14px 10px;text-decoration:none;transition:all .3s;position:relative;overflow:hidden;animation:cardIn .4s forwards;opacity:0;text-align:center}
 .app-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,#0ff,transparent);transform:scaleX(0);transition:transform .3s}
 .app-card:hover{border-color:#0ff;background:rgba(0,40,60,.6);box-shadow:0 0 20px rgba(0,255,255,.2);transform:translateY(-3px)}
@@ -128,7 +142,7 @@ input:focus{border-color:#0ff;box-shadow:0 0 10px rgba(0,255,255,.3)}
 .app-card .ico{font-size:22px;color:#0ff;margin-bottom:8px;text-shadow:0 0 8px rgba(0,255,255,.5)}
 .app-card .nm{font-family:'Orbitron';font-size:10px;color:#0ff;letter-spacing:.5px;line-height:1.3}
 .app-card .ds{font-family:'Rajdhani';font-size:9px;color:rgba(0,255,255,.5);margin-top:3px;line-height:1.2}
-.apps-footer{margin-top:10px;font-family:'Orbitron';font-size:8px;color:rgba(0,255,255,.4);letter-spacing:2px}
+.apps-footer{margin-top:10px;font-family:'Orbitron';font-size:8px;color:rgba(0,255,255,.4);letter-spacing:2px;flex-shrink:0}
 
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:rgba(0,255,255,.05)}::-webkit-scrollbar-thumb{background:rgba(0,255,255,.3)}
 </style>
@@ -146,14 +160,12 @@ input:focus{border-color:#0ff;box-shadow:0 0 10px rgba(0,255,255,.3)}
 <div class="boot-text orbitron" style="animation-delay:1.5s;margin-top:10px" id="boot-pct">0%</div>
 </div>
 
-<!-- BG -->
 <canvas id="particles"></canvas>
 <canvas id="hud-canvas"></canvas>
 <div class="scan-line"></div>
 <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div>
 <div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
 
-<!-- MAIN HUD -->
 <div class="hud" id="main-hud" style="display:none">
 
 <div class="top-bar">
@@ -168,8 +180,8 @@ input:focus{border-color:#0ff;box-shadow:0 0 10px rgba(0,255,255,.3)}
 
 <div class="main-grid">
 
-<!-- LEFT COL -->
-<div class="col">
+<!-- LEFT -->
+<div class="col col-left">
 <div class="module">
 <div class="label">System Status</div>
 <div class="grid-2" style="margin-top:8px">
@@ -185,50 +197,38 @@ input:focus{border-color:#0ff;box-shadow:0 0 10px rgba(0,255,255,.3)}
 </div>
 <div class="module flex-1">
 <div class="label">Data Stream</div>
-<div class="data-stream" id="data-stream" style="height:calc(100% - 20px);margin-top:4px"></div>
+<div class="data-stream" id="data-stream" style="margin-top:4px"></div>
 </div>
 </div>
 
-<!-- CENTER COL -->
+<!-- CENTER -->
+<div class="col col-center">
 <div class="center-hud">
-
-<!-- ROBOT FACE -->
 <div class="robot-container">
 <div class="orbit-ring" style="width:100%;height:100%;animation-duration:20s"></div>
 <div class="orbit-ring" style="width:85%;height:85%;animation-duration:15s;animation-direction:reverse;border-style:dashed"></div>
 <div class="pulse-ring" style="width:70%;height:70%"></div>
-
 <svg class="robot-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-<!-- Ears -->
 <g class="ear-l"><polygon points="25,45 8,8 45,28" fill="#0a1929" stroke="#06b6d4" stroke-width="2"/><polygon points="25,38 14,16 38,28" fill="#06b6d4" opacity=".6"/></g>
 <g class="ear-r"><polygon points="75,45 92,8 55,28" fill="#0a1929" stroke="#06b6d4" stroke-width="2"/><polygon points="75,38 86,16 62,28" fill="#06b6d4" opacity=".6"/></g>
-<!-- Head -->
 <circle cx="50" cy="55" r="36" fill="#0a1929" stroke="#06b6d4" stroke-width="2.5"/>
 <path d="M 16 44 Q 50 28 84 44" fill="none" stroke="#334155" stroke-width="5" stroke-linecap="round"/>
-<!-- Forehead gem -->
 <circle cx="50" cy="35" r="10" fill="#06b6d4" opacity=".3" stroke="#06b6d4" stroke-width="1.5"/>
 <circle cx="50" cy="35" r="5" fill="#06b6d4" opacity=".5"/>
 <circle cx="48" cy="33" r="2" fill="#fff" opacity=".8"/>
-<!-- Eyes -->
 <g class="eye-l"><ellipse cx="35" cy="52" rx="5" ry="7" fill="#06b6d4"/><circle cx="33" cy="50" r="2.5" fill="#fff"/><circle cx="36" cy="54" r="1.5" fill="#fff" opacity=".5"/><path d="M 28 47 Q 35 43 42 47" fill="none" stroke="#06b6d4" stroke-width="1.5" stroke-linecap="round"/></g>
 <g class="eye-r"><ellipse cx="65" cy="52" rx="5" ry="7" fill="#06b6d4"/><circle cx="63" cy="50" r="2.5" fill="#fff"/><circle cx="66" cy="54" r="1.5" fill="#fff" opacity=".5"/><path d="M 58 47 Q 65 43 72 47" fill="none" stroke="#06b6d4" stroke-width="1.5" stroke-linecap="round"/></g>
-<!-- Cheeks -->
 <ellipse cx="25" cy="63" rx="6" ry="3.5" fill="#f472b6" opacity=".5"/>
 <ellipse cx="75" cy="63" rx="6" ry="3.5" fill="#f472b6" opacity=".5"/>
-<!-- Nose -->
 <polygon points="47,60 53,60 50,64" fill="#06b6d4" opacity=".6"/>
-<!-- Mouth -->
 <g class="mouth" id="robot-mouth"><path d="M 38 67 Q 44 73 50 68 Q 56 73 62 67" fill="none" stroke="#06b6d4" stroke-width="2" stroke-linecap="round"/></g>
-<!-- Side circuits -->
 <line x1="14" y1="55" x2="8" y2="55" stroke="#06b6d4" stroke-width="1.5" opacity=".4"/>
 <line x1="86" y1="55" x2="92" y2="55" stroke="#06b6d4" stroke-width="1.5" opacity=".4"/>
 <circle cx="8" cy="55" r="1.5" fill="#06b6d4" opacity=".5"/>
 <circle cx="92" cy="55" r="1.5" fill="#06b6d4" opacity=".5"/>
 </svg>
 </div>
-
 <div class="robot-status" id="core-status">ONLINE</div>
-
 <div class="chat-box module" style="padding:10px">
 <div class="chat-log" id="chat-log">
 <div class="chat-msg chat-ai">Systems online. I am JARVIS. How may I help you?</div>
@@ -245,9 +245,10 @@ input:focus{border-color:#0ff;box-shadow:0 0 10px rgba(0,255,255,.3)}
 </div>
 </div>
 </div>
+</div>
 
-<!-- RIGHT COL -->
-<div class="col">
+<!-- RIGHT -->
+<div class="col col-right">
 <div class="module">
 <div class="label">AI Core Vitals</div>
 <div style="margin-top:8px">
@@ -270,14 +271,14 @@ input:focus{border-color:#0ff;box-shadow:0 0 10px rgba(0,255,255,.3)}
 </div>
 <div class="module flex-1">
 <div class="label" id="module-title">System Info</div>
-<div id="module-content" style="margin-top:8px;font-size:13px;line-height:1.6;color:rgba(0,255,255,.8);overflow-y:auto;max-height:100%">All systems operational.</div>
+<div id="module-content" style="margin-top:8px;font-size:13px;line-height:1.6;color:rgba(0,255,255,.8)">All systems operational.</div>
 </div>
 </div>
 
 </div><!-- main-grid -->
 
 <!-- CREDIT BAR -->
-<div style="width:100%;max-width:1200px;margin:4px auto 0;padding:0 4px;flex-shrink:0">
+<div style="width:100%;max-width:1200px;margin:6px auto 0;padding:0 4px;flex-shrink:0">
 <div class="credit-bar">
 <div style="display:flex;align-items:center;gap:10px">
 <div class="credit-avatar">
@@ -298,7 +299,7 @@ input:focus{border-color:#0ff;box-shadow:0 0 10px rgba(0,255,255,.3)}
 
 </div><!-- hud -->
 
-<!-- ===== APPS MODAL ===== -->
+<!-- APPS MODAL -->
 <div class="apps-overlay" id="appsOverlay">
 <div class="apps-header">
 <div class="apps-title"><i class="fa-solid fa-grip"></i> MY APPLICATIONS</div>
@@ -333,19 +334,14 @@ function openApps(){const ov=document.getElementById('appsOverlay'),grid=documen
 function closeApps(){document.getElementById('appsOverlay').classList.remove('active')}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeApps()});
 
-// BOOT
 let bp=0;const bi=setInterval(()=>{bp+=Math.random()*8+2;if(bp>=100){bp=100;clearInterval(bi);setTimeout(()=>{document.getElementById('boot').style.display='none';document.getElementById('main-hud').style.display='flex';initAll();speak('Systems online. I am JARVIS, your AI assistant.')},500)}document.getElementById('boot-bar').style.width=bp+'%';document.getElementById('boot-pct').textContent=Math.floor(bp)+'%'},100);
 
-// PARTICLES
 function initParticles(){const c=document.getElementById('particles'),ctx=c.getContext('2d');function rz(){c.width=innerWidth;c.height=innerHeight}rz();addEventListener('resize',rz);const p=[];for(let i=0;i<50;i++)p.push({x:Math.random()*c.width,y:Math.random()*c.height,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*2+.5});function dr(){ctx.fillStyle='rgba(0,0,0,.05)';ctx.fillRect(0,0,c.width,c.height);p.forEach(pt=>{pt.x+=pt.vx;pt.y+=pt.vy;if(pt.x<0||pt.x>c.width)pt.vx*=-1;if(pt.y<0||pt.y>c.height)pt.vy*=-1;ctx.beginPath();ctx.arc(pt.x,pt.y,pt.r,0,7);ctx.fillStyle='rgba(0,255,255,'+(.3+pt.r*.2)+')';ctx.fill()});for(let i=0;i<p.length;i++)for(let j=i+1;j<p.length;j++){const dx=p[i].x-p[j].x,dy=p[i].y-p[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<110){ctx.beginPath();ctx.moveTo(p[i].x,p[i].y);ctx.lineTo(p[j].x,p[j].y);ctx.strokeStyle='rgba(0,255,255,'+(1-d/110)*.1+')';ctx.lineWidth=.5;ctx.stroke()}}requestAnimationFrame(dr)}dr()}
 
-// HUD CANVAS
 function initHudCanvas(){const c=document.getElementById('hud-canvas'),ctx=c.getContext('2d');function rz(){c.width=innerWidth;c.height=innerHeight}rz();addEventListener('resize',rz);let t=0;function dr(){ctx.clearRect(0,0,c.width,c.height);if(innerWidth<900){t++;requestAnimationFrame(dr);return}const cx=c.width/2,cy=c.height/2;for(let i=0;i<6;i++){const a1=t*.001+i*Math.PI/3,a2=a1+Math.PI/4;ctx.beginPath();ctx.arc(cx,cy,200+i*10,a1,a2);ctx.strokeStyle='rgba(0,255,255,'+(.06-i*.008)+')';ctx.lineWidth=2;ctx.stroke()}t++;requestAnimationFrame(dr)}dr()}
 
-// NEURAL
 function initNeural(){const c=document.getElementById('neural-canvas'),ctx=c.getContext('2d'),w=c.width,h=c.height;let t=0;function dr(){ctx.fillStyle='rgba(0,10,20,.3)';ctx.fillRect(0,0,w,h);ctx.beginPath();ctx.moveTo(0,h/2);for(let x=0;x<w;x++){const y=h/2+Math.sin(x*.05+t*.05)*12+Math.sin(x*.02+t*.03)*6;ctx.lineTo(x,y)}ctx.strokeStyle='#0ff';ctx.lineWidth=1;ctx.shadowBlur=4;ctx.shadowColor='#0ff';ctx.stroke();ctx.shadowBlur=0;t++;requestAnimationFrame(dr)}dr()}
 
-// CLOCK & STATS
 function updateClock(){const d=new Date();document.getElementById('clock').textContent=d.toLocaleTimeString('en-GB')}
 setInterval(updateClock,1000);updateClock();
 const stT=Date.now();
@@ -356,19 +352,16 @@ setInterval(updateStats,2000);
 function updateDataStream(){const ch='01ABCD#$@%*[]{}<>^~';let l=[];for(let i=0;i<3;i++){let s='';for(let j=0;j<28;j++)s+=ch[Math.floor(Math.random()*ch.length)];l.push(s)}document.getElementById('data-stream').textContent=l.join('\n')}
 setInterval(updateDataStream,200);updateDataStream();
 
-// SPEECH + ROBOT MOUTH
 let synth=speechSynthesis;
 function speak(t){if(!synth)return;const u=new SpeechSynthesisUtterance(t);u.rate=.9;u.pitch=.6;u.volume=.8;const vs=synth.getVoices(),m=vs.find(v=>v.name.includes('Female')||v.name.includes('Samantha')||v.name.includes('Google UK English Female'))||vs.find(v=>v.name.includes('Male')||v.name.includes('Daniel'));if(m)u.voice=m;synth.speak(u);const mouth=document.getElementById('robot-mouth');mouth.classList.add('talking');document.getElementById('core-status').textContent='SPEAKING';u.onend=()=>{mouth.classList.remove('talking');document.getElementById('core-status').textContent='ONLINE'}}
 let rec=null,ls=false;
 function initSpeech(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(SR){rec=new SR();rec.continuous=false;rec.interimResults=true;rec.lang='en-US';rec.onresult=e=>{const t=e.results[e.results.length-1][0].transcript;document.getElementById('chat-input').value=t;if(e.results[e.results.length-1].isFinal)sendMsg()};rec.onend=()=>{ls=false;document.getElementById('mic-btn').classList.remove('mic-active')};rec.onerror=()=>{ls=false;document.getElementById('mic-btn').classList.remove('mic-active')}}}
 function toggleVoice(){if(!rec){speak('Voice not available');return}if(ls){rec.stop();return}ls=true;document.getElementById('mic-btn').classList.add('mic-active');try{rec.start()}catch(e){ls=false;document.getElementById('mic-btn').classList.remove('mic-active')}}
 
-// CHAT
 function aiRespond(msg){const m=msg.toLowerCase();let r='';if(m.includes('hello')||m.includes('hi')||m.includes('hey'))r='Hello sir. All systems operational.';else if(m.includes('time'))r='Time: '+new Date().toLocaleTimeString('en-GB');else if(m.includes('date')||m.includes('today'))r='Today: '+new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});else if(m.includes('joke'))r=['Why dont atoms trust each other? They make up everything.','I told my computer I need a break. It went to sleep.','Why did the AI cross the road? To optimize the chicken route.'][Math.floor(Math.random()*3)];else if(m.includes('status')||m.includes('system')){r='All nominal. CPU '+(30+Math.floor(Math.random()*40))+'%. Memory stable.';switchModule('sys')}else if(m.includes('weather')){r='28C, partly cloudy. Humidity 65%.';switchModule('weather')}else if(m.includes('calc')||m.includes('calculate')){const ex=msg.replace(/[^0-9+\-*/.() ]/g,'');if(ex&&ex.length>1){try{r='Result: '+eval(ex)}catch(e){r='Invalid expression'}}else r='Try: calculate 25 * 4'}else if(m.includes('health')){r='Heart: 72 BPM. O2: 98%.';switchModule('health')}else if(m.includes('space')){r='ISS: 408km altitude.';switchModule('space')}else if(m.includes('who are you'))r='I am JARVIS - Just A Rather Very Intelligent System.';else if(m.includes('thank'))r='Always at your service, sir.';else if(m.includes('app')||m.includes('open')||m.includes('launch')){openApps();r='Opening applications panel...'}else r='I heard: "'+msg+'". Try: weather, time, calc, apps.';return r}
 function sendMsg(){const inp=document.getElementById('chat-input'),msg=inp.value.trim();if(!msg)return;inp.value='';const log=document.getElementById('chat-log');const ud=document.createElement('div');ud.className='chat-msg chat-user';ud.textContent=msg;log.appendChild(ud);log.scrollTop=log.scrollHeight;document.getElementById('core-status').textContent='PROCESS';setTimeout(()=>{const r=aiRespond(msg),ad=document.createElement('div');ad.className='chat-msg chat-ai';ad.textContent=r;log.appendChild(ad);log.scrollTop=log.scrollHeight;speak(r)},600)}
 function quickCmd(c){const map={time:'What time is it?',date:'What is todays date?',joke:'Tell me a joke',status:'System status'};document.getElementById('chat-input').value=map[c]||c;sendMsg()}
 
-// MODULES
 function switchModule(mod){const t={weather:'Weather',time:'Time',calc:'Calculator',sys:'Diagnostics',health:'Health',space:'Space'},c={weather:'<div style="color:#0ff">Jakarta, ID</div><div>28C | Feels 31C</div><div>Humidity: 65%</div><div>Wind: 12km/h NW</div><div>UV: 7 High</div><div style="margin-top:4px;color:rgba(0,255,255,.5)">Partly cloudy</div>',time:'<div style="color:#0ff;font-size:16px" class="orbitron">'+new Date().toLocaleTimeString('en-GB')+'</div><div>GMT+7 Jakarta</div><div>'+new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})+'</div>',calc:'<input type="text" id="ci" placeholder="Expression..." onkeypress="if(event.key===\'Enter\'){try{document.getElementById(\'cr\').textContent=\'= \'+eval(this.value)}catch(e){document.getElementById(\'cr\').textContent=\'Error\'}}"><div class="orbitron" style="font-size:16px;margin-top:4px;color:#0ff" id="cr">= 0</div>',sys:'<div style="color:#0ff">Operational</div><div>Core: ACTIVE</div><div>Neural: 1.2B params</div><div>Memory: 62%/128GB</div><div>Storage: 45%/2TB</div><div>Security: SECURE</div>',health:'<div style="color:#0ff">Monitor</div><div>Heart: 72 BPM</div><div>O2: 98%</div><div>Temp: 36.5C</div><div>Steps: 8,432</div><div>Sleep: 7.2h</div>',space:'<div style="color:#0ff">Space</div><div>ISS: 408km</div><div>Velocity: 27,600km/h</div><div>Moon: Waxing</div><div>Solar: Low</div><div>Sats: 7,832</div>'};document.getElementById('module-title').textContent=t[mod]||'Module';document.getElementById('module-content').innerHTML=c[mod]||'N/A'}
 
 function initAll(){initParticles();initHudCanvas();initNeural();initSpeech();updateStats()}
