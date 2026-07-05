@@ -442,6 +442,8 @@ const apps=[
 {u:"https://adikds.github.io/UNIFIED-SOIL-CLASSIFICATION-SYSTEM/",i:"fa-cubes",n:"USCS Soil",d:"Soil Classify"},
 {u:"https://adikds.github.io/AERORADAR-PRO/",i:"fa-plane",n:"AeroRadar Pro",d:"Aviation Radar"},
 {u:"https://adikds.github.io/HYDRACANAL-PRO-GEOMETRIC-DESIGN/",i:"fa-water-ladder",n:"HydraCanal Pro",d:"Canal Design"},
+{u:"https://adikds.github.io/financial-planner/",i:"fa-chart-line",n:"Financial Planner",d:"OTW 1 Milyar"},
+{u:"https://adikds.github.io/stock-manager/",i:"fa-boxes-stacked",n:"Stock Manager",d:"Inventory System"},
 ];
 function openApps(){const ov=document.getElementById('appsOverlay'),grid=document.getElementById('appsGrid');grid.innerHTML='';apps.forEach((a,idx)=>{const c=document.createElement('a');c.href=a.u;c.target='_blank';c.className='app-card';c.style.animationDelay=(idx*0.04)+'s';c.innerHTML=`<div class="ico"><i class="fa-solid ${a.i}"></i></div><div class="nm">${a.n}</div><div class="ds">${a.d}</div>`;grid.appendChild(c)});ov.classList.add('active')}
 function closeApps(){document.getElementById('appsOverlay').classList.remove('active')}
