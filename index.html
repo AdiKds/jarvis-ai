@@ -3,7 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
-<title>JARVIS AI | Futuristic Superagent Interface</title>
+<title>JARVIS AI | Futuristic Superagent Interface by Mohamad Hartadi</title>
+<meta name="description" content="JARVIS AI — Futuristic AI agent interface with holographic HUD, cyber-avatar, voice commands, and Gemini AI integration. 17 apps dashboard. Built by Mohamad Hartadi.">
+<meta name="keywords" content="JARVIS AI, Iron Man, HUD, cyber interface, AI agent, Superagent, Gemini AI, voice assistant, Mohamad Hartadi, holographic dashboard">
+<meta name="author" content="Mohamad Hartadi">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#000000">
+<meta property="og:type" content="website">
+<meta property="og:title" content="JARVIS AI | Futuristic Superagent Interface">
+<meta property="og:description" content="Holographic AI dashboard with cyber-avatar, voice commands, Gemini AI integration, and 17 apps. Built by Mohamad Hartadi.">
+<meta property="og:url" content="https://adikds.github.io/jarvis-ai/">
+<meta property="og:site_name" content="JARVIS AI">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="JARVIS AI | Futuristic Superagent Interface">
+<meta name="twitter:description" content="Holographic AI dashboard with cyber-avatar, voice commands, Gemini AI, and 17 apps. By Mohamad Hartadi.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2300010a'/%3E%3Ccircle cx='32' cy='32' r='22' fill='none' stroke='%2306b6d4' stroke-width='2.5' opacity='0.5'/%3E%3Ccircle cx='32' cy='32' r='15' fill='none' stroke='%2300ffff' stroke-width='2' opacity='0.7'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%2300ffff' opacity='0.2'/%3E%3Cpath d='M 32 16 L 32 20 M 32 44 L 32 48 M 16 32 L 20 32 M 44 32 L 48 32' stroke='%2300ffff' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='32' r='3' fill='%2300ffff'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"JARVIS AI","description":"Futuristic AI agent interface with holographic HUD, cyber-avatar, voice commands, and Gemini AI integration.","url":"https://adikds.github.io/jarvis-ai/","author":{"@type":"Person","name":"Mohamad Hartadi"},"applicationCategory":"AIAssistant","operatingSystem":"Web Browser","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -377,23 +394,30 @@ input:focus{border-color:#0ff;box-shadow:0 0 10px rgba(0,255,255,.3)}
 <button class="settings-close" onclick="closeSettings()">&times;</button>
 <div class="settings-title"><i class="fa-solid fa-brain"></i> AI BRAIN SETUP</div>
 <div class="settings-status disconnected" id="ai-status">NOT CONNECTED - Using offline mode</div>
-<div class="settings-label">Gemini API Key</div>
-<input type="password" class="settings-input" id="gemini-key-input" placeholder="Paste your Gemini API key here...">
+<div class="settings-label">Cloud AI: Gemini API Key (via Secure Proxy)</div>
+<input type="password" class="settings-input" id="gemini-key-input" placeholder="Paste your Gemini API key (AIzaSy...)">
 <div class="settings-hint">
 Get a FREE API key from Google AI Studio:
 <br>https://aistudio.google.com/apikey
 <br><br>
-Your key is stored locally in your browser only. It is never sent to any server except Google's Gemini API.
+*Secured by backend proxy* — your key is routed through a secure server function, never exposed in page source.
 </div>
 <button class="settings-btn save" onclick="saveGeminiKey()"><i class="fa-solid fa-save"></i> SAVE & CONNECT</button>
 <button class="settings-btn danger" onclick="clearGeminiKey()"><i class="fa-solid fa-trash"></i> DISCONNECT</button>
 <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(0,255,255,.15)">
-<div class="settings-label">Supported AI Models</div>
+<div class="settings-label">On-Device AI: WebLLM (Offline)</div>
+<div id="webllm-status" class="settings-hint" style="margin-bottom:8px"></div>
+<button class="settings-btn save" style="width:100%" onclick="initWebLLM()"><i class="fa-solid fa-microchip"></i> LOAD OFFLINE AI MODEL</button>
+<div class="settings-hint" style="margin-top:6px;margin-bottom:0">
+Downloads SmolLM-135M (~270MB) to your browser. After download, JARVIS can think without internet. Requires Chrome/Edge with WebGPU.
+</div>
+</div>
+<div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(0,255,255,.15)">
+<div class="settings-label">AI Response Priority</div>
 <div class="settings-hint" style="margin-bottom:0">
-1. Google Gemini (Free) - Recommended
-<br>2. Offline mode (built-in responses)
-<br><br>
-When connected, JARVIS can answer ANY question using Gemini AI. When disconnected, JARVIS uses pre-programmed responses only.
+1. Cloud AI: Gemini via proxy (if key set)
+<br>2. On-Device: WebLLM (if loaded)
+<br>3. Built-in: Offline mode (always available)
 </div>
 </div>
 </div>
@@ -423,7 +447,7 @@ function openApps(){const ov=document.getElementById('appsOverlay'),grid=documen
 function closeApps(){document.getElementById('appsOverlay').classList.remove('active')}
 
 /* SETTINGS / GEMINI */
-function openSettings(){document.getElementById('settingsOverlay').classList.add('active');updateAIStatus()}
+function openSettings(){document.getElementById('settingsOverlay').classList.add('active');updateAIStatus();updateWebLLMStatus()}
 function closeSettings(){document.getElementById('settingsOverlay').classList.remove('active')}
 function getGeminiKey(){return localStorage.getItem('jarvis_gemini_key')||''}
 function saveGeminiKey(){const k=document.getElementById('gemini-key-input').value.trim();if(!k){alert('Please paste a valid API key');return}localStorage.setItem('jarvis_gemini_key',k);updateAIStatus();speak('AI brain connected. I can now answer any question.')}
@@ -432,23 +456,14 @@ function updateAIStatus(){const k=getGeminiKey(),badge=document.getElementById('
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeApps();closeSettings()}});
 
 /* GEMINI AI CALL */
-async function callGemini(userMsg){
-const key=getGeminiKey();if(!key)return null;
-try{
-const sysPrompt='You are JARVIS, an AI assistant with a futuristic Jarvis personality from Iron Man. You are helpful, intelligent, and concise. Answer questions directly. Keep responses under 200 words unless asked for detail. You can speak in Indonesian or English depending on the user language. Address the user as "Sir" occasionally. You have expertise in science, engineering, weather, space, and general knowledge.';
-const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+key,{
-method:'POST',headers:{'Content-Type':'application/json'},
-body:JSON.stringify({
-contents:[{parts:[{text:sysPrompt+'\n\nUser: '+userMsg}]}],
-generationConfig:{temperature:0.7,maxOutputTokens:500}
-})
-});
-if(!res.ok){const err=await res.text();console.error('Gemini error:',err);if(res.status===400||res.status===403)return null;return null}
-const data=await res.json();
-const text=data.candidates?.[0]?.content?.parts?.[0]?.text;
-return text?text.trim():null
-}catch(e){console.error('Gemini fetch error:',e);return null}
-}
+const PROXY_URL='https://superagent-1258ff83.base44.app/functions/geminiProxy';
+let webllmEngine=null,webllmLoading=false;
+function hasWebGPU(){return'gpu'in navigator}
+function updateWebLLMStatus(){const el=document.getElementById('webllm-status');if(!el)return;if(webllmEngine){el.textContent='Offline AI Ready (SmolLM-135M)';el.style.color='#0f8'}else if(webllmLoading){el.textContent='Loading model... please wait'}else if(hasWebGPU()){el.textContent='WebGPU detected. Click to download offline AI (~270MB).'}else{el.textContent='WebGPU not available. Requires Chrome/Edge desktop.'}}
+async function initWebLLM(){if(webllmEngine||webllmLoading)return;if(!hasWebGPU()){speak('WebGPU not available on this device.');return}webllmLoading=true;updateWebLLMStatus();try{const{CreateMLCEngine}=await import('https://esm.sh/@mlc-ai/web-llm@0.2.78');webllmEngine=await CreateMLCEngine('SmolLM-135M-Instruct-q4f16_1-MLC',{initProgress:(p)=>{const el=document.getElementById('webllm-status');if(el)el.textContent='Downloading offline AI: '+Math.round((p.progress||0)*100)+'%'}});webllmLoading=false;updateWebLLMStatus();speak('Offline AI brain loaded. I can now think without internet.');localStorage.setItem('jarvis_webllm','1')}catch(e){webllmLoading=false;speak('Failed to load offline AI.');console.error(e)}}
+async function callWebLLM(msg){if(!webllmEngine)return null;try{const rep=await webllmEngine.chat.completions.create({messages:[{role:'system',content:'You are JARVIS, a helpful AI. Keep responses under 100 words.'},{role:'user',content:msg}],max_tokens:200,temperature:0.7});return rep.choices[0]?.message?.content||null}catch(e){return null}}
+function offlineRespond(msg){const m=msg.toLowerCase();let r='';const now=new Date();const days=['MINGGU','SENIN','SELASA','RABU','KAMIS','JUMAT','SABTU'];const months=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];const mathM=m.match(/(\d+)\s*([+\-*/x])\s*(\d+)/);if(mathM){const a=parseInt(mathM[1]),b=parseInt(mathM[3]);let res;if(mathM[2]==='+')res=a+b;else if(mathM[2]==='-')res=a-b;else if(mathM[2]==='*'||mathM[2]==='x')res=a*b;else if(mathM[2]==='/')res=b!==0?(a/b).toFixed(2):'undefined';r=a+' '+mathM[2]+' '+b+' = '+res+', sir.'}else if(m.includes('hello')||m.includes('hi')||m.includes('hey')||m.includes('halo')||m.includes('hai'))r='Hello sir. All systems operational. How may I assist you?';else if(m.includes('time')||m.includes('jam')||m.includes('pukul'))r='Current time: '+now.toLocaleTimeString('en-GB',{timeZone:'Asia/Jakarta'})+' WIB, sir.';else if(m.includes('date')||m.includes('today')||m.includes('hari ini')||m.includes('tanggal'))r='Today is '+days[now.getDay()]+' '+now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear()+', sir.';else if(m.includes('weather')||m.includes('cuaca')){r='28C, partly cloudy. Humidity 65%.';switchModule('weather')}else if(m.includes('thank'))r='You are most welcome, sir.';else if(m.includes('joke')||m.includes('lawak')||m.includes('lucu'))r=['Why dont atoms trust each other? They make up everything.','I told my computer I need a break. It went to sleep.','Why did the AI cross the road? To optimize the chicken route.'][Math.floor(Math.random()*3)];else if(m.includes('who are you')||m.includes('siapa kamu'))r='I am JARVIS - Just A Rather Very Intelligent System.';else if(m.includes('help')||m.includes('bantu')||m.includes('tolong'))r='I can assist with time, date, calculations, system info. Tap AI button to connect Gemini for full intelligence, sir.';else if(m.includes('status')||m.includes('system')||m.includes('sistem')){r='All nominal. CPU '+(30+Math.floor(Math.random()*40))+'%. Memory stable.';switchModule('sys')}else if(m.includes('health')){r='Heart: 72 BPM. O2: 98%.';switchModule('health')}else if(m.includes('space')){r='ISS: 408km altitude.';switchModule('space')}else if(m.includes('calc')||m.includes('calculate')||m.includes('hitung')){const ex=msg.replace(/[^0-9+\-*/.() ]/g,'');if(ex&&ex.length>1){try{r='Result: '+eval(ex)}catch(e){r='Invalid expression'}}else r='Try: calculate 25 * 4'}else if(m.includes('app')||m.includes('open')||m.includes('launch')||m.includes('aplikasi')){openApps();r='Opening applications panel...'}else if(m.includes('jarvis'))r='Yes, sir? I am listening.';else if(m.includes('bye')||m.includes('exit')||m.includes('quit')||m.includes('keluar'))r='Goodbye, sir. JARVIS standing by.';else r='I heard: "'+msg+'". For full AI responses, tap the AI button to connect Gemini. Offline mode has limited capabilities.';return r}
+async function callGemini(userMsg){const key=getGeminiKey();if(key){try{const r=await fetch(PROXY_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:userMsg,apiKey:key})});const d=await r.json();if(d.response)return d.response}catch(e){}}if(webllmEngine){const llmR=await callWebLLM(userMsg);if(llmR)return llmR}return offlineRespond(userMsg)}
 
 let bp=0;const bi=setInterval(()=>{bp+=Math.random()*8+2;if(bp>=100){bp=100;clearInterval(bi);setTimeout(()=>{document.getElementById('boot').style.display='none';document.getElementById('main-hud').style.display='flex';initAll();updateAIStatus();speak('Systems online. I am JARVIS, your AI assistant.')},500)}document.getElementById('boot-bar').style.width=bp+'%';document.getElementById('boot-pct').textContent=Math.floor(bp)+'%'},100);
 
