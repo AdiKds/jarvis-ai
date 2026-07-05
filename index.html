@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS AI | Futuristic Superagent Interface</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Rajdhani',sans-serif}
+body{background:#000;color:#0ff;overflow:hidden;height:100vh;width:100vw}
+canvas{position:absolute;top:0;left:0}
+.hud{position:relative;z-index:10;width:100%;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.glow{text-shadow:0 0 10px #0ff,0 0 20px #0ff,0 0 40px #08f}
+.glow-blue{text-shadow:0 0 10px #0af,0 0 20px #0af}
+.glow-text{color:#0ff;text-shadow:0 0 5px #0ff,0 0 10px #0ff,0 0 20px #0ff,0 0 40px #08f}
+.orbitron{font-family:'Orbitron',sans-serif}
+.ring{position:absolute;border:2px solid rgba(0,255,255,.15);border-radius:50%;animation:spin linear infinite}
+.ring-glow{border-color:rgba(0,255,255,.4);box-shadow:0 0 20px rgba(0,255,255,.2)}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes spinRev{from{transform:rotate(360deg)}to{transform:rotate(0)}}
+@keyframes pulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
+@keyframes flicker{0%,100%{opacity:1}50%{opacity:.7}52%{opacity:1}54%{opacity:.8}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scan{0%{top:0}100%{top:100%}}
+@keyframes typeIn{from{width:0}to{width:100%}}
+@keyframes blink{50%{border-color:transparent}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 10px #0ff,0 0 20px #0ff,0 0 30px rgba(0,255,255,.3)}50%{box-shadow:0 0 20px #0ff,0 0 40px #0ff,0 0 60px rgba(0,255,255,.5)}}
+@keyframes dash{to{stroke-dashoffset:0}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.boot{position:fixed;inset:0;background:#000;z-index:100;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.boot-text{color:#0ff;font-family:'Orbitron';font-size:14px;letter-spacing:2px;opacity:0;animation:fadeIn .5s forwards}
+.boot-bar{width:300px;height:2px;background:rgba(0,255,255,.1);margin-top:20px;overflow:hidden}
+.boot-fill{height:100%;background:#0ff;box-shadow:0 0 10px #0ff;width:0;transition:width .1s}
+.scan-line{position:absolute;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,#0ff,transparent);animation:scan 3s linear infinite;opacity:.3;z-index:5}
+.hud-corner{position:absolute;width:60px;height:60px;border:2px solid rgba(0,255,255,.3)}
+.hud-tl{top:20px;left:20px;border-right:none;border-bottom:none}
+.hud-tr{top:20px;right:20px;border-left:none;border-bottom:none}
+.hud-bl{bottom:20px;left:20px;border-right:none;border-top:none}
+.hud-br{bottom:20px;right:20px;border-left:none;border-top:none}
+.module{background:rgba(0,20,40,.4);border:1px solid rgba(0,255,255,.2);border-radius:12px;backdrop-filter:blur(10px);padding:16px;position:relative;overflow:hidden}
+.module::before{content:'';position:absolute;top:0;left:0;width:100%;height:1px;background:linear-gradient(90deg,transparent,#0ff,transparent);animation:scan 4s linear infinite}
+.label{font-family:'Orbitron';font-size:10px;letter-spacing:2px;color:rgba(0,255,255,.6);text-transform:uppercase}
+.value{font-family:'Orbitron';font-size:24px;color:#0ff;text-shadow:0 0 10px #0ff}
+.chat-msg{max-width:80%;padding:10px 16px;border-radius:12px;margin:8px 0;font-size:14px;animation:fadeIn .3s}
+.chat-ai{background:rgba(0,255,255,.1);border:1px solid rgba(0,255,255,.3);color:#0ff;align-self:flex-start;border-radius:12px 12px 12px 0}
+.chat-user{background:rgba(0,150,255,.15);border:1px solid rgba(0,150,255,.3);color:#aef;align-self:flex-end;border-radius:12px 12px 0 12px}
+.mic-btn{width:80px;height:80px;border-radius:50%;border:2px solid #0ff;background:rgba(0,255,255,.1);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s}
+.mic-btn:hover{background:rgba(0,255,255,.2);box-shadow:0 0 30px #0ff}
+.mic-active{background:rgba(255,50,50,.2);border-color:#f44;box-shadow:0 0 30px #f44;animation:pulse 1s infinite}
+.gauge-svg{transform:rotate(-90deg)}
+.data-stream{font-family:'Orbitron';font-size:9px;color:rgba(0,255,255,.3);white-space:pre;line-height:1.3}
+.bar-fill{height:100%;background:linear-gradient(90deg,#0ff,#0af);box-shadow:0 0 10px #0ff;transition:width .5s}
+input,textarea{background:rgba(0,20,40,.6);border:1px solid rgba(0,255,255,.3);color:#0ff;padding:10px 16px;border-radius:8px;outline:none;font-family:'Rajdhani';font-size:14px}
+input:focus{border-color:#0ff;box-shadow:0 0 15px rgba(0,255,255,.3)}
+.btn-hud{background:rgba(0,255,255,.1);border:1px solid rgba(0,255,255,.4);color:#0ff;padding:8px 20px;border-radius:6px;cursor:pointer;font-family:'Orbitron';font-size:11px;letter-spacing:1px;transition:all .2s}
+.btn-hud:hover{background:rgba(0,255,255,.2);box-shadow:0 0 15px rgba(0,255,255,.3)}
+.module-icon{font-size:20px;margin-bottom:8px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.flex{display:flex}
+.flex-col{flex-direction:column}
+.gap-2{gap:8px}.gap-3{gap:12px}.gap-4{gap:16px}
+.items-center{align-items:center}
+.justify-center{justify-content:center}
+.text-center{text-align:center}
+.w-full{width:100%}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:rgba(0,255,255,.05)}::-webkit-scrollbar-thumb{background:rgba(0,255,255,.3)}
+</style>
+</head>
+<body>
+
+<div class="boot" id="boot">
+<div class="boot-text orbitron glow" style="font-size:28px;margin-bottom:30px">J.A.R.V.I.S</div>
+<div class="boot-text orbitron" style="animation-delay:.3s">INITIALIZING SYSTEM...</div>
+<div class="boot-text orbitron" style="animation-delay:.6s">LOADING AI CORE...</div>
+<div class="boot-text orbitron" style="animation-delay:.9s">CALIBRATING NEURAL NETWORK...</div>
+<div class="boot-text orbitron" style="animation-delay:1.2s">ESTABLISHING SECURE CONNECTION...</div>
+<div class="boot-bar"><div class="boot-fill" id="boot-bar"></div></div>
+<div class="boot-text orbitron" style="animation-delay:1.5s;margin-top:15px" id="boot-pct">0%</div>
+</div>
+
+<canvas id="particles"></canvas>
+<canvas id="hud-canvas"></canvas>
+
+<div class="scan-line"></div>
+<div class="hud-corner hud-tl"></div>
+<div class="hud-corner hud-tr"></div>
+<div class="hud-corner hud-bl"></div>
+<div class="hud-corner hud-br"></div>
+
+<div class="hud" id="main-hud" style="display:none">
+<div style="position:absolute;top:20px;left:50%;transform:translateX(-50%);text-align:center">
+<div class="orbitron glow" style="font-size:22px;letter-spacing:8px">J.A.R.V.I.S</div>
+<div class="orbitron" style="font-size:10px;color:rgba(0,255,255,.5);letter-spacing:3px" id="clock">--:--:--</div>
+</div>
+
+<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;z-index:5">
+<div style="position:relative;width:400px;height:400px;display:flex;align-items:center;justify-content:center">
+<div class="ring ring-glow" style="width:400px;height:400px;animation-duration:20s"></div>
+<div class="ring" style="width:320px;height:320px;animation-duration:15s;animation-direction:reverse;border-style:dashed"></div>
+<div class="ring ring-glow" style="width:240px;height:240px;animation-duration:10s"></div>
+<div class="ring" style="width:160px;height:160px;animation-duration:5s;animation-direction:reverse"></div>
+<div style="position:absolute;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(0,255,255,.2),transparent);display:flex;align-items:center;justify-content:center;animation:glowPulse 3s infinite">
+<div class="orbitron glow" style="font-size:16px" id="core-status">ONLINE</div>
+</div>
+</div>
+</div>
+
+<div style="position:absolute;top:90px;left:20px;width:240px;display:flex;flex-direction:column;gap:10px">
+<div class="module">
+<div class="label">System Status</div>
+<div class="grid-2" style="margin-top:8px">
+<div><div class="label" style="font-size:8px">CPU</div><div style="height:4px;background:rgba(0,255,255,.1);border-radius:2px;margin-top:2px"><div class="bar-fill" id="cpu-bar" style="width:45%"></div></div></div>
+<div><div class="label" style="font-size:8px">RAM</div><div style="height:4px;background:rgba(0,255,255,.1);border-radius:2px;margin-top:2px"><div class="bar-fill" id="ram-bar" style="width:62%"></div></div></div>
+<div><div class="label" style="font-size:8px">GPU</div><div style="height:4px;background:rgba(0,255,255,.1);border-radius:2px;margin-top:2px"><div class="bar-fill" id="gpu-bar" style="width:38%"></div></div></div>
+<div><div class="label" style="font-size:8px">NET</div><div style="height:4px;background:rgba(0,255,255,.1);border-radius:2px;margin-top:2px"><div class="bar-fill" id="net-bar" style="width:78%"></div></div></div>
+</div>
+</div>
+<div class="module">
+<div class="label">Neural Activity</div>
+<canvas id="neural-canvas" width="220" height="60" style="margin-top:4px"></canvas>
+</div>
+<div class="module">
+<div class="label">Data Stream</div>
+<div class="data-stream" id="data-stream" style="height:50px;overflow:hidden;margin-top:4px"></div>
+</div>
+</div>
+
+<div style="position:absolute;top:90px;right:20px;width:240px;display:flex;flex-direction:column;gap:10px">
+<div class="module">
+<div class="label">AI Core Vitals</div>
+<div style="margin-top:8px">
+<div class="flex justify-between" style="margin-bottom:4px"><span class="label" style="font-size:8px">Temperature</span><span class="orbitron" style="font-size:10px;color:#0ff" id="temp-val">36.5C</span></div>
+<div class="flex justify-between" style="margin-bottom:4px"><span class="label" style="font-size:8px">Power Output</span><span class="orbitron" style="font-size:10px;color:#0ff" id="power-val">98.7%</span></div>
+<div class="flex justify-between" style="margin-bottom:4px"><span class="label" style="font-size:8px">Processes</span><span class="orbitron" style="font-size:10px;color:#0ff" id="proc-val">1,247</span></div>
+<div class="flex justify-between"><span class="label" style="font-size:8px">Uptime</span><span class="orbitron" style="font-size:10px;color:#0ff" id="uptime-val">00:00:00</span></div>
+</div>
+</div>
+<div class="module">
+<div class="label">Quick Modules</div>
+<div class="grid-2" style="margin-top:8px">
+<button class="btn-hud" onclick="switchModule('weather')">Weather</button>
+<button class="btn-hud" onclick="switchModule('time')">Time</button>
+<button class="btn-hud" onclick="switchModule('calc')">Calc</button>
+<button class="btn-hud" onclick="switchModule('sys')">System</button>
+<button class="btn-hud" onclick="switchModule('health')">Health</button>
+<button class="btn-hud" onclick="switchModule('space')">Space</button>
+</div>
+</div>
+<div class="module">
+<div class="label" id="module-title">System Info</div>
+<div id="module-content" style="margin-top:8px;font-size:13px;line-height:1.6;color:rgba(0,255,255,.8)">
+All systems operational. Awaiting commands.
+</div>
+</div>
+</div>
+
+<div style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);width:90%;max-width:600px">
+<div class="module" style="padding:12px">
+<div id="chat-log" style="height:120px;overflow-y:auto;display:flex;flex-direction:column;margin-bottom:10px">
+<div class="chat-msg chat-ai">Systems online. I am JARVIS, your AI assistant. How may I help you today?</div>
+</div>
+<div style="display:flex;gap:8px;align-items:center">
+<input type="text" id="chat-input" placeholder="Type or speak a command..." class="w-full" onkeypress="if(event.key==='Enter')sendMsg()">
+<button class="mic-btn" id="mic-btn" onclick="toggleVoice()" style="width:44px;height:44px;flex-shrink:0">
+<i style="font-size:18px">MIC</i>
+</button>
+</div>
+<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;justify-content:center">
+<button class="btn-hud" onclick="quickCmd('time')">What time is it?</button>
+<button class="btn-hud" onclick="quickCmd('date')">Today's date</button>
+<button class="btn-hud" onclick="quickCmd('joke')">Tell me a joke</button>
+<button class="btn-hud" onclick="quickCmd('status')">System status</button>
+<button class="btn-hud" onclick="quickCmd('calc')">Calculate</button>
+</div>
+</div>
+</div>
+
+<div style="position:absolute;bottom:20px;left:20px">
+<div class="label" style="font-size:8px">SPEECH: <span id="speech-status" style="color:#0ff">READY</span></div>
+</div>
+<div style="position:absolute;bottom:20px;right:20px">
+<div class="label" style="font-size:8px;text-align:right">v2.0.26 | NEURAL CORE</div>
+</div>
+</div>
+
+<script>
+// BOOT SEQUENCE
+let bootPct=0;
+const bootInterval=setInterval(()=>{
+bootPct+=Math.random()*8+2;
+if(bootPct>=100){bootPct=100;clearInterval(bootInterval);setTimeout(()=>{document.getElementById('boot').style.display='none';document.getElementById('main-hud').style.display='flex';initAll();speak('Systems online. I am JARVIS, your AI assistant. How may I help you today?')},500)}
+document.getElementById('boot-bar').style.width=bootPct+'%';
+document.getElementById('boot-pct').textContent=Math.floor(bootPct)+'%';
+},100);
+
+// PARTICLE BACKGROUND
+function initParticles(){
+const c=document.getElementById('particles');const ctx=c.getContext('2d');
+c.width=window.innerWidth;c.height=window.innerHeight;
+const pts=[];for(let i=0;i<80;i++)pts.push({x:Math.random()*c.width,y:Math.random()*c.height,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*2+.5});
+function draw(){
+ctx.fillStyle='rgba(0,0,0,.05)';ctx.fillRect(0,0,c.width,c.height);
+pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>c.width)p.vx*=-1;if(p.y<0||p.y>c.height)p.vy*=-1;
+ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba(0,255,255,'+(.3+p.r*.2)+')';ctx.fill()});
+for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y;const d=Math.sqrt(dx*dx+dy*dy);if(d<120){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle='rgba(0,255,255,'+(1-d/120)*.15+')';ctx.lineWidth=.5;ctx.stroke()}}
+requestAnimationFrame(draw)}
+draw();window.addEventListener('resize',()=>{c.width=window.innerWidth;c.height=window.innerHeight})}
+initParticles();
+
+// HUD CANVAS - circular data viz
+function initHudCanvas(){
+const c=document.getElementById('hud-canvas');const ctx=c.getContext('2d');
+c.width=window.innerWidth;c.height=window.innerHeight;
+let t=0;
+function draw(){
+ctx.clearRect(0,0,c.width,c.height);
+const cx=c.width/2,cy=c.height/2;
+// Rotating arc segments
+for(let i=0;i<6;i++){
+const a1=t*.001+i*Math.PI/3;const a2=a1+Math.PI/4;
+ctx.beginPath();ctx.arc(cx,cy,210+i*10,a1,a2);ctx.strokeStyle='rgba(0,255,255,'+(.08-i*.01)+')';ctx.lineWidth=2;ctx.stroke()
+}
+// Crosshair lines
+ctx.strokeStyle='rgba(0,255,255,.06)';ctx.lineWidth=1;
+ctx.beginPath();ctx.moveTo(cx-250,cy);ctx.lineTo(cx-130,cy);ctx.moveTo(cx+130,cy);ctx.lineTo(cx+250,cy);ctx.stroke();
+ctx.beginPath();ctx.moveTo(cx,cy-250);ctx.lineTo(cx,cy-130);ctx.moveTo(cx,cy+130);ctx.lineTo(cx,cy+250);ctx.stroke();
+// Data dots
+for(let i=0;i<20;i++){const a=t*.0005+i*Math.PI/10;const r=180+Math.sin(t*.002+i)*20;
+const x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;
+ctx.beginPath();ctx.arc(x,y,1.5,0,Math.PI*2);ctx.fillStyle='rgba(0,255,255,.4)';ctx.fill()}
+t++;requestAnimationFrame(draw)}
+draw()}
+initHudCanvas();
+
+// NEURAL CANVAS - brain wave visualization
+function initNeural(){
+const c=document.getElementById('neural-canvas');const ctx=c.getContext('2d');
+const w=c.width,h=c.height;let t=0;
+function draw(){
+ctx.fillStyle='rgba(0,10,20,.3)';ctx.fillRect(0,0,w,h);
+ctx.beginPath();ctx.moveTo(0,h/2);
+for(let x=0;x<w;x++){const y=h/2+Math.sin(x*.05+t*.05)*15+Math.sin(x*.02+t*.03)*8+Math.random()*2;
+ctx.lineTo(x,y)}
+ctx.strokeStyle='#0ff';ctx.lineWidth=1;ctx.shadowBlur=5;ctx.shadowColor='#0ff';ctx.stroke();ctx.shadowBlur=0;
+// Second wave
+ctx.beginPath();ctx.moveTo(0,h/2);
+for(let x=0;x<w;x++){const y=h/2+Math.sin(x*.03-t*.04)*10+Math.cos(x*.08+t*.02)*5;
+ctx.lineTo(x,y)}
+ctx.strokeStyle='rgba(0,150,255,.5)';ctx.lineWidth=1;ctx.stroke();
+t++;requestAnimationFrame(draw)}
+draw()}
+
+// CLOCK
+function updateClock(){
+const d=new Date();
+document.getElementById('clock').textContent=d.toLocaleTimeString('en-GB')+' | '+d.toLocaleDateString('en-GB');
+}
+setInterval(updateClock,1000);updateClock();
+
+// UPTIME
+const startTime=Date.now();
+function updateUptime(){
+const s=Math.floor((Date.now()-startTime)/1000);
+const h=String(Math.floor(s/3600)).padStart(2,'0');
+const m=String(Math.floor((s%3600)/60)).padStart(2,'0');
+const ss=String(s%60).padStart(2,'0');
+document.getElementById('uptime-val').textContent=`${h}:${m}:${ss}`;
+}
+setInterval(updateUptime,1000);
+
+// SYSTEM STATS - animated
+function updateStats(){
+document.getElementById('cpu-bar').style.width=(30+Math.random()*40)+'%';
+document.getElementById('ram-bar').style.width=(50+Math.random()*30)+'%';
+document.getElementById('gpu-bar').style.width=(20+Math.random()*50)+'%';
+document.getElementById('net-bar').style.width=(60+Math.random()*35)+'%';
+document.getElementById('temp-val').textContent=(35+Math.random()*3).toFixed(1)+'C';
+document.getElementById('power-val').textContent=(95+Math.random()*5).toFixed(1)+'%';
+document.getElementById('proc-val').textContent=(1200+Math.floor(Math.random()*100)).toLocaleString();
+}
+setInterval(updateStats,2000);
+
+// DATA STREAM
+function updateDataStream(){
+const chars='01ABCD#$@%*[]{}<>^~';
+let lines=[];
+for(let i=0;i<3;i++){let l='';for(let j=0;j<30;j++)l+=chars[Math.floor(Math.random()*chars.length)];lines.push(l)}
+document.getElementById('data-stream').textContent=lines.join('\n');
+}
+setInterval(updateDataStream,200);updateDataStream();
+
+// SPEECH SYNTHESIS
+let synth=window.speechSynthesis;
+function speak(text){
+if(!synth)return;
+const u=new SpeechSynthesisUtterance(text);
+u.rate=.9;u.pitch=.6;u.volume=.8;
+const voices=synth.getVoices();
+const male=voices.find(v=>v.name.includes('Male')||v.name.includes('Daniel')||v.name.includes('Google UK English Male'));
+if(male)u.voice=male;
+synth.speak(u);
+document.getElementById('core-status').textContent='SPEAKING';
+setTimeout(()=>{document.getElementById('core-status').textContent='ONLINE'},text.length*60);
+}
+
+// SPEECH RECOGNITION
+let recognition=null;let listening=false;
+function initSpeech(){
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(SR){recognition=new SR();recognition.continuous=false;recognition.interimResults=true;recognition.lang='en-US';
+recognition.onresult=e=>{const t=e.results[e.results.length-1][0].transcript;document.getElementById('chat-input').value=t;if(e.results[e.results.length-1].isFinal)sendMsg()};
+recognition.onend=()=>{listening=false;document.getElementById('mic-btn').classList.remove('mic-active');document.getElementById('speech-status').textContent='READY'};
+recognition.onerror=()=>{listening=false;document.getElementById('mic-btn').classList.remove('mic-active');document.getElementById('speech-status').textContent='ERROR'}
+}}
+function toggleVoice(){
+if(!recognition){speak('Voice recognition not available in this browser');return}
+if(listening){recognition.stop();return}
+listening=true;document.getElementById('mic-btn').classList.add('mic-active');document.getElementById('speech-status').textContent='LISTENING';
+try{recognition.start()}catch(e){listening=false;document.getElementById('mic-btn').classList.remove('mic-active')}
+}
+
+// AI RESPONSES
+function aiRespond(msg){
+const m=msg.toLowerCase();let r='';
+if(m.includes('hello')||m.includes('hi')||m.includes('hey'))r='Hello sir. All systems are operational. How may I assist you?';
+else if(m.includes('time'))r='The current time is '+new Date().toLocaleTimeString('en-GB');
+else if(m.includes('date')||m.includes('today'))r='Today is '+new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+else if(m.includes('joke'))r=['Why dont scientists trust atoms? They make up everything.','I told my computer I needed a break, and it said: No problem, Ill go to sleep.','Why did the AI cross the road? To optimize the chicken\'s route.'][Math.floor(Math.random()*3)];
+else if(m.includes('status')||m.includes('system'))r='All systems nominal. CPU at '+(30+Math.floor(Math.random()*40))+'%. Memory stable. Network connectivity optimal. No threats detected.';
+else if(m.includes('weather')){r='Current conditions: 28 degrees Celsius, partly cloudy. Humidity at 65 percent. Wind speed 12 kilometers per hour. No rain expected in the next 6 hours.';switchModule('weather')}
+else if(m.includes('calc')||m.includes('calculate')||m.includes('compute')){
+const nums=msg.match(/[-\d.]+/g);
+if(nums&&nums.length>=2){
+try{const expr=msg.replace(/[^0-9+\-*/.() ]/g,'');const res=eval(expr);r='The result of '+expr+' is '+res}
+catch(e){r='I could not parse that calculation. Please try again with a valid expression.'}
+}else r='What would you like me to calculate? For example: calculate 25 times 4';
+}
+else if(m.includes('health')){r='Health monitoring active. Heart rate: 72 BPM. Blood oxygen: 98 percent. Stress level: low. Recommendation: maintain regular hydration.';switchModule('health')}
+else if(m.includes('space')){r='Space module activated. ISS current altitude: 408 kilometers. Velocity: 27,600 km/h. Next lunar phase: new moon in 3 days.';switchModule('space')}
+else if(m.includes('who are you')||m.includes('what are you'))r='I am JARVIS, a Just A Rather Very Intelligent System. I am your personal AI assistant, capable of voice interaction, data analysis, system monitoring, and more.';
+else if(m.includes('thank'))r='You are most welcome, sir. Always at your service.';
+else if(m.includes('open')||m.includes('search')){
+const q=msg.replace(/.*(open|search for|google|find)/i,'').trim();
+if(q)r='Searching for '+q+'. I have found several results. However, web search integration requires an API key to provide live results.';
+else r='What would you like me to search for?';
+}
+else if(m.includes('music')||m.includes('play'))r='I can play music if you connect a streaming service. For now, would you like me to generate a tone at a specific frequency?';
+else if(m.includes('clear')||m.includes('reset')){document.getElementById('chat-log').innerHTML='';r='Chat cleared. Ready for new commands.'}
+else if(m.includes('shutdown')||m.includes('power off'))r='I cannot shut down the system without proper authorization. All systems will remain online.';
+else r='I have processed your request: "'+msg+'". I am a demonstration AI with voice capabilities, system monitoring, and multiple analysis modules. Try asking about weather, time, calculations, system status, or health monitoring.';
+return r;
+}
+
+function sendMsg(){
+const inp=document.getElementById('chat-input');const msg=inp.value.trim();if(!msg)return;
+inp.value='';
+const log=document.getElementById('chat-log');
+const ud=document.createElement('div');ud.className='chat-msg chat-user';ud.textContent=msg;log.appendChild(ud);
+log.scrollTop=log.scrollHeight;
+document.getElementById('core-status').textContent='PROCESSING';
+setTimeout(()=>{
+const r=aiRespond(msg);
+const ad=document.createElement('div');ad.className='chat-msg chat-ai';ad.textContent=r;log.appendChild(ad);
+log.scrollTop=log.scrollHeight;
+speak(r);
+},800);
+}
+function quickCmd(cmd){
+const map={time:'What time is it?',date:'What is today\'s date?',joke:'Tell me a joke',status:'System status',calc:'Calculate 128 multiplied by 7'};
+document.getElementById('chat-input').value=map[cmd]||cmd;sendMsg();
+}
+
+// MODULES
+function switchModule(mod){
+const titles={weather:'Weather Module',time:'Time Module',calc:'Calculator',sys:'System Diagnostics',health:'Health Monitor',space:'Space Module'};
+const contents={
+weather:'<div style="color:#0ff">Location: Jakarta, ID</div><div>Temp: 28C | Feels: 31C</div><div>Humidity: 65%</div><div>Wind: 12 km/h NW</div><div>UV Index: 7 (High)</div><div>Visibility: 10 km</div><div style="margin-top:8px;color:rgba(0,255,255,.5)">Forecast: Partly cloudy for 6h. Rain probability: 20%.</div>',
+time:'<div style="color:#0ff;font-size:20px" class="orbitron">'+new Date().toLocaleTimeString('en-GB')+'</div><div>Timezone: GMT+7 (Jakarta)</div><div>Date: '+new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})+'</div><div>Week: '+Math.ceil((new Date()-new Date(new Date().getFullYear(),0,1))/604800000)+'</div><div>Sunrise: 06:12 | Sunset: 17:48</div>',
+calc:'<div>AI Calculator Active</div><div style="margin-top:8px">Try: calculate 25 * 4 + 100</div><div style="margin-top:8px;color:rgba(0,255,255,.5)">Supports: +, -, *, /, parentheses, decimals</div><div style="margin-top:8px"><input type="text" id="calc-input" placeholder="Enter expression..." style="width:100%" onkeypress="if(event.key===\'Enter\'){try{document.getElementById(\'calc-result\').textContent=\'= \'+eval(this.value)}catch(e){document.getElementById(\'calc-result\').textContent=\'Error\'}}"></div><div class="orbitron" style="font-size:20px;margin-top:8px;color:#0ff" id="calc-result">= 0</div>',
+sys:'<div style="color:#0ff">All Systems Operational</div><div style="margin-top:4px">AI Core: ACTIVE</div><div>Neural Net: 1.2B params</div><div>Memory: 62% / 128GB</div><div>Storage: 45% / 2TB</div><div>Network: 1Gbps</div><div>Security: SECURE</div><div>Threats: 0 detected</div><div style="margin-top:8px;color:rgba(0,255,255,.5)">Last scan: Just now</div>',
+health:'<div style="color:#0ff">Health Monitor Active</div><div style="margin-top:4px">Heart Rate: 72 BPM</div><div>Blood O2: 98%</div><div>Body Temp: 36.5C</div><div>Steps Today: 8,432</div><div>Calories: 1,847 kcal</div><div>Stress: LOW</div><div>Sleep: 7.2h (Good)</div><div style="margin-top:8px;color:rgba(0,255,255,.5)">Recommendation: Stay hydrated.</div>',
+space:'<div style="color:#0ff">Space Tracking Module</div><div style="margin-top:4px">ISS Altitude: 408 km</div><div>ISS Velocity: 27,600 km/h</div><div>Moon Phase: Waxing Crescent</div><div>Next Full Moon: 12 days</div><div>Solar Activity: Low</div><div>Satellites Tracked: 7,832</div><div style="margin-top:8px;color:rgba(0,255,255,.5)">Near-Earth objects: 0 hazardous</div>',
+};
+document.getElementById('module-title').textContent=titles[mod]||'Module';
+document.getElementById('module-content').innerHTML=contents[mod]||'Module not found';
+}
+
+// INIT ALL
+function initAll(){
+initNeural();initSpeech();
+if('speechSynthesis' in window)synth.onvoiceschanged=()=>{};
+// Welcome data stream
+updateStats();
+}
+</script>
+</body>
+</html>
