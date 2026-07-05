@@ -131,10 +131,14 @@ input:focus{border-color:#0ff;box-shadow:0 0 10px rgba(0,255,255,.3)}
 .credit-bar::before{content:'';position:absolute;top:0;left:0;width:100%;height:1px;background:linear-gradient(90deg,transparent,#0ff,transparent);animation:scan 5s linear infinite}
 .credit-avatar{width:34px;height:34px;border-radius:50%;border:2px solid #0ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 8px rgba(0,255,255,.3);background:rgba(0,20,40,.6)}
 .credit-info{display:flex;flex-direction:column;gap:0;align-items:center}
+.credit-personal{display:flex;align-items:center;justify-content:center;gap:10px;width:100%}
+@media(min-width:600px){.credit-personal{justify-content:flex-start;width:auto}}
 @media(min-width:600px){.credit-info{align-items:flex-start}}
-.credit-name{font-family:'Orbitron';font-size:11px;color:#0ff;text-shadow:0 0 6px rgba(0,255,255,.5);letter-spacing:1px}
-.credit-role{font-family:'Rajdhani';font-size:9px;color:rgba(0,255,255,.5)}
-.credit-links{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.credit-name{font-family:'Orbitron';font-size:11px;color:#0ff;text-shadow:0 0 6px rgba(0,255,255,.5);letter-spacing:1px;text-align:center}
+.credit-role{font-family:'Rajdhani';font-size:9px;color:rgba(0,255,255,.5);text-align:center}
+.credit-links{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;width:100%}
+@media(min-width:600px){.credit-links{width:auto}}
+@media(max-width:599px){.credit-bar{padding:14px 10px;gap:12px}.credit-personal{flex-direction:column;gap:8px}.credit-avatar{width:40px;height:40px}.credit-name{font-size:12px}.credit-role{font-size:10px}.clink{font-size:10px;padding:6px 14px}}
 .clink{display:inline-flex;align-items:center;gap:4px;font-family:'Orbitron';font-size:9px;text-decoration:none;padding:5px 10px;border-radius:6px;transition:all .2s;white-space:nowrap}
 .clink:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.3)}
 .clink i{font-size:11px}
@@ -361,7 +365,7 @@ input:focus{border-color:#0ff;box-shadow:0 0 10px rgba(0,255,255,.3)}
 
 <div style="width:100%;max-width:1200px;margin:6px auto 0;padding:0 4px;flex-shrink:0">
 <div class="credit-bar">
-<div style="display:flex;align-items:center;gap:10px">
+<div class="credit-personal">
 <div class="credit-avatar"><i class="fa-solid fa-user-astronaut" style="font-size:14px;color:#0ff"></i></div>
 <div class="credit-info">
 <div class="credit-name">MOHAMAD HARTADI (ADI)</div>
