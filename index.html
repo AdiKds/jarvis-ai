@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>JARVIS AI | Futuristic Superagent Interface</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Rajdhani',sans-serif}
@@ -44,8 +45,14 @@ canvas{position:fixed;top:0;left:0;pointer-events:none}
 .bar-fill{height:100%;background:linear-gradient(90deg,#0ff,#0af);box-shadow:0 0 8px #0ff;transition:width .5s}
 input,textarea{background:rgba(0,20,40,.6);border:1px solid rgba(0,255,255,.3);color:#0ff;padding:10px 16px;border-radius:8px;outline:none;font-family:'Rajdhani';font-size:14px;width:100%}
 input:focus{border-color:#0ff;box-shadow:0 0 12px rgba(0,255,255,.3)}
-.btn-hud{background:rgba(0,255,255,.1);border:1px solid rgba(0,255,255,.4);color:#0ff;padding:7px 14px;border-radius:6px;cursor:pointer;font-family:'Orbitron';font-size:10px;letter-spacing:1px;transition:all .2s;white-space:nowrap}
+.btn-hud{background:rgba(0,255,255,.1);border:1px solid rgba(0,255,255,.4);color:#0ff;padding:8px 6px;border-radius:6px;cursor:pointer;font-family:'Orbitron';font-size:10px;letter-spacing:.5px;transition:all .2s;white-space:normal;word-break:break-word;line-height:1.4;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:44px}
+.btn-hud .sub{font-family:'Rajdhani',sans-serif;font-size:8px;color:rgba(0,255,255,.55);letter-spacing:.3px;text-transform:none}
 .btn-hud:hover{background:rgba(0,255,255,.2);box-shadow:0 0 12px rgba(0,255,255,.3)}
+.app-link{display:flex;align-items:center;gap:10px;background:rgba(0,255,255,.05);border:1px solid rgba(0,255,255,.25);border-radius:8px;padding:8px 10px;text-decoration:none;transition:all .2s}
+.app-link:hover{background:rgba(0,255,255,.15);box-shadow:0 0 12px rgba(0,255,255,.25);transform:translateX(2px)}
+.app-link i{color:#0ff;font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.app-link .app-name{font-family:'Orbitron';font-size:10px;color:#0ff;letter-spacing:.5px}
+.app-link .app-desc{font-family:'Rajdhani',sans-serif;font-size:9px;color:rgba(0,255,255,.5);margin-top:1px}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .flex{display:flex}.flex-col{flex-direction:column}.gap-2{gap:8px}.gap-3{gap:12px}
@@ -143,12 +150,21 @@ input:focus{border-color:#0ff;box-shadow:0 0 12px rgba(0,255,255,.3)}
 <div class="module">
 <div class="label">Quick Modules</div>
 <div class="grid-2" style="margin-top:8px">
-<button class="btn-hud" onclick="switchModule('weather')">Weather</button>
-<button class="btn-hud" onclick="switchModule('time')">Time</button>
-<button class="btn-hud" onclick="switchModule('calc')">Calc</button>
-<button class="btn-hud" onclick="switchModule('sys')">System</button>
-<button class="btn-hud" onclick="switchModule('health')">Health</button>
-<button class="btn-hud" onclick="switchModule('space')">Space</button>
+<button class="btn-hud" onclick="switchModule('weather')"><span>Weather</span><span class="sub">Cuaca</span></button>
+<button class="btn-hud" onclick="switchModule('time')"><span>Time</span><span class="sub">Waktu</span></button>
+<button class="btn-hud" onclick="switchModule('calc')"><span>Calc</span><span class="sub">Kalkulasi</span></button>
+<button class="btn-hud" onclick="switchModule('sys')"><span>System</span><span class="sub">Sistem</span></button>
+<button class="btn-hud" onclick="switchModule('health')"><span>Health</span><span class="sub">Kesehatan</span></button>
+<button class="btn-hud" onclick="switchModule('space')"><span>Space</span><span class="sub">Luar Angkasa</span></button>
+</div>
+</div>
+<div class="module">
+<div class="label">My Apps <span style="font-size:8px;color:rgba(0,255,255,.5)">Aplikasi Saya</span></div>
+<div style="display:grid;grid-template-columns:1fr;gap:6px;margin-top:8px">
+<a href="https://adikds.github.io/jarvis-ai/" target="_blank" class="app-link"><i class="fa-solid fa-robot"></i><div><div class="app-name">JARVIS AI</div><div class="app-desc">Superagent HUD Interface</div></div></a>
+<a href="https://adikds.github.io/edu-market-pro/" target="_blank" class="app-link"><i class="fa-solid fa-graduation-cap"></i><div><div class="app-name">EduMarket Pro</div><div class="app-desc">E-Learning & Marketplace</div></div></a>
+<a href="https://adikds.github.io/iptv-terminal/" target="_blank" class="app-link"><i class="fa-solid fa-tv"></i><div><div class="app-name">IPTV Terminal Pro</div><div class="app-desc">Streaming TV Indonesia</div></div></a>
+<a href="https://civil-eng-agent.loca.lt" target="_blank" class="app-link"><i class="fa-solid fa-drafting-compass"></i><div><div class="app-name">Civil Eng Agent</div><div class="app-desc">Agen Teknik Sipil AI</div></div></a>
 </div>
 </div>
 <div class="module">
