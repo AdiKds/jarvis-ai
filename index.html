@@ -4,10 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>J.A.R.V.I.S v6.0 — Cyber Cat Superagent HUD by Mohamad Hartadi</title>
-<meta name="description" content="JARVIS AI — Futuristic AI agent interface with Cyber Cat Avatar, 3D atomic orbits, dynamic quotes, and 28 Apps Database. Built by Mohamad Hartadi.">
+<meta name="description" content="JARVIS AI — Futuristic AI agent interface with Cyber Cat Avatar, Earth Map, Windy Radar, and 28 Apps Database. Built by Mohamad Hartadi.">
 <meta name="author" content="Mohamad Hartadi">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 <style>
 :root {
   --cyan: #00ffff;
@@ -47,17 +48,16 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
 .ear-right { transform-origin: 75px 35px; animation: earR 4.5s infinite ease-in-out; }
 @keyframes cat-mouth-talk { 0%, 100% { transform: scaleY(0.2) scaleX(0.9); } 25% { transform: scaleY(1.3) scaleX(1.1); } 50% { transform: scaleY(0.7) scaleX(0.95); } 75% { transform: scaleY(1.1) scaleX(1.05); } }
 
-/* Quote Text Animations */
+/* Color Shift */
 @keyframes color-shift {
-  0% { color: #00ffff; text-shadow: 0 0 10px #00ffff; }
-  33% { color: #ff007f; text-shadow: 0 0 10px #ff007f; }
-  66% { color: #f59e0b; text-shadow: 0 0 10px #f59e0b; }
-  100% { color: #00ffff; text-shadow: 0 0 10px #00ffff; }
+  0% { color: #00ffff; text-shadow: 0 0 10px #00ffff; border-color: #00ffff; }
+  33% { color: #ff007f; text-shadow: 0 0 10px #ff007f; border-color: #ff007f; }
+  66% { color: #f59e0b; text-shadow: 0 0 10px #f59e0b; border-color: #f59e0b; }
+  100% { color: #00ffff; text-shadow: 0 0 10px #00ffff; border-color: #00ffff; }
 }
-@keyframes fade-slide { 0% { opacity: 0; transform: translateY(10px); } 10% { opacity: 1; transform: translateY(0); } 90% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-10px); } }
 
 /* SCANLINE & CORNERS */
-.scan-line { position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, transparent, var(--cyan), transparent); opacity: 0.4; animation: scanline 6s linear infinite; z-index: 5; }
+.scan-line { position: fixed; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, transparent, var(--cyan), transparent); opacity: 0.4; animation: scanline 6s linear infinite; z-index: 5; pointer-events: none; }
 .corner { position: fixed; width: 22px; height: 22px; border: 2px solid var(--cyan); z-index: 10; pointer-events: none; }
 .c-tl { top: 8px; left: 8px; border-right: none; border-bottom: none; }
 .c-tr { top: 8px; right: 8px; border-left: none; border-bottom: none; }
@@ -74,19 +74,22 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
 .boot-title { font-size: clamp(20px, 5vw, 28px); letter-spacing: 6px; margin-bottom: 10px; }
 .boot-bar-wrap { width: 280px; height: 4px; background: rgba(0, 255, 255, 0.1); border-radius: 2px; overflow: hidden; margin: 15px 0; border: 1px solid rgba(0, 255, 255, 0.3); }
 .boot-bar-fill { height: 100%; width: 0%; background: var(--cyan); box-shadow: 0 0 12px var(--cyan); transition: width 0.1s linear; }
-.boot-status { font-size: 13px; color: rgba(0, 255, 255, 0.7); letter-spacing: 2px; }
 
 /* SCREENSAVER */
 #screensaver { position: fixed; inset: 0; background: rgba(0, 3, 10, 0.96); z-index: 400; display: none; flex-direction: column; align-items: center; justify-content: space-evenly; backdrop-filter: blur(12px); cursor: pointer; padding: 20px 10px; }
 .ss-time { font-size: clamp(40px, 8vw, 86px); font-weight: 900; letter-spacing: 4px; text-shadow: 0 0 35px var(--cyan); line-height: 1; margin-bottom: 10px; }
 .ss-date { font-size: clamp(14px, 2.5vw, 24px); color: #88ccff; letter-spacing: 6px; margin-bottom: 15px; }
-.ss-hint { font-size: 12px; letter-spacing: 3px; color: rgba(0, 255, 255, 0.5); animation: pulse 2s infinite; text-align: center; margin-top: 10px; }
 
 /* MAIN HUD LAYOUT */
 #main-hud { display: none; flex: 1; width: 100%; padding: 12px; z-index: 10; flex-direction: column; gap: 12px; max-width: 1650px; margin: 0 auto; }
-.header-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0, 255, 255, 0.2); padding-bottom: 8px; flex-wrap: wrap; gap: 10px; }
-.header-title { font-size: clamp(16px, 2.5vw, 22px); font-weight: 800; letter-spacing: 4px; display: flex; align-items: center; gap: 10px; }
-.header-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.header-bar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; border-bottom: 1px solid rgba(0, 255, 255, 0.2); padding-bottom: 8px; gap: 10px; }
+@media (max-width: 800px) { .header-bar { grid-template-columns: 1fr; text-align: center; gap: 15px; } }
+.header-title { font-size: clamp(16px, 2.2vw, 22px); font-weight: 800; letter-spacing: 3px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+@media (min-width: 801px) { .header-title { justify-content: flex-start; } }
+.header-center { display: flex; justify-content: center; align-items: center; }
+.header-clock-pill { background: rgba(0, 20, 40, 0.8); border: 2px solid var(--cyan); padding: 6px 18px; border-radius: 30px; font-size: clamp(12px, 1.5vw, 15px); font-weight: 900; letter-spacing: 2px; box-shadow: var(--glow); animation: color-shift 10s infinite; text-align: center; }
+.header-controls { display: flex; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap; }
+@media (min-width: 801px) { .header-controls { justify-content: flex-end; } }
 
 .btn-hud { background: rgba(0, 30, 60, 0.6); border: var(--border); color: var(--cyan); padding: 8px 14px; border-radius: 6px; font-size: 12px; font-family: 'Orbitron'; letter-spacing: 1px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
 .btn-hud:hover { background: rgba(0, 255, 255, 0.25); box-shadow: var(--glow); transform: translateY(-2px); }
@@ -101,52 +104,47 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
 .panel-title { font-family: 'Orbitron'; font-size: 11px; color: rgba(0, 255, 255, 0.75); letter-spacing: 2px; text-transform: uppercase; border-bottom: 1px dashed rgba(0, 255, 255, 0.2); padding-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
 
 /* LEFT PANEL: QUICK ACTIONS */
-.quick-action-list { display: flex; flex-direction: column; gap: 8px; }
+.quick-action-list { display: flex; flex-direction: column; gap: 8px; max-height: 480px; overflow-y: auto; padding-right: 4px; }
 .action-item { background: rgba(0, 25, 50, 0.4); border: 1px solid rgba(0, 255, 255, 0.15); padding: 10px; border-radius: 6px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
 .action-item:hover { background: rgba(0, 255, 255, 0.15); border-color: var(--cyan); transform: translateX(5px); }
 .action-icon { font-size: 18px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: rgba(0, 255, 255, 0.1); border-radius: 6px; flex-shrink: 0; }
 
-/* CENTER PANEL: 3D ATOMIC ORBIT & CYBER CAT AVATAR */
-.center-stage { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; position: relative; padding: 20px 0; perspective: 1000px; flex: 1; }
+/* CENTER STAGES */
+.center-stage { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; position: relative; padding: 10px 0; perspective: 1000px; flex: 1; width: 100%; }
 
-/* Interactive Clock in Center */
-.center-clock-wrap { cursor: pointer; text-align: center; margin-bottom: 15px; z-index: 15; padding: 6px 16px; background: rgba(0, 20, 40, 0.6); border: 1px solid rgba(0,255,255,0.4); border-radius: 30px; transition: all 0.3s; box-shadow: 0 0 15px rgba(0,255,255,0.15); }
-.center-clock-wrap:hover { transform: scale(1.05); border-color: var(--cyan); box-shadow: var(--glow); background: rgba(0, 40, 80, 0.8); }
-.center-time { font-size: clamp(22px, 4vw, 32px); font-weight: 900; letter-spacing: 4px; animation: color-shift 8s infinite; }
+.center-clock-wrap { cursor: pointer; text-align: center; margin-bottom: 10px; z-index: 15; padding: 6px 16px; background: rgba(0, 20, 40, 0.6); border: 1px solid rgba(0,255,255,0.4); border-radius: 30px; transition: all 0.3s; box-shadow: 0 0 15px rgba(0,255,255,0.15); }
+.center-time { font-size: clamp(20px, 3.5vw, 28px); font-weight: 900; letter-spacing: 4px; animation: color-shift 8s infinite; }
 .center-day { font-size: 11px; letter-spacing: 3px; color: #fff; opacity: 0.8; }
 
-/* 3D Atomic Orbit Rings */
-.atom-orbit-container { position: absolute; width: clamp(220px, 46vw, 360px); height: clamp(220px, 46vw, 360px); display: flex; align-items: center; justify-content: center; transform-style: preserve-3d; pointer-events: none; }
+.atom-orbit-container { position: absolute; width: clamp(220px, 44vw, 340px); height: clamp(220px, 44vw, 340px); display: flex; align-items: center; justify-content: center; transform-style: preserve-3d; pointer-events: none; }
 .orbit-ring-3d { position: absolute; width: 100%; height: 100%; border-radius: 50%; transform-style: preserve-3d; }
 .ring-1 { border: 2px solid rgba(0, 255, 255, 0.6); animation: orbit-3d-1 12s linear infinite; box-shadow: inset 0 0 15px rgba(0,255,255,0.2); }
 .ring-2 { border: 2px dashed rgba(0, 136, 255, 0.7); animation: orbit-3d-2 16s linear infinite; }
 .ring-3 { border: 1px dotted rgba(245, 158, 11, 0.7); animation: orbit-3d-3 20s linear infinite; }
 .electron { position: absolute; top: 0; left: 50%; width: 10px; height: 10px; background: #00ffff; border-radius: 50%; box-shadow: 0 0 15px #00ffff, 0 0 25px #ffffff; transform: translate(-50%, -50%); }
-.electron.amber { background: #f59e0b; box-shadow: 0 0 15px #f59e0b, 0 0 25px #ffffff; }
 
-/* 2D Background Radar Arcs */
-.radar-ring { position: absolute; border-radius: 50%; border: 1px solid rgba(0, 255, 255, 0.15); pointer-events: none; }
-.r1 { width: clamp(200px, 42vw, 330px); height: clamp(200px, 42vw, 330px); border-top: 2px solid var(--cyan); border-bottom: 2px solid var(--cyan); animation: spin 20s linear infinite; }
-.r2 { width: clamp(150px, 34vw, 260px); height: clamp(150px, 34vw, 260px); border-left: 2px dashed rgba(0, 255, 255, 0.5); border-right: 2px dashed rgba(0, 255, 255, 0.5); animation: spin-rev 25s linear infinite; }
-
-/* Cyber Cat Avatar SVG Wrap */
-.cat-avatar-wrap { width: clamp(130px, 28vw, 190px); height: clamp(130px, 28vw, 190px); z-index: 5; filter: drop-shadow(0 0 20px rgba(6,182,212,0.7)); animation: floatY 5s ease-in-out infinite; cursor: pointer; transition: transform 0.3s; }
+.cat-avatar-wrap { width: clamp(120px, 26vw, 180px); height: clamp(120px, 26vw, 180px); z-index: 5; filter: drop-shadow(0 0 20px rgba(6,182,212,0.7)); animation: floatY 5s ease-in-out infinite; cursor: pointer; transition: transform 0.3s; }
 .cat-avatar-wrap:hover { transform: scale(1.08); filter: drop-shadow(0 0 25px var(--pink)); }
-
-/* Audio Visualizer Wave */
-.visualizer-box { display: flex; gap: 4px; align-items: center; justify-content: center; height: 30px; margin-top: 10px; z-index: 5; }
+.visualizer-box { display: flex; gap: 4px; align-items: center; justify-content: center; height: 26px; margin-top: 8px; z-index: 5; }
 .vis-bar { width: 4px; height: 6px; background: var(--cyan); border-radius: 2px; box-shadow: 0 0 8px var(--cyan); transition: height 0.1s ease; }
 .vis-bar.active { animation: audio-bar 0.4s ease-in-out infinite alternate; }
 
-/* Quote Box on Main Center Stage */
-.main-quote-box { background: rgba(0, 20, 40, 0.6); border: 1px solid rgba(0, 255, 255, 0.2); border-left: 3px solid var(--pink); padding: 10px 14px; border-radius: 6px; font-size: 13px; color: #fff; max-width: 90%; text-align: center; margin-top: 10px; z-index: 5; min-height: 50px; display: flex; align-items: center; justify-content: center; font-style: italic; animation: color-shift 10s infinite; }
+.main-quote-box { background: rgba(0, 20, 40, 0.6); border: 1px solid rgba(0, 255, 255, 0.2); border-left: 3px solid var(--pink); padding: 8px 14px; border-radius: 6px; font-size: 13px; color: #fff; max-width: 90%; text-align: center; margin-top: 10px; z-index: 5; min-height: 44px; display: flex; align-items: center; justify-content: center; font-style: italic; animation: color-shift 10s infinite; }
+
+/* INATEWS MAP & WINDY MAP CONTAINERS */
+#earth-map-container, #windy-map-container { display: none; width: 100%; height: 100%; min-height: 380px; border-radius: 10px; overflow: hidden; border: 2px solid var(--cyan); box-shadow: var(--glow); position: relative; z-index: 20; }
+#map { width: 100%; height: 100%; background: #000814; }
+.map-overlay-header { position: absolute; top: 10px; left: 10px; z-index: 1000; background: rgba(0, 15, 30, 0.9); border: 1px solid var(--cyan); padding: 6px 12px; border-radius: 6px; font-family: 'Orbitron'; font-size: 11px; color: #00ffaa; box-shadow: 0 0 10px rgba(0,255,255,0.3); pointer-events: none; }
+
+/* Leaflet Customizations for Dark UI harmony */
+.leaflet-control-layers { background: rgba(0,20,40,0.9) !important; color: #00ffff !important; border: 1px solid #00ffff !important; font-family: 'Rajdhani', sans-serif !important; border-radius: 8px !important; }
+.leaflet-control-layers-toggle { filter: invert(1) hue-rotate(180deg) brightness(200%); }
 
 /* COMMAND INPUT */
 .command-box { display: flex; gap: 8px; width: 100%; margin-top: auto; }
 .cmd-input { flex: 1; background: rgba(0, 10, 20, 0.8); border: var(--border); color: var(--cyan); padding: 12px 16px; border-radius: 8px; font-size: 15px; outline: none; transition: 0.3s; }
 .cmd-input:focus { border-color: #fff; box-shadow: var(--glow); }
 .mic-btn { width: 45px; height: 45px; border-radius: 8px; border: var(--border); background: rgba(0, 255, 255, 0.1); color: var(--cyan); font-size: 18px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.mic-btn.listening { background: rgba(255, 50, 50, 0.3); border-color: #ff3333; color: #ff3333; animation: pulse 1s infinite; }
 
 /* RIGHT PANEL: ACTIVITY LOG */
 .log-container { flex: 1; background: rgba(0, 5, 12, 0.6); border: 1px solid rgba(0, 255, 255, 0.15); border-radius: 6px; padding: 10px; overflow-x: hidden; overflow-y: auto; max-height: 350px; display: flex; flex-direction: column; gap: 8px; font-size: 12px; }
@@ -154,8 +152,6 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
 .log-time { color: rgba(0, 255, 255, 0.5); font-weight: bold; }
 .log-text { color: #d0f0ff; flex: 1; word-break: break-word; }
 .log-text.sys { color: #00ffaa; }
-.log-text.warn { color: #ffaa00; }
-.log-text.user { color: #33aaff; }
 
 /* FOOTER CREDIT BAR */
 .footer-bar { display: flex; justify-content: space-between; align-items: center; background: rgba(0, 15, 30, 0.75); border: var(--border); border-radius: 8px; padding: 10px 16px; margin-top: auto; flex-wrap: wrap; gap: 10px; }
@@ -167,40 +163,28 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
 .modal-overlay.active { display: flex; opacity: 1; }
 .modal-box { background: rgba(0, 20, 40, 0.88); border: 1px solid var(--cyan); border-radius: 12px; width: 100%; max-width: 900px; max-height: 88vh; overflow-y: auto; padding: 22px; position: relative; box-shadow: 0 0 35px rgba(0, 255, 255, 0.25); }
 .modal-close { position: absolute; top: 15px; right: 15px; width: 34px; height: 34px; border-radius: 50%; border: 1px solid #ff4444; background: rgba(255, 50, 50, 0.1); color: #ff4444; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; z-index: 100; }
-.modal-close:hover { background: #ff4444; color: #fff; box-shadow: 0 0 10px #ff4444; }
 
-/* MY APPS & DATABASE GRID */
 .apps-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin-top: 15px; }
-@media (max-width: 480px) { .apps-grid { grid-template-columns: repeat(2, 1fr); } }
 .app-card { background: rgba(0, 30, 60, 0.5); border: 1px solid rgba(0, 255, 255, 0.2); border-radius: 8px; padding: 14px 10px; text-align: center; text-decoration: none; color: #fff; transition: all 0.25s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 110px; position: relative; }
 .app-card:hover { border-color: var(--cyan); background: rgba(0, 255, 255, 0.15); transform: translateY(-4px); box-shadow: var(--glow); }
-.app-card i { font-size: 26px; color: var(--cyan); }
-.app-card span { font-size: 12px; font-family: 'Orbitron'; font-weight: 600; line-height: 1.3; }
 .app-actions { display: flex; gap: 4px; position: absolute; top: 4px; right: 4px; opacity: 0; transition: 0.2s; }
 .app-card:hover .app-actions { opacity: 1; }
 .btn-mini { background: rgba(0,0,0,0.8); border: 1px solid var(--cyan); color: var(--cyan); width: 22px; height: 22px; border-radius: 4px; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.btn-mini:hover { background: var(--cyan); color: #000; }
 
-/* CREDIT & MOTTO MODAL STYLE */
 .credit-content { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; padding: 10px; }
 .credit-robot-wrap { width: 140px; height: 140px; position: relative; margin: 0 auto; cursor: pointer; }
 .quote-box { background: rgba(0, 255, 255, 0.05); border-left: 3px solid var(--cyan); padding: 14px 18px; border-radius: 4px; font-size: 15px; font-style: italic; color: #d0f0ff; max-width: 680px; line-height: 1.6; animation: color-shift 6s infinite; }
 .social-links { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
 .soc-btn { padding: 10px 18px; border-radius: 6px; text-decoration: none; font-family: 'Orbitron'; font-size: 12px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
-.soc-fb { background: rgba(24, 119, 242, 0.2); border: 1px solid #1877f2; color: #58a5ff; }
-.soc-fb:hover { background: #1877f2; color: #fff; box-shadow: 0 0 15px #1877f2; }
-.soc-wa { background: rgba(37, 211, 102, 0.2); border: 1px solid #25d366; color: #5df894; }
-.soc-wa:hover { background: #25d366; color: #fff; box-shadow: 0 0 15px #25d366; }
-.soc-blog { background: rgba(255, 153, 0, 0.2); border: 1px solid #ff9900; color: #ffba4d; }
-.soc-blog:hover { background: #ff9900; color: #fff; box-shadow: 0 0 15px #ff9900; }
 
-/* SETTINGS & HELP TABLE */
 .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(0, 255, 255, 0.1); flex-wrap: wrap; gap: 10px; }
 .setting-select, .setting-input { background: rgba(0, 10, 20, 0.9); border: var(--border); color: var(--cyan); padding: 8px 12px; border-radius: 6px; font-family: 'Orbitron'; font-size: 12px; outline: none; }
 .help-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
 .help-table th, .help-table td { border: 1px solid rgba(0,255,255,0.2); padding: 8px 10px; text-align: left; }
 .help-table th { background: rgba(0, 255, 255, 0.1); color: var(--cyan); font-family: 'Orbitron'; }
-.help-table tr:nth-child(even) { background: rgba(0, 20, 40, 0.3); }
+
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
 </head>
 <body>
@@ -238,7 +222,6 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
         <div class="orbit-ring-3d ring-1"><div class="electron"></div></div>
         <div class="orbit-ring-3d ring-2"><div class="electron"></div></div>
         <div class="orbit-ring-3d ring-3"><div class="electron amber"></div></div>
-        
         <div style="width:120px; height:120px; filter:drop-shadow(0 0 20px rgba(6,182,212,0.6)); position:absolute; z-index:10;">
           <svg viewBox="0 0 100 100" style="width:100%; height:100%;" xmlns="http://www.w3.org/2000/svg">
               <g class="ear-left"><polygon points="25,45 10,10 45,30" fill="#f8fafc" stroke="#06b6d4" stroke-width="2"/><polygon points="25,38 16,18 38,30" fill="#f472b6"/></g>
@@ -255,48 +238,40 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
         </div>
       </div>
   </div>
-
   <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; width:100%;">
       <div class="ss-time orbitron" id="ss-clock">00:00:00</div>
       <div class="ss-date orbitron" id="ss-date">SENIN, 01 JAN 2026</div>
       <div class="main-quote-box" id="ss-quote-box" style="max-width: 600px; margin: 15px auto;">"Teknologi sejati adalah yang memberi manfaat bagi kemanusiaan."</div>
   </div>
-
   <div class="ss-hint orbitron" style="margin-top:20px;">TAP OR CLICK ANYWHERE TO RESUME HUD</div>
 </div>
 
 <div id="main-hud">
-  
   <header class="header-bar">
     <div class="header-title orbitron text-glow" data-tip="Just A Rather Very Intelligent System - Cyber Cat Edition">
       <i class="fa-solid fa-cat fa-bounce" style="--fa-animation-duration: 3s; color: var(--pink);"></i>
       J.A.R.V.I.S <span style="font-size: 11px; color: rgba(0,255,255,0.6); font-family: 'Rajdhani';">v6.0 PRO CAT</span>
     </div>
+    <div class="header-center">
+      <div class="header-clock-pill orbitron" id="top-center-clock" data-tip="Waktu Realtime Server Indonesia Barat (WIB)">MEMUAT WAKTU...</div>
+    </div>
     <div class="header-controls">
-      <div class="orbitron mono" style="background: rgba(0,255,255,0.1); padding: 6px 12px; border-radius: 6px; border: var(--border);" id="live-clock-top">00:00:00</div>
-      <button class="btn-hud" onclick="openModal('db-modal'); renderDatabase();" data-tip="Kelola Database 28+ Aplikasi Web">
-        <i class="fa-solid fa-database"></i> DATABASE
-      </button>
-      <button class="btn-hud" onclick="openModal('apps-modal'); renderMyApps();" data-tip="Buka Daftar Aplikasi Web">
-        <i class="fa-solid fa-grid-2"></i> MY APPS
-      </button>
-      <button class="btn-hud" onclick="openModal('ss-settings-modal')" data-tip="Pengaturan Screensaver & Waktu">
-        <i class="fa-solid fa-desktop"></i> SETTING SS
-      </button>
-      <button class="btn-hud" onclick="openModal('credit-modal'); triggerCreditVoice();" data-tip="Informasi Kreator & Motto Bijak">
-        <i class="fa-solid fa-user-astronaut"></i> KREDIT
-      </button>
-      <button class="btn-hud" style="border-color: var(--pink); color: #fff; background: rgba(255,0,127,0.2);" onclick="openModal('help-modal')" data-tip="Panduan Fitur & Cara Penggunaan J.A.R.V.I.S">
-        <i class="fa-solid fa-circle-question"></i> HELP
-      </button>
+      <button class="btn-hud" onclick="openModal('db-modal'); renderDatabase();" data-tip="Kelola Database 28+ Aplikasi Web"><i class="fa-solid fa-database"></i> DATABASE</button>
+      <button class="btn-hud" onclick="openModal('apps-modal'); renderMyApps();" data-tip="Buka Daftar Aplikasi Web"><i class="fa-solid fa-grid-2"></i> MY APPS</button>
+      <button class="btn-hud" onclick="openModal('ss-settings-modal')" data-tip="Pengaturan Screensaver & Waktu"><i class="fa-solid fa-desktop"></i> SETTING SS</button>
+      <button class="btn-hud" onclick="openModal('credit-modal'); triggerCreditVoice();" data-tip="Informasi Kreator & Motto Bijak"><i class="fa-solid fa-user-astronaut"></i> KREDIT</button>
+      <button class="btn-hud" style="border-color: var(--pink); color: #fff; background: rgba(255,0,127,0.2);" onclick="openModal('help-modal')" data-tip="Panduan Fitur & Cara Penggunaan J.A.R.V.I.S"><i class="fa-solid fa-circle-question"></i> HELP</button>
     </div>
   </header>
 
   <div class="hud-grid">
-    
     <div class="panel">
       <div class="panel-title"><span><i class="fa-solid fa-bolt"></i> QUICK ACTIONS</span> <span>SYS_01</span></div>
-      <div class="quick-action-list">
+      <div class="quick-action-list hide-scrollbar">
+        <a href="https://adikds.github.io/Al-Quran-Karim/" target="_blank" class="action-item" onclick="quickAction('Opening Al-Quran Karim Digital...')" data-tip="Membuka Aplikasi Al-Quran Karim Digital">
+          <div class="action-icon" style="color: #0088ff;"><i class="fa-solid fa-book-quran"></i></div>
+          <div><div class="orbitron" style="font-size: 13px;">Al Quran</div><div style="font-size: 11px; color: rgba(0,255,255,0.5);">Digital Quran & Audio</div></div>
+        </a>
         <a href="https://adikds.github.io/GEOSTRUCT-PRO-20-FORMULA-GEOTECHNICAL/" target="_blank" class="action-item" onclick="quickAction('Opening GeoStruct Pro 20 Geotechnical Formulas...')" data-tip="Kalkulasi 20 Rumus Geoteknik & Bendungan">
           <div class="action-icon" style="color: #00ffaa;"><i class="fa-solid fa-calculator"></i></div>
           <div><div class="orbitron" style="font-size: 13px;">Geo-Struct Calc</div><div style="font-size: 11px; color: rgba(0,255,255,0.5);">20 Geotechnical Formulas</div></div>
@@ -318,7 +293,6 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
           <div><div class="orbitron" style="font-size: 13px;">Perpustakaan</div><div style="font-size: 11px; color: rgba(0,255,255,0.5);">F15 Library Digital</div></div>
         </a>
       </div>
-
       <div class="panel-title" style="margin-top: 10px;"><span><i class="fa-solid fa-microchip"></i> SYSTEM METRICS</span></div>
       <div style="display: flex; flex-direction: column; gap: 6px; font-size: 11px; font-family: 'Orbitron';">
         <div>CPU LOAD <span style="float: right; color: #00ffaa;" id="cpu-val">34%</span></div>
@@ -329,24 +303,28 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
     </div>
 
     <div class="panel" style="align-items: center; justify-content: space-between;">
-      <div class="panel-title" style="width: 100%;"><span><i class="fa-solid fa-crosshairs"></i> 3D ATOMIC CORE & CYBER CAT</span> <span class="mono">ONLINE</span></div>
+      <div class="panel-title" style="width: 100%;">
+        <span><i class="fa-solid fa-crosshairs"></i> <span id="center-panel-label">3D ATOMIC CORE & CYBER CAT</span></span> 
+        <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
+          <button class="btn-hud" style="padding:2px 8px; font-size:10px; background:rgba(0,255,255,0.2);" onclick="toggleCenterMode('cat')" id="btn-mode-cat"><i class="fa-solid fa-cat"></i> CAT 3D</button>
+          <button class="btn-hud" style="padding:2px 8px; font-size:10px;" onclick="toggleCenterMode('map')" id="btn-mode-map"><i class="fa-solid fa-globe"></i> EARTH MAP</button>
+          <button class="btn-hud" style="padding:2px 8px; font-size:10px; border-color: #ff00aa; color: #ff00aa;" onclick="toggleCenterMode('windy')" id="btn-mode-windy"><i class="fa-solid fa-cloud-showers-heavy"></i> RADAR CUACA</button>
+        </div>
+      </div>
       
-      <div class="center-stage">
-        <div class="center-clock-wrap" onclick="openModal('ss-settings-modal')" data-tip="Klik untuk membuka Pengaturan Screensaver">
+      <div class="center-stage" id="stage-cat">
+        <div class="center-clock-wrap" onclick="openModal('ss-settings-modal')">
           <div class="center-time orbitron" id="center-clock-text">00:00:00</div>
           <div class="center-day orbitron" id="center-date-text">SENIN, 01 JAN 2026</div>
         </div>
-
-        <div class="radar-ring r1"></div>
-        <div class="radar-ring r2"></div>
-        
+        <div class="radar-ring r1"></div><div class="radar-ring r2"></div>
         <div class="atom-orbit-container">
           <div class="orbit-ring-3d ring-1"><div class="electron"></div></div>
           <div class="orbit-ring-3d ring-2"><div class="electron"></div></div>
           <div class="orbit-ring-3d ring-3"><div class="electron amber"></div></div>
         </div>
         
-        <div class="cat-avatar-wrap" onclick="speakJarvis('Meow! Halo Sir, saya J.A.R.V.I.S Cyber Cat. Seluruh sistem 3D orbit dan database aplikasi berjalan optimal. Ketik buka aplikasi pada prompt di bawah untuk bantuan.')" data-tip="Klik untuk Interaksi Suara Kucing J.A.R.V.I.S">
+        <div class="cat-avatar-wrap" onclick="speakJarvis('Meow! Halo Sir, saya J.A.R.V.I.S Cyber Cat. Ketik cari lokasi semarang pada command untuk membuka Peta Earth InaTEWS, atau ketik radar cuaca untuk Peta Windy!')">
           <svg viewBox="0 0 100 100" style="width:100%; height:100%;" xmlns="http://www.w3.org/2000/svg">
               <g class="ear-left"><polygon points="25,45 10,10 45,30" fill="#f8fafc" stroke="#06b6d4" stroke-width="2"/><polygon points="25,38 16,18 38,30" fill="#f472b6"/></g>
               <g class="ear-right"><polygon points="75,45 90,10 55,30" fill="#f8fafc" stroke="#06b6d4" stroke-width="2"/><polygon points="75,38 84,18 62,30" fill="#f472b6"/></g>
@@ -362,31 +340,35 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
         </div>
 
         <div class="visualizer-box" id="audio-vis">
-          <div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div>
-          <div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div>
-          <div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div>
+          <div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div>
         </div>
+        <div class="main-quote-box" id="hud-quote-box" onclick="readCurrentQuote()">"Teknologi sejati bukan hanya tentang algoritma, melainkan manfaat bagi kemanusiaan."</div>
+      </div>
 
-        <div class="main-quote-box" id="hud-quote-box" onclick="readCurrentQuote()" data-tip="Klik untuk mendengarkan J.A.R.V.I.S membaca motto ini">
-          "Teknologi sejati bukan hanya tentang algoritma, melainkan manfaat bagi kemanusiaan."
-        </div>
+      <div id="earth-map-container">
+        <div class="map-overlay-header"><i class="fa-solid fa-satellite-dish animate-pulse"></i> INATEWS EARTH MAP RADAR V2.2</div>
+        <div id="map"></div>
+      </div>
+
+      <div id="windy-map-container">
+        <div class="map-overlay-header" style="color: #ff00aa; border-color: #ff00aa;"><i class="fa-solid fa-cloud-showers-heavy animate-pulse"></i> WINDY WEATHER RADAR</div>
+        <iframe width="100%" height="100%" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&metricTemp=default&metricWind=default&zoom=5&overlay=wind&product=ecmwf&level=surface&lat=-2.0&lon=118" frameborder="0"></iframe>
       </div>
 
       <div class="command-box">
-        <input type="text" class="cmd-input" id="cmd-input" placeholder="Ketik perintah panduan: 'perpustakaan', 'buka quran'..." onkeypress="if(event.key==='Enter') sendCommand()">
-        <button class="mic-btn" id="mic-btn" onclick="toggleVoice()" data-tip="Perintah Suara (Voice Command)"><i class="fa-solid fa-microphone"></i></button>
+        <input type="text" class="cmd-input" id="cmd-input" placeholder="Ketik: 'cari lokasi jakarta', 'radar cuaca', atau tanya Copilot AI..." onkeypress="if(event.key==='Enter') sendCommand()">
+        <button class="mic-btn" id="mic-btn" onclick="toggleVoice()"><i class="fa-solid fa-microphone"></i></button>
       </div>
     </div>
 
     <div class="panel">
-      <div class="panel-title"><span><i class="fa-solid fa-list-check"></i> ACTIVITY LOG</span> <span class="mono">LIVE</span></div>
-      <div class="log-container mono" id="log-box">
-        <div class="log-entry"><span class="log-time">[SYS]</span> <span class="log-text sys">Cyber Cat 3D Core initialized. Welcome Mohamad Hartadi.</span></div>
-        <div class="log-entry"><span class="log-time">[SEC]</span> <span class="log-text sys">No Password mode active. Direct access granted.</span></div>
-        <div class="log-entry"><span class="log-time">[AI]</span> <span class="log-text user">Smart NLP Ready. Ketik 'buka' pada prompt untuk panduan.</span></div>
+      <div class="panel-title"><span><i class="fa-solid fa-list-check"></i> TERMINAL / COPILOT AI</span> <span class="mono">LIVE</span></div>
+      <div class="log-container mono hide-scrollbar" id="log-box">
+        <div class="log-entry"><span class="log-time">[SYS]</span> <span class="log-text sys">Cyber Cat 3D Core & InaTEWS Map initialized.</span></div>
+        <div class="log-entry"><span class="log-time">[AI]</span> <span class="log-text user">Copilot AI Knowledge Engine Online. Siap menjawab segala topik dari Internet.</span></div>
       </div>
       <div style="display: flex; gap: 6px; margin-top: 5px;">
-        <button class="btn-hud" style="flex: 1; justify-content: center; font-size: 10px;" onclick="addLog('System diagnostics nominal. 28+ apps linked in Database.', 'sys')">DIAGNOSTICS</button>
+        <button class="btn-hud" style="flex: 1; justify-content: center; font-size: 10px;" onclick="addLog('System diagnostics nominal. Copilot AI & InaTEWS Map ready.', 'sys')">DIAGNOSTICS</button>
         <button class="btn-hud" style="flex: 1; justify-content: center; font-size: 10px;" onclick="document.getElementById('log-box').innerHTML=''">CLEAR LOG</button>
       </div>
     </div>
@@ -457,16 +439,11 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
 <div class="modal-overlay" id="credit-modal" onclick="closeModalOutside(event, 'credit-modal')">
   <div class="modal-box" style="max-width: 720px;">
     <button class="modal-close" onclick="closeModal('credit-modal')">&times;</button>
-    
     <div class="credit-content">
       <div class="orbitron" style="font-size: 12px; color: #00ffaa; letter-spacing: 3px;">LEAD ARCHITECT & DEVELOPER</div>
       <h2 class="orbitron text-glow" style="font-size: 24px; color: #fff;">MOHAMAD HARTADI (ADI)</h2>
-      
-      <div class="orbitron mono" style="background: rgba(0,255,255,0.1); padding: 4px 16px; border-radius: 20px; font-size: 13px; border: var(--border);" id="credit-clock-display">
-        SENIN, 01 JAN 2026 | 00:00:00
-      </div>
-
-      <div class="credit-robot-wrap" onclick="triggerCreditVoice()" data-tip="Klik untuk mendengarkan sambutan & motto dari J.A.R.V.I.S">
+      <div class="orbitron mono" style="background: rgba(0,255,255,0.1); padding: 4px 16px; border-radius: 20px; font-size: 13px; border: var(--border);" id="credit-clock-display">SENIN, 01 JAN 2026 | 00:00:00</div>
+      <div class="credit-robot-wrap" onclick="triggerCreditVoice()">
         <div class="orbit-ring-3d ring-1" style="width:100%; height:100%;"><div class="electron"></div></div>
         <svg viewBox="0 0 100 100" style="width:100%; height:100%; filter: drop-shadow(0 0 15px var(--cyan));" xmlns="http://www.w3.org/2000/svg">
             <g class="ear-left"><polygon points="25,45 10,10 45,30" fill="#f8fafc" stroke="#06b6d4" stroke-width="2"/><polygon points="25,38 16,18 38,30" fill="#f472b6"/></g>
@@ -481,12 +458,7 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
             <path d="M 38 65 Q 44 72 50 66 Q 56 72 62 65" fill="none" stroke="#020617" stroke-width="2" stroke-linecap="round" id="credit-mouth"/>
         </svg>
       </div>
-
-      <div class="quote-box" id="credit-quote-box" onclick="readCurrentQuote()" style="cursor:pointer;" data-tip="Klik untuk membaca audio kata bijak ini">
-        "Teknologi sejati bukan hanya tentang kecerdasan buatan, melainkan tentang bagaimana kita memanfaatkannya untuk memitigasi bencana dan memberi manfaat tak terbatas bagi kemanusiaan."
-      </div>
-      <div style="font-size:11px; color:var(--pink); font-family:'Orbitron';">✨ Kata bijak berganti otomatis setiap 8 detik. Klik kotak di atas untuk membaca suara. ✨</div>
-
+      <div class="quote-box" id="credit-quote-box" onclick="readCurrentQuote()">"Teknologi sejati bukan hanya tentang kecerdasan buatan, melainkan memberi manfaat tak terbatas bagi kemanusiaan."</div>
       <div style="width:100%; background:rgba(0,15,30,0.8); border:1px solid rgba(0,255,255,0.3); padding:12px; border-radius:8px; margin-top:5px; text-align:left;">
         <div class="orbitron" style="font-size:11px; color:#00ffaa; margin-bottom:6px;"><i class="fa-solid fa-pen-to-square"></i> TAMBAH / EDIT KATA BIJAK & MOTTO:</div>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
@@ -495,15 +467,12 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
         </div>
         <div style="max-height:100px; overflow-y:auto; margin-top:8px; font-size:11px; display:flex; flex-direction:column; gap:4px;" id="quotes-list-container"></div>
       </div>
-
-      <div style="font-family: 'Orbitron'; font-size: 11px; color: rgba(0,255,255,0.6); margin-top: 10px;">TERHUBUNG DENGAN PROGRAMMER:</div>
       <div class="social-links">
-        <a href="https://www.facebook.com/m.hartadi" target="_blank" class="soc-btn soc-fb" data-tip="Kunjungi Profil Facebook M. Hartadi"><i class="fa-brands fa-facebook-f"></i> FACEBOOK</a>
-        <a href="https://newbieonline7.blogspot.com/" target="_blank" class="soc-btn soc-blog" data-tip="Baca Artikel di Blog NewbieOnline7"><i class="fa-solid fa-globe"></i> BLOG NEWBIE</a>
-        <a href="https://wa.me/6282231036047" target="_blank" class="soc-btn soc-wa" data-tip="Chat Langsung via WhatsApp"><i class="fa-brands fa-whatsapp"></i> WHATSAPP</a>
+        <a href="https://www.facebook.com/m.hartadi" target="_blank" class="soc-btn soc-fb"><i class="fa-brands fa-facebook-f"></i> FACEBOOK</a>
+        <a href="https://newbieonline7.blogspot.com/" target="_blank" class="soc-btn soc-blog"><i class="fa-solid fa-globe"></i> BLOG NEWBIE</a>
+        <a href="https://wa.me/6282231036047" target="_blank" class="soc-btn soc-wa"><i class="fa-brands fa-whatsapp"></i> WHATSAPP</a>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -511,40 +480,27 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
   <div class="modal-box" style="max-width: 500px;">
     <button class="modal-close" onclick="closeModal('ss-settings-modal')">&times;</button>
     <h2 class="orbitron text-glow" style="font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-desktop"></i> PENGATURAN SCREENSAVER & WAKTU</h2>
-    
     <div class="setting-row">
       <span>Waktu Otomatis Aktif (Idle):</span>
       <select class="setting-select" id="ss-timer-select" onchange="updateScreensaverTimer()">
-        <option value="60">1 Menit</option>
-        <option value="180" selected>3 Menit</option>
-        <option value="300">5 Menit</option>
-        <option value="0">Never (Nonaktif)</option>
+        <option value="60">1 Menit</option><option value="180" selected>3 Menit</option><option value="300">5 Menit</option><option value="0">Never (Nonaktif)</option>
       </select>
     </div>
-    
     <div class="setting-row">
       <span>Suara Kucing di Screensaver:</span>
       <select class="setting-select" id="ss-voice-select">
-        <option value="yes">Aktif (Berbicara & Membaca Quote)</option>
-        <option value="no">Senyap (Mute)</option>
+        <option value="yes">Aktif (Berbicara & Membaca Quote)</option><option value="no">Senyap (Mute)</option>
       </select>
     </div>
-
     <div class="setting-row">
       <span>Audio Baca Motto Otomatis di Dasbor:</span>
       <select class="setting-select" id="quote-auto-read">
-        <option value="yes">Aktif (Bicara Tiap Ganti)</option>
-        <option value="no" selected>Klik Manual (Hemat Audio)</option>
+        <option value="yes">Aktif (Bicara Tiap Ganti)</option><option value="no" selected>Klik Manual (Hemat Audio)</option>
       </select>
     </div>
-
     <div style="display: flex; gap: 10px; margin-top: 20px; flex-wrap:wrap;">
-      <button class="btn-hud" style="flex: 1; justify-content: center; background: rgba(0, 255, 100, 0.2); border-color: #00ffaa;" onclick="saveScreensaverSettings()">
-        <i class="fa-solid fa-check"></i> SAVE SETTINGS
-      </button>
-      <button class="btn-hud" style="flex: 1; justify-content: center; background: rgba(0, 150, 255, 0.3);" onclick="testScreensaver()">
-        <i class="fa-solid fa-play"></i> COBA SCREENSAVER
-      </button>
+      <button class="btn-hud" style="flex: 1; justify-content: center; background: rgba(0, 255, 100, 0.2); border-color: #00ffaa;" onclick="saveScreensaverSettings()"><i class="fa-solid fa-check"></i> SAVE SETTINGS</button>
+      <button class="btn-hud" style="flex: 1; justify-content: center; background: rgba(0, 150, 255, 0.3);" onclick="testScreensaver()"><i class="fa-solid fa-play"></i> COBA SCREENSAVER</button>
     </div>
   </div>
 </div>
@@ -562,29 +518,29 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
         </thead>
         <tbody>
           <tr>
-            <td class="orbitron" style="color:#ff007f;">Cyber Cat Avatar</td>
-            <td>Avatar 3D dengan animasi mata berkedip, telinga bergoyang, dan mulut sinkron audio.</td>
-            <td>Klik pada avatar kucing di center stage atau screensaver untuk mendengarkan sapaan suara AI.</td>
+            <td class="orbitron" style="color:#00ffaa;">Peta Bumi Multi-Layer</td>
+            <td>Menampilkan Peta Satelit, Street (Terang), Topografi 3D, dan Gelap ala InaTEWS v2.2.</td>
+            <td>Ketik "cari lokasi jakarta" di command, atau klik tombol "EARTH MAP". Ubah layer di pojok kanan atas peta.</td>
           </tr>
           <tr>
-            <td class="orbitron" style="color:#00ffaa;">Dynamic Quotes & Voice</td>
-            <td>Menampilkan motto & kata bijak bergulir dengan animasi warna menarik serta pembacaan teks ke suara.</td>
-            <td>Klik kotak motto di dasbor/kredit untuk mendengarkan audio. Masuk ke menu Kredit untuk tambah/edit motto.</td>
+            <td class="orbitron" style="color:#ff00aa;">Radar Cuaca Windy</td>
+            <td>Menampilkan Radar Cuaca interaktif realtime menggunakan layanan Windy.com.</td>
+            <td>Ketik "radar cuaca" atau klik tombol "RADAR CUACA" berwarna pink di panel tengah atas.</td>
+          </tr>
+          <tr>
+            <td class="orbitron" style="color:#0088ff;">Copilot AI Universal</td>
+            <td>Mampu menjawab SEGALA HAL dengan mencari dan mengekstrak data dari internet / Wikipedia.</td>
+            <td>Tanyakan apa saja di command prompt (Misal: "apa itu kecerdasan buatan"), AI akan merespons langsung.</td>
           </tr>
           <tr>
             <td class="orbitron" style="color:#00ffff;">28+ Apps Database</td>
             <td>Manajemen seluruh portofolio aplikasi web terintegrasi dengan fitur sinkronisasi live.</td>
-            <td>Klik tombol DATABASE di atas untuk menambah atau mengedit URL link aplikasi. Otomatis sinkron ke menu My Apps.</td>
+            <td>Klik tombol DATABASE di atas untuk menambah atau mengedit URL link aplikasi.</td>
           </tr>
           <tr>
-            <td class="orbitron" style="color:#f59e0b;">Smart NLP Command</td>
-            <td>Pusat komando teks dan suara interaktif terintegrasi pada panel Terminal Log.</td>
-            <td>Ketik "buka" atau "aplikasi" di prompt bawah untuk panduan otomatis, lalu Enter.</td>
-          </tr>
-          <tr>
-            <td class="orbitron" style="color:#0088ff;">Interactive Clock</td>
-            <td>Menampilkan waktu realtime WIB dan tanggal lengkap dengan efek warna bercahaya.</td>
-            <td>Klik kotak jam di Dashboard Center untuk langsung membuka konfigurasi screensaver.</td>
+            <td class="orbitron" style="color:#f59e0b;">Top Center Clock</td>
+            <td>Menampilkan Hari dan Waktu realtime WIB dengan animasi bercahaya di tengah header.</td>
+            <td>Berganti warna otomatis setiap beberapa detik, menjadi fokus navigasi utama.</td>
           </tr>
         </tbody>
       </table>
@@ -595,8 +551,9 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
   </div>
 </div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
-/* 1. DATABASE APLIKASI WEB (SINKRONISASI LIVE) */
+/* 1. DATABASE 28 APLIKASI WEB */
 let myApps = [
   { n: "JARVIS AI", u: "https://adikds.github.io/jarvis-ai/", i: "fa-cat", d: "Superagent HUD" },
   { n: "EduMarket Pro", u: "https://adikds.github.io/edu-market-pro/", i: "fa-graduation-cap", d: "E-Learning Market" },
@@ -631,7 +588,6 @@ let myApps = [
   { n: "TV Online", u: "https://famelack.com/tv/id", i: "fa-tv", d: "Streaming TV Famelack" }
 ];
 
-// Load Database dari LocalStorage jika ada
 if (localStorage.getItem('jarvis_apps_db_v6')) {
   try { myApps = JSON.parse(localStorage.getItem('jarvis_apps_db_v6')); } catch(e){}
 }
@@ -642,7 +598,6 @@ function renderMyApps() {
   myApps.forEach((app, idx) => {
     const card = document.createElement('div');
     card.className = 'app-card';
-    card.setAttribute('data-tip', `Buka Aplikasi: ${app.n} (${app.d})`);
     card.innerHTML = `
       <i class="fa-solid ${app.i}"></i>
       <span>${app.n}</span>
@@ -690,16 +645,14 @@ function saveAppToDb() {
 
   if (idx >= 0) {
     myApps[idx] = { n: name, u: url, i: icon, d: desc };
-    addLog(`Database updated: App "${name}" modified.`, 'sys');
   } else {
     myApps.push({ n: name, u: url, i: icon, d: desc });
-    addLog(`Database updated: App "${name}" added to ecosystem.`, 'sys');
   }
 
   resetDbForm();
   renderDatabase();
   renderMyApps();
-  speakJarvis(`Aplikasi ${name} berhasil disinkronisasi ke dalam database J.A.R.V.I.S.`);
+  speakJarvis(`Aplikasi ${name} disinkronisasi ke dalam database J.A.R.V.I.S.`);
 }
 
 function editApp(idx) {
@@ -715,11 +668,9 @@ function editApp(idx) {
 
 function deleteApp(idx) {
   if (confirm(`Hapus aplikasi "${myApps[idx].n}" dari database?`)) {
-    const deletedName = myApps[idx].n;
     myApps.splice(idx, 1);
     renderDatabase();
     renderMyApps();
-    addLog(`App deleted: "${deletedName}" removed.`, 'warn');
   }
 }
 
@@ -734,13 +685,12 @@ function resetDbForm() {
 }
 renderMyApps();
 
-/* 2. AUDIO VISUALIZER & TEXT TO SPEECH (SYNCHRONIZED CAT MOUTH) */
+/* 2. AUDIO VISUALIZER & TEXT TO SPEECH */
 const synth = window.speechSynthesis;
 let jarvisVoice = null;
-
 function loadVoices() {
   const voices = synth.getVoices();
-  jarvisVoice = voices.find(v => (v.name.includes('Indonesian') || v.name.includes('ID') || v.name.includes('Google ID') || v.name.includes('Female') || v.name.includes('Daniel'))) || voices[0];
+  jarvisVoice = voices.find(v => (v.name.includes('Indonesian') || v.name.includes('ID') || v.name.includes('Female') || v.name.includes('Daniel'))) || voices[0];
 }
 if (synth.onvoiceschanged !== undefined) { synth.onvoiceschanged = loadVoices; }
 loadVoices();
@@ -764,7 +714,7 @@ function speakJarvis(text, mouthElementId = 'hud-mouth') {
   const utterance = new SpeechSynthesisUtterance(text);
   if (jarvisVoice) utterance.voice = jarvisVoice;
   utterance.rate = 0.96;
-  utterance.pitch = 1.1; // Sedikit dinaikkan agar cocok dengan karakter Cyber Cat
+  utterance.pitch = 1.1; 
   
   const mouth = document.getElementById(mouthElementId);
   utterance.onstart = () => { 
@@ -775,21 +725,18 @@ function speakJarvis(text, mouthElementId = 'hud-mouth') {
     if (mouth) mouth.style.animation = "none"; 
     toggleVisualizer(false);
   };
-  
   synth.speak(utterance);
 }
 
-/* 3. MOTTO & KATA BIJAK DINAMIS (CRUD & AUTO-VOICE READER) */
+/* 3. MOTTO & KATA BIJAK DINAMIS */
 let myQuotes = [
   "Teknologi sejati bukan hanya tentang algoritma, melainkan tentang bagaimana kita memanfaatkannya untuk memberi manfaat bagi kemanusiaan.",
   "Teruslah berinovasi tanpa batas untuk memitigasi bencana dan membangun peradaban masa depan!",
-  "Keberhasilan adalah hasil dari konsistensi analisis keteknikan dan ketekunan yang pantang menyerah.",
   "Keamanan dan stabilitas infrastruktur adalah pondasi utama kemajuan sebuah bangsa. Bangun dengan hati dan presisi."
 ];
 if (localStorage.getItem('jarvis_quotes_v6')) {
   try { myQuotes = JSON.parse(localStorage.getItem('jarvis_quotes_v6')); } catch(e){}
 }
-
 let currentQuoteIdx = 0;
 function updateQuotesDisplay() {
   const qText = `"${myQuotes[currentQuoteIdx]}"`;
@@ -801,12 +748,10 @@ function updateQuotesDisplay() {
   if (creditQ) creditQ.innerText = qText;
   if (ssQ) ssQ.innerText = qText;
 
-  // Cek apakah suara baca otomatis aktif
   const autoRead = document.getElementById('quote-auto-read') && document.getElementById('quote-auto-read').value === 'yes';
   if (autoRead && document.getElementById('main-hud').style.display === 'flex') {
     speakJarvis(myQuotes[currentQuoteIdx]);
   }
-
   currentQuoteIdx = (currentQuoteIdx + 1) % myQuotes.length;
 }
 setInterval(updateQuotesDisplay, 8000);
@@ -830,29 +775,23 @@ function renderQuotesList() {
     container.appendChild(div);
   });
 }
-
 function addNewQuote() {
   const input = document.getElementById('new-quote-input');
-  const val = input.value.trim();
-  if(!val) return;
-  myQuotes.push(val);
+  if(!input.value.trim()) return;
+  myQuotes.push(input.value.trim());
   input.value = '';
   localStorage.setItem('jarvis_quotes_v6', JSON.stringify(myQuotes));
-  renderQuotesList();
-  updateQuotesDisplay();
-  speakJarvis("Kata bijak baru berhasil ditambahkan ke dalam memori.");
+  renderQuotesList(); updateQuotesDisplay();
 }
-
 function deleteQuote(idx) {
-  if(myQuotes.length <= 1) { alert("Minimal harus tersisa 1 kata bijak!"); return; }
+  if(myQuotes.length <= 1) { alert("Minimal tersisa 1 kata bijak!"); return; }
   myQuotes.splice(idx, 1);
   localStorage.setItem('jarvis_quotes_v6', JSON.stringify(myQuotes));
-  renderQuotesList();
-  updateQuotesDisplay();
+  renderQuotesList(); updateQuotesDisplay();
 }
 renderQuotesList();
 
-/* 4. CLOCK & DATE HANDLER */
+/* 4. CLOCK & DATE HANDLER (SAFE DOM) */
 const daysID = ['MINGGU', 'SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT', 'SABTU'];
 const monthsID = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'];
 
@@ -863,314 +802,267 @@ function updateAllClocks() {
   const dateStr = `${String(now.getDate()).padStart(2, '0')} ${monthsID[now.getMonth()]} ${now.getFullYear()}`;
   const fullDateStr = `${dayStr}, ${dateStr}`;
 
-  document.getElementById('live-clock-top').innerText = timeStr;
-  document.getElementById('ss-clock').innerText = timeStr;
-  document.getElementById('ss-date').innerText = fullDateStr;
-  document.getElementById('center-clock-text').innerText = timeStr;
-  document.getElementById('center-date-text').innerText = fullDateStr;
-  document.getElementById('credit-clock-display').innerText = `${fullDateStr} | ${timeStr} WIB`;
+  const topPill = document.getElementById('top-center-clock');
+  if (topPill) { topPill.innerHTML = `<i class="fa-solid fa-calendar-day" style="margin-right:6px; color:var(--amber);"></i>${dayStr} | <span style="color:#fff;">${timeStr} WIB</span>`; }
+
+  const c1 = document.getElementById('ss-clock'); if(c1) c1.innerText = timeStr;
+  const c2 = document.getElementById('ss-date'); if(c2) c2.innerText = fullDateStr;
+  const c3 = document.getElementById('center-clock-text'); if(c3) c3.innerText = timeStr;
+  const c4 = document.getElementById('center-date-text'); if(c4) c4.innerText = fullDateStr;
+  const c5 = document.getElementById('credit-clock-display'); if(c5) c5.innerText = `${fullDateStr} | ${timeStr} WIB`;
 }
-setInterval(updateAllClocks, 1000);
-updateAllClocks();
+setInterval(updateAllClocks, 1000); updateAllClocks();
 
-/* 5. BOOTING SEQUENCE WITH CAT ANIMATION */
+/* 5. MULTI-LAYER GOOGLE EARTH / INATEWS SEISMIC MAP ENGINE */
+let leafMap = null;
+let currentMapMarker = null;
+
+function initLeafletMap() {
+  if (leafMap) return;
+  
+  // Peta Jalan Terang (OpenStreetMap Default)
+  const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' });
+  // Peta Satelit Citra
+  const satelit = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: '© Esri' });
+  // Peta Topografi 3D
+  const topo3d = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { maxZoom: 17, attribution: '© OpenTopoMap' });
+  // Peta Gelap Radar InaTEWS
+  const darkMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19, attribution: '© CartoDB' });
+
+  leafMap = L.map('map', { 
+    zoomControl: true, 
+    attributionControl: false,
+    layers: [osm] // Default Terang Street
+  }).setView([-6.9825, 110.4323], 6);
+  
+  const baseMaps = {
+    "🗺️ Peta Street (Terang)": osm,
+    "🌍 Satelit (Citra Real)": satelit,
+    "⛰️ Topografi 3D": topo3d,
+    "📡 Mode Gelap (Radar)": darkMap
+  };
+  
+  L.control.layers(baseMaps, null, {position: 'topright'}).addTo(leafMap);
+  addInaTewsMarker(-6.9825, 110.4323, "SEMARANG (ZONA GAJAH MUNGKUR)", "Stasiun Seismik InaTEWS aktif. PGA: 0.15g | Status: AMAN (SIAGA 4)");
+}
+
+function addInaTewsMarker(lat, lng, title, info) {
+  if (!leafMap) return;
+  if (currentMapMarker) leafMap.removeLayer(currentMapMarker);
+  const customIcon = L.divIcon({
+    className: 'custom-seismic-icon',
+    html: `<div style="width:20px;height:20px;background:#ff007f;border-radius:50%;border:2px solid #00ffff;box-shadow:0 0 15px #ff007f;animation:pulse 1s infinite;"></div>`,
+    iconSize: [20, 20], iconAnchor: [10, 10]
+  });
+  currentMapMarker = L.marker([lat, lng], { icon: customIcon }).addTo(leafMap);
+  const popupHtml = `<div style="font-family:'Orbitron'; color:#000; font-size:11px; border-bottom:1px solid #ccc; padding-bottom:4px; margin-bottom:4px; font-weight:bold;"><i class="fa-solid fa-tower-broadcast" style="color:#ff007f;"></i> ${title}</div><div style="font-family:'Rajdhani'; color:#333; font-size:12px; line-height:1.4; font-weight:bold;">${info}<br><span style="color:#000; font-size:10px; font-family:'Share Tech Mono';">LAT: ${lat.toFixed(4)} | LNG: ${lng.toFixed(4)}</span></div>`;
+  currentMapMarker.bindPopup(popupHtml).openPopup();
+}
+
+function toggleCenterMode(mode) {
+  const catStage = document.getElementById('stage-cat');
+  const mapStage = document.getElementById('earth-map-container');
+  const windyStage = document.getElementById('windy-map-container');
+  const btnCat = document.getElementById('btn-mode-cat');
+  const btnMap = document.getElementById('btn-mode-map');
+  const btnWindy = document.getElementById('btn-mode-windy');
+  const label = document.getElementById('center-panel-label');
+
+  btnCat.style.background = 'none'; btnMap.style.background = 'none'; btnWindy.style.background = 'none';
+  catStage.style.display = 'none'; mapStage.style.display = 'none'; windyStage.style.display = 'none';
+
+  if (mode === 'map') {
+    mapStage.style.display = 'block';
+    btnMap.style.background = 'rgba(0,255,255,0.3)';
+    label.innerText = "INATEWS EARTH MAP RADAR V2.2";
+    initLeafletMap();
+    setTimeout(() => { leafMap.invalidateSize(); }, 300);
+    speakJarvis("Beralih ke mode Google Earth Peta Terang InaTEWS.");
+  } else if (mode === 'windy') {
+    windyStage.style.display = 'block';
+    btnWindy.style.background = 'rgba(255,0,170,0.3)';
+    label.innerText = "WINDY.COM WEATHER RADAR";
+    speakJarvis("Menampilkan Radar Cuaca Langsung dari Windy.");
+  } else {
+    catStage.style.display = 'flex';
+    btnCat.style.background = 'rgba(0,255,255,0.3)';
+    label.innerText = "3D ATOMIC CORE & CYBER CAT";
+    speakJarvis("Meow! Kembali ke tampilan Cyber Cat 3D Core.");
+  }
+}
+
+const locationCoords = {
+  "jakarta": { lat: -6.2088, lng: 106.8456, name: "JAKARTA (DKI)", info: "Pusat Koordinasi BMKG & InaTEWS. Status: NORMAL." },
+  "semarang": { lat: -6.9825, lng: 110.4323, name: "SEMARANG (JAWA TENGAH)", info: "Sensor Seismik Gajah Mungkur. PGA: 0.15g." },
+  "kudus": { lat: -6.8048, lng: 110.8405, name: "KUDUS (JAWA TENGAH)", info: "Pemantauan Hidrologi & Banjir Daerah Aliran Sungai." },
+  "yogyakarta": { lat: -7.7956, lng: 110.3695, name: "YOGYAKARTA", info: "Pemantauan Aktivitas Vulkanik Merapi & Sesar Opak." },
+  "surabaya": { lat: -7.2575, lng: 112.7521, name: "SURABAYA (JAWA TIMUR)", info: "Stasiun Maritim Tanjung Perak. Status Tsunami: AMAN." },
+  "maluku": { lat: -3.2385, lng: 130.1453, name: "AMBON / MALUKU", info: "Proyek Bendungan Way Apu. Sensor Geoteknik Aktif." },
+  "bali": { lat: -8.4095, lng: 115.1889, name: "BALI", info: "Stasiun Peringatan Dini Gempa Laut Selatan." }
+};
+
+function triggerMapSearch(queryLocation) {
+  toggleCenterMode('map');
+  let found = false;
+  for (let key in locationCoords) {
+    if (queryLocation.includes(key)) {
+      const loc = locationCoords[key];
+      leafMap.flyTo([loc.lat, loc.lng], 11, { duration: 2.5 });
+      setTimeout(() => { addInaTewsMarker(loc.lat, loc.lng, loc.name, loc.info); }, 2000);
+      speakJarvis(`Menampilkan peta untuk wilayah ${loc.name}.`);
+      addLog(`[MAP RADAR]: Mengunci koordinat ${loc.name}...`, 'sys');
+      found = true; break;
+    }
+  }
+  if (!found) {
+    const randomLat = -2.0 + (Math.random() * -6.0); const randomLng = 108.0 + (Math.random() * 15.0);
+    leafMap.flyTo([randomLat, randomLng], 8, { duration: 2 });
+    setTimeout(() => { addInaTewsMarker(randomLat, randomLng, "ZONA EKSPLORASI SEISMIK", `Hasil pemindaian: "${queryLocation}". Status: AMAN.`); }, 1800);
+    speakJarvis(`Memetakan lokasi untuk ${queryLocation}.`);
+  }
+}
+
+/* 6. BOOTING SEQUENCE */
 let bootProgress = 0;
-const bootSteps = [
-  "INITIALIZING CYBER CAT 3D CORE...",
-  "CALIBRATING ORBITAL ELECTRON RINGS...",
-  "BYPASSING SECURITY (NO PASSWORD MODE)...",
-  "LOADING MOHAMAD HARTADI 28 APPS DATABASE...",
-  "SYSTEM OPTIMAL. LAUNCHING CAT SUPERAGENT..."
-];
-
+const bootSteps = ["INITIALIZING CYBER CAT 3D CORE...", "CALIBRATING ORBITAL ELECTRON RINGS...", "BYPASSING SECURITY (NO PASSWORD MODE)...", "LOADING MOHAMAD HARTADI 28 APPS DATABASE...", "SYSTEM OPTIMAL. LAUNCHING CAT SUPERAGENT..."];
 const bootInterval = setInterval(() => {
   bootProgress += 2;
-  document.getElementById('boot-progress').style.width = bootProgress + "%";
-  document.getElementById('boot-percent').innerText = bootProgress + "%";
-  
-  const stepIdx = Math.min(Math.floor((bootProgress / 100) * bootSteps.length), bootSteps.length - 1);
-  document.getElementById('boot-step-text').innerText = bootSteps[stepIdx];
-
+  const pb = document.getElementById('boot-progress'); const pt = document.getElementById('boot-percent'); const st = document.getElementById('boot-step-text');
+  if (pb) pb.style.width = bootProgress + "%";
+  if (pt) pt.innerText = bootProgress + "%";
+  if (st) st.innerText = bootSteps[Math.min(Math.floor((bootProgress / 100) * bootSteps.length), bootSteps.length - 1)];
   if (bootProgress >= 100) {
     clearInterval(bootInterval);
     setTimeout(() => {
-      document.getElementById('boot-screen').style.display = 'none';
-      document.getElementById('main-hud').style.display = 'flex';
-      
-      const now = new Date();
-      const dayEn = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][now.getDay()];
-      const timeEn = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-      
-      speakJarvis(`Meow! System online. Selamat datang kembali, Bapak Mohamad Hartadi. Hari ini adalah hari ${daysID[now.getDay()]}, pukul ${timeEn}. Seluruh database aplikasi siap dijalankan.`);
+      const bs = document.getElementById('boot-screen'); const mh = document.getElementById('main-hud');
+      if(bs) bs.style.display = 'none'; if(mh) mh.style.display = 'flex';
+      speakJarvis(`Meow! System online. Selamat datang Bapak Mohamad Hartadi. Peta Terang InaTEWS, Copilot AI Internet, & Radar Cuaca Windy siap dijalankan.`);
       addLog("Boot sequence complete. Welcome Mohamad Hartadi (Adi).", "sys");
     }, 500);
   }
 }, 35);
 
-/* 6. MODAL & TOOLTIP HANDLER */
+/* 7. MODAL & SCREENSAVER ENGINE */
 function openModal(id) { document.getElementById(id).classList.add('active'); if(id==='credit-modal') renderQuotesList(); }
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 function closeModalOutside(e, id) { if (e.target.id === id) closeModal(id); }
 
-const tooltip = document.getElementById('custom-tooltip');
-document.addEventListener('mouseover', (e) => {
-  const tipText = e.target.closest('[data-tip]')?.getAttribute('data-tip');
-  if (tipText) {
-    tooltip.innerText = tipText;
-    tooltip.classList.add('show');
-  } else {
-    tooltip.classList.remove('show');
-  }
-});
-document.addEventListener('mousemove', (e) => {
-  if (tooltip.classList.contains('show')) {
-    tooltip.style.left = Math.min(e.pageX + 15, window.innerWidth - 220) + 'px';
-    tooltip.style.top = (e.pageY + 15) + 'px';
-  }
-});
-
-/* 7. SCREENSAVER ENGINE */
-let idleTimer = null;
-let idleLimit = 180;
-
-function resetIdleTimer() {
-  clearTimeout(idleTimer);
-  if (idleLimit > 0 && document.getElementById('screensaver').style.display !== 'flex') {
-    idleTimer = setTimeout(startScreensaver, idleLimit * 1000);
-  }
-}
+let idleTimer = null; let idleLimit = 180;
+function resetIdleTimer() { clearTimeout(idleTimer); if (idleLimit > 0 && document.getElementById('screensaver').style.display !== 'flex') { idleTimer = setTimeout(startScreensaver, idleLimit * 1000); } }
 ['mousemove', 'keydown', 'mousedown', 'touchstart'].forEach(evt => document.addEventListener(evt, resetIdleTimer));
+function startScreensaver() { document.getElementById('screensaver').style.display = 'flex'; if(document.getElementById('ss-voice-select').value === 'yes'){ speakJarvis(`Screensaver aktif. Sentuh layar untuk kembali.`, 'ss-mouth'); } }
+function stopScreensaver() { document.getElementById('screensaver').style.display = 'none'; resetIdleTimer(); speakJarvis("Meow! Kembali ke Dasbor.", 'hud-mouth'); }
+function testScreensaver() { closeModal('ss-settings-modal'); startScreensaver(); }
+function updateScreensaverTimer() { idleLimit = parseInt(document.getElementById('ss-timer-select').value); resetIdleTimer(); }
+function saveScreensaverSettings() { updateScreensaverTimer(); closeModal('ss-settings-modal'); speakJarvis("Pengaturan screensaver disimpan."); }
+function triggerCreditVoice() { speakJarvis("Memperkenalkan Bapak Mohamad Hartadi. Civil Engineer dan Spesialis Prompt Engineering.", 'credit-mouth'); }
 
-function startScreensaver() {
-  document.getElementById('screensaver').style.display = 'flex';
-  const voiceActive = document.getElementById('ss-voice-select').value === 'yes';
-  if (voiceActive) {
-    const nowStr = new Date().toLocaleTimeString('id-ID');
-    speakJarvis(`Screensaver mode aktif. Jam menunjukkan pukul ${nowStr}. Sentuh layar atau klik di mana saja untuk kembali ke antarmuka utama.`, 'ss-mouth');
-  }
-}
-
-function stopScreensaver() {
-  document.getElementById('screensaver').style.display = 'none';
-  resetIdleTimer();
-  speakJarvis("Meow! Kembali ke Dasbor J.A.R.V.I.S. Siap menerima perintah Anda, Sir.", 'hud-mouth');
-}
-
-function testScreensaver() {
-  closeModal('ss-settings-modal');
-  startScreensaver();
-}
-
-function updateScreensaverTimer() {
-  idleLimit = parseInt(document.getElementById('ss-timer-select').value);
-  resetIdleTimer();
-}
-
-function saveScreensaverSettings() {
-  updateScreensaverTimer();
-  closeModal('ss-settings-modal');
-  speakJarvis("Pengaturan screensaver dan waktu berhasil disimpan.");
-  addLog("Screensaver settings updated.", "sys");
-}
-
-/* 8. KREDIT PROGRAMMER VOICE TRIGGER */
-function triggerCreditVoice() {
-  const text = `Memperkenalkan Bapak Mohamad Hartadi, atau biasa dipanggil Adi. Civil Engineer, Analis Geoteknik, dan Spesialis Prompt Engineering. Motto beliau: Teknologi sejati harus memberi manfaat bagi kemanusiaan!`;
-  speakJarvis(text, 'credit-mouth');
-}
-
-/* 9. ACTIVITY LOG & SMART COMMAND NLP DENGAN UI PANDUAN OTOMATIS */
+/* 8. ACTIVITY LOG & COPILOT NLP UNIVERSAL (WIKIPEDIA API FETCH) */
 function addLog(text, type = 'user') {
-  const logBox = document.getElementById('log-box');
-  const now = new Date().toLocaleTimeString('id-ID', { hour12: false });
-  const entry = document.createElement('div');
-  entry.className = 'log-entry';
-  entry.innerHTML = `<span class="log-time">[${now}]</span> <span class="log-text ${type}">${text}</span>`;
+  const logBox = document.getElementById('log-box'); const now = new Date().toLocaleTimeString('id-ID', { hour12: false });
+  const entry = document.createElement('div'); entry.className = 'log-entry'; entry.innerHTML = `<span class="log-time">[${now}]</span> <span class="log-text ${type}">${text}</span>`;
   logBox.prepend(entry);
 }
-
-// Fungsi tambahan untuk memasukkan UI HTML langsung ke log-box
 function addRichLog(htmlStr) {
-  const logBox = document.getElementById('log-box');
-  const now = new Date().toLocaleTimeString('id-ID', { hour12: false });
-  const entry = document.createElement('div');
-  entry.className = 'log-entry';
-  entry.style.flexDirection = 'column';
-  entry.style.alignItems = 'flex-start';
-  entry.style.borderBottom = '1px solid rgba(0, 255, 255, 0.2)';
-  entry.innerHTML = `<div style="margin-bottom:6px;"><span class="log-time">[${now}] [NLP ASSISTANT]</span></div> ${htmlStr}`;
+  const logBox = document.getElementById('log-box'); const now = new Date().toLocaleTimeString('id-ID', { hour12: false });
+  const entry = document.createElement('div'); entry.className = 'log-entry'; entry.style.flexDirection = 'column'; entry.style.alignItems = 'flex-start'; entry.style.borderBottom = '1px solid rgba(0, 255, 255, 0.2)';
+  entry.innerHTML = `<div style="margin-bottom:6px;"><span class="log-time">[${now}] [COPILOT AI]</span></div> ${htmlStr}`;
   logBox.prepend(entry);
 }
 
-// Render UI Template untuk Aplikasi Spesifik
-function getAppCardHtml(app) {
-    return `
-    <div style="background:rgba(0,30,50,0.8); border:1px solid var(--cyan); padding:12px; border-radius:8px; margin-top:4px; width:100%; box-shadow:0 0 10px rgba(0,255,255,0.1);">
-        <span style="color:var(--cyan); font-weight:bold; font-family:'Orbitron'; font-size:13px; border-bottom:1px solid rgba(0,255,255,0.3); padding-bottom:6px; display:block; margin-bottom:8px;">
-            <i class="fa-solid ${app.i}" style="color:var(--amber); margin-right:4px;"></i> ${app.n.toUpperCase()}
-        </span>
-        <p style="color:#d0f0ff; font-size:11px; margin-bottom:10px; line-height:1.4;">${app.d}</p>
-        <a href="${app.u}" target="_blank" style="display:inline-block; background:linear-gradient(90deg, rgba(0,255,255,0.2), rgba(0,100,255,0.2)); border:1px solid var(--cyan); color:#fff; padding:6px 12px; border-radius:4px; text-decoration:none; font-size:10px; font-weight:bold; letter-spacing:1px; transition:0.3s;">
-            <i class="fa-solid fa-arrow-up-right-from-square"></i> BUKA SEKARANG
-        </a>
-    </div>`;
+function tampilkanJawabanCopilot(jawaban) {
+  const aiBoxHtml = `<div style="background:rgba(0,40,60,0.85); border:1px solid #00ffaa; padding:10px 12px; border-radius:8px; margin-top:4px; box-shadow:0 0 10px rgba(0,255,170,0.2);"><div style="color:#00ffaa; font-family:'Orbitron'; font-size:11px; font-weight:bold; border-bottom:1px solid rgba(0,255,170,0.3); padding-bottom:4px; margin-bottom:6px;"><i class="fa-solid fa-robot" style="margin-right:6px;"></i> COPILOT AI UNIVERSAL</div><div style="color:#fff; font-size:12px; font-family:'Rajdhani'; line-height:1.4;">${jawaban}</div></div>`;
+  addRichLog(aiBoxHtml); 
+  // Membatasi pembacaan suara agar tidak terlalu panjang
+  const bicara = jawaban.length > 200 ? jawaban.substring(0, 200) + "..." : jawaban;
+  speakJarvis(bicara);
 }
 
-function quickAction(msg) {
-  addLog(`Action executed: ${msg}`, 'user');
-  speakJarvis(msg);
+function getAppCardHtml(app) {
+    return `<div style="background:rgba(0,30,50,0.8); border:1px solid var(--cyan); padding:12px; border-radius:8px; margin-top:4px; width:100%; box-shadow:0 0 10px rgba(0,255,255,0.1);"><span style="color:var(--cyan); font-weight:bold; font-family:'Orbitron'; font-size:13px; border-bottom:1px solid rgba(0,255,255,0.3); padding-bottom:6px; display:block; margin-bottom:8px;"><i class="fa-solid ${app.i}" style="color:var(--amber); margin-right:4px;"></i> ${app.n.toUpperCase()}</span><p style="color:#d0f0ff; font-size:11px; margin-bottom:10px; line-height:1.4;">${app.d}</p><a href="${app.u}" target="_blank" style="display:inline-block; background:linear-gradient(90deg, rgba(0,255,255,0.2), rgba(0,100,255,0.2)); border:1px solid var(--cyan); color:#fff; padding:6px 12px; border-radius:4px; text-decoration:none; font-size:10px; font-weight:bold;"><i class="fa-solid fa-arrow-up-right-from-square"></i> BUKA SEKARANG</a></div>`;
 }
+
+function quickAction(msg) { addLog(`Action executed: ${msg}`, 'user'); speakJarvis(msg); }
 
 function sendCommand() {
-  const input = document.getElementById('cmd-input');
-  const query = input.value.trim();
-  if (!query) return;
-  
-  addLog(`Command: "${query}"`, 'user');
-  input.value = '';
-  const qLow = query.toLowerCase();
+  const input = document.getElementById('cmd-input'); const query = input.value.trim(); if (!query) return;
+  addLog(`Command: "${query}"`, 'user'); input.value = ''; const qLow = query.toLowerCase();
 
-  // A1. Cek Pintasan Khusus Tanpa Kata "Buka"
-  if (qLow === 'perpustakaan' || qLow === 'library') {
-      const app = { n: "Perpustakaan", u: "https://www.f15library.com/", i: "fa-book-open-reader", d: "F15 Library Digital" };
-      addRichLog(getAppCardHtml(app));
-      speakJarvis(`Membuka panduan aplikasi ${app.n}.`);
-      setTimeout(() => { window.open(app.u, '_blank'); }, 1500);
-      return;
+  // A. PETA BUMI / LOKASI
+  if (qLow.includes('cari lokasi') || qLow.includes('lokasi') || qLow.includes('peta') || qLow.includes('earth') || qLow.includes('map')) {
+    triggerMapSearch(qLow); return;
   }
-  if (qLow === 'radio' || qLow === 'radio online') {
-      const app = { n: "Radio Online", u: "https://famelack.com/radio/id", i: "fa-radio", d: "Streaming Radio ID" };
-      addRichLog(getAppCardHtml(app));
-      speakJarvis(`Membuka panduan aplikasi ${app.n}.`);
-      setTimeout(() => { window.open(app.u, '_blank'); }, 1500);
-      return;
+  // B. RADAR CUACA WINDY
+  if (qLow.includes('radar cuaca') || qLow.includes('cuaca windy') || qLow.includes('windy')) {
+    toggleCenterMode('windy'); addLog(`[COMMAND]: Menampilkan Radar Cuaca Windy...`, 'sys'); return;
   }
-  if (qLow === 'tv' || qLow === 'tv online') {
-      const app = { n: "TV Online", u: "https://famelack.com/tv/id", i: "fa-tv", d: "Streaming TV Famelack" };
-      addRichLog(getAppCardHtml(app));
-      speakJarvis(`Membuka panduan aplikasi ${app.n}.`);
-      setTimeout(() => { window.open(app.u, '_blank'); }, 1500);
-      return;
-  }
+  // C. PANDUAN APLIKASI
+  if (qLow === 'perpustakaan' || qLow === 'library') { const app = { n: "Perpustakaan", u: "https://www.f15library.com/", i: "fa-book-open-reader", d: "F15 Library Digital" }; addRichLog(getAppCardHtml(app)); speakJarvis("Membuka panduan aplikasi."); setTimeout(() => { window.open(app.u, '_blank'); }, 1500); return; }
+  if (qLow === 'radio' || qLow === 'radio online') { const app = { n: "Radio Online", u: "https://famelack.com/radio/id", i: "fa-radio", d: "Streaming Radio ID" }; addRichLog(getAppCardHtml(app)); speakJarvis("Membuka panduan aplikasi."); setTimeout(() => { window.open(app.u, '_blank'); }, 1500); return; }
+  if (qLow === 'tv' || qLow === 'tv online') { const app = { n: "TV Online", u: "https://famelack.com/tv/id", i: "fa-tv", d: "Streaming TV Famelack" }; addRichLog(getAppCardHtml(app)); speakJarvis("Membuka panduan aplikasi."); setTimeout(() => { window.open(app.u, '_blank'); }, 1500); return; }
+  if (qLow === 'quran' || qLow === 'al quran') { const app = { n: "Al-Quran Karim", u: "https://adikds.github.io/Al-Quran-Karim/", i: "fa-book-quran", d: "Digital Quran" }; addRichLog(getAppCardHtml(app)); speakJarvis("Membuka panduan aplikasi."); setTimeout(() => { window.open(app.u, '_blank'); }, 1500); return; }
 
-  // A2. PANDUAN HELP TEKS OTOMATIS (Aplikasi & Ekosistem)
-  if (qLow.includes('buka') || qLow === 'aplikasi' || qLow === 'app' || qLow === 'my app' || qLow.includes('daftar app') || qLow === 'help') {
-      
-      let matchedApp = null;
-      let querySubject = qLow.replace('buka', '').replace('aplikasi', '').trim();
-      
-      if (querySubject.length > 2) {
-          for (let app of myApps) {
-              if (app.n.toLowerCase().includes(querySubject) || app.d.toLowerCase().includes(querySubject)) {
-                  matchedApp = app;
-                  break;
-              }
-          }
-      }
-
-      // Jika menemukan aplikasi spesifik (contoh: "buka quran")
+  if (qLow.includes('buka') || qLow === 'aplikasi' || qLow === 'app' || qLow === 'my app' || qLow === 'help') {
+      let matchedApp = null; let querySubject = qLow.replace('buka', '').replace('aplikasi', '').trim();
+      if (querySubject.length > 2) { for (let app of myApps) { if (app.n.toLowerCase().includes(querySubject) || app.d.toLowerCase().includes(querySubject)) { matchedApp = app; break; } } }
       if (matchedApp) {
-          addRichLog(getAppCardHtml(matchedApp));
-          speakJarvis(`Membuka panduan aplikasi ${matchedApp.n}.`);
-          setTimeout(() => { window.open(matchedApp.u, '_blank'); }, 1500);
-      } 
-      // Jika hanya "buka" atau "aplikasi", tampilkan daftar lengkap
-      else {
-          let appsListUI = `
-          <div style="background:rgba(0,15,30,0.9); border:1px solid var(--amber); padding:12px; border-radius:8px; margin-top:4px; width:100%; box-shadow:0 0 10px rgba(245,158,11,0.1);">
-              <span style="color:var(--amber); font-weight:bold; font-family:'Orbitron'; font-size:12px; border-bottom:1px dashed rgba(245,158,11,0.4); padding-bottom:6px; display:block; margin-bottom:8px;">
-                  <i class="fa-solid fa-grid-2" style="margin-right:4px;"></i> PANDUAN EKOSISTEM APLIKASI
-              </span>
-              <p style="color:#bbb; font-size:10px; margin-bottom:8px;">Pilih aplikasi web karya Bapak Mohamad Hartadi di bawah ini untuk membukanya:</p>
-              <div style="display:flex; flex-direction:column; gap:6px; max-height:180px; overflow-y:auto; padding-right:6px;" class="hide-scrollbar">
-          `;
-          
-          myApps.forEach(app => {
-              appsListUI += `
-              <div style="background:rgba(0,30,60,0.5); padding:8px; border-radius:6px; border:1px solid rgba(0,255,255,0.15); cursor:pointer; display:flex; justify-content:space-between; align-items:center;" onclick="window.open('${app.u}', '_blank')" title="${app.d}">
-                  <div style="display:flex; align-items:center; gap:8px;">
-                      <div style="width:20px; text-align:center;"><i class="fa-solid ${app.i}" style="color:var(--cyan); font-size:14px;"></i></div>
-                      <span style="color:#fff; font-size:11px; font-weight:bold;">${app.n}</span>
-                  </div>
-                  <span style="font-size:9px; background:rgba(0,255,255,0.15); color:var(--cyan); padding:3px 6px; border-radius:4px; font-weight:bold;">Buka &rarr;</span>
-              </div>`;
-          });
-          
-          appsListUI += `</div></div>`;
-          addRichLog(appsListUI);
-          speakJarvis("Menampilkan panduan ekosistem aplikasi di layar terminal log Anda.");
+          addRichLog(getAppCardHtml(matchedApp)); speakJarvis(`Membuka panduan ${matchedApp.n}.`); setTimeout(() => { window.open(matchedApp.u, '_blank'); }, 1500);
+      } else {
+          let appsListUI = `<div style="background:rgba(0,15,30,0.9); border:1px solid var(--amber); padding:12px; border-radius:8px; margin-top:4px; width:100%; box-shadow:0 0 10px rgba(245,158,11,0.1);"><span style="color:var(--amber); font-weight:bold; font-family:'Orbitron'; font-size:12px; border-bottom:1px dashed rgba(245,158,11,0.4); padding-bottom:6px; display:block; margin-bottom:8px;"><i class="fa-solid fa-grid-2" style="margin-right:4px;"></i> PANDUAN EKOSISTEM APLIKASI</span><p style="color:#bbb; font-size:10px; margin-bottom:8px;">Pilih aplikasi web karya Bapak Mohamad Hartadi di bawah ini untuk membukanya:</p><div style="display:flex; flex-direction:column; gap:6px; max-height:180px; overflow-y:auto; padding-right:6px;" class="hide-scrollbar">`;
+          myApps.forEach(app => { appsListUI += `<div style="background:rgba(0,30,60,0.5); padding:8px; border-radius:6px; border:1px solid rgba(0,255,255,0.15); cursor:pointer; display:flex; justify-content:space-between; align-items:center;" onclick="window.open('${app.u}', '_blank')" title="${app.d}"><div style="display:flex; align-items:center; gap:8px;"><div style="width:20px; text-align:center;"><i class="fa-solid ${app.i}" style="color:var(--cyan); font-size:14px;"></i></div><span style="color:#fff; font-size:11px; font-weight:bold;">${app.n}</span></div><span style="font-size:9px; background:rgba(0,255,255,0.15); color:var(--cyan); padding:3px 6px; border-radius:4px; font-weight:bold;">Buka &rarr;</span></div>`; });
+          appsListUI += `</div></div>`; addRichLog(appsListUI); speakJarvis("Menampilkan panduan ekosistem aplikasi di layar log Anda.");
       }
       return;
   }
 
-  // B. Topik Info Programmer
-  if (qLow.includes('info') || qLow.includes('programmer') || qLow.includes('kreator') || qLow.includes('adi') || qLow.includes('hartadi') || qLow.includes('kontak') || qLow.includes('wa') || qLow.includes('fb') || qLow.includes('blog')) {
-    openModal('credit-modal');
-    triggerCreditVoice();
-    addLog("[SYSTEM]: Menampilkan info Programmer (FB: m.hartadi, Blog: newbieonline7, WA: 082231036047).", "sys");
-    return;
-  }
+  // D. INFO / LAIN-LAIN
+  if (qLow.includes('info') || qLow.includes('programmer')) { openModal('credit-modal'); triggerCreditVoice(); return; }
+  if (qLow.includes('waktu') || qLow.includes('jam')) { const nowStr = new Date().toLocaleTimeString('id-ID'); speakJarvis(`Waktu saat ini adalah pukul ${nowStr} WIB.`); return; }
 
-  // C. Topik Database
-  if (qLow.includes('database') || qLow.includes('db') || qLow.includes('kelola app')) {
-    openModal('db-modal');
-    renderDatabase();
-    speakJarvis("Membuka antarmuka Database untuk mengelola daftar aplikasi Anda.");
-    return;
+  // E. COPILOT AI UNIVERSAL ENGINE DENGAN DATA INTERNET (WIKIPEDIA API)
+  if (qLow.includes('siapa kamu') || qLow.includes('pembuatmu') || qLow.includes('apa itu jarvis')) { 
+      tampilkanJawabanCopilot("Saya adalah J.A.R.V.I.S v6.0 Cyber Cat, asisten AI cerdas karya Bapak Mohamad Hartadi untuk mengelola ekosistem aplikasi web dan pemantauan."); 
+  } 
+  else {
+      addLog(`[COPILOT AI]: Memindai database internet untuk "${query}"...`, 'warn');
+      const searchUrl = `https://id.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exsentences=3&exintro=1&explaintext=1&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrlimit=1&origin=*`;
+      
+      fetch(searchUrl)
+        .then(response => response.json())
+        .then(data => {
+            if (data.query && data.query.pages) {
+                const pages = data.query.pages;
+                const pageId = Object.keys(pages)[0];
+                const extract = pages[pageId].extract;
+                tampilkanJawabanCopilot(`Berdasarkan data dari Internet: ${extract}`);
+            } else {
+                tampilkanJawabanCopilot(`Copilot AI tidak menemukan data yang relevan tentang "${query}" di internet. Cobalah gunakan kata kunci lain.`);
+            }
+        })
+        .catch(err => {
+            tampilkanJawabanCopilot(`Koneksi internet bermasalah. Tidak dapat mengambil data dari database eksternal.`);
+        });
   }
-
-  // D. Cek Waktu / Jam
-  if (qLow.includes('waktu') || qLow.includes('jam') || qLow.includes('hari') || qLow.includes('tanggal')) {
-    const nowStr = new Date().toLocaleTimeString('id-ID');
-    speakJarvis(`Waktu saat ini adalah pukul ${nowStr} Waktu Indonesia Barat, hari ${document.getElementById('center-date-text').innerText}.`);
-    return;
-  }
-
-  // Default Fallback
-  speakJarvis(`Meow! Saya mengerti perintah: "${query}". Untuk panduan aplikasi, silakan ketik kata "buka aplikasi".`);
 }
 
 let recognizing = false;
 function toggleVoice() {
   const micBtn = document.getElementById('mic-btn');
-  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-    alert("Fitur Voice Recognition tidak didukung di browser ini. Gunakan Google Chrome atau Microsoft Edge terbaru.");
-    return;
-  }
-  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const rec = new SpeechRec();
-  rec.lang = 'id-ID';
-  
-  if (!recognizing) {
-    rec.start();
-    recognizing = true;
-    micBtn.classList.add('listening');
-    addLog("Mendengarkan perintah suara (Katakan: buka perpustakaan, info programmer, atau help)...", "warn");
-  } else {
-    rec.stop();
-    recognizing = false;
-    micBtn.classList.remove('listening');
-  }
-
-  rec.onresult = (e) => {
-    const transcript = e.results[0][0].transcript;
-    document.getElementById('cmd-input').value = transcript;
-    sendCommand();
-  };
-  rec.onend = () => {
-    recognizing = false;
-    micBtn.classList.remove('listening');
-  };
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) { alert("Voice Recognition tidak didukung di browser ini."); return; }
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition; const rec = new SpeechRec(); rec.lang = 'id-ID';
+  if (!recognizing) { rec.start(); recognizing = true; micBtn.classList.add('listening'); addLog("Mendengarkan perintah suara...", "warn"); } 
+  else { rec.stop(); recognizing = false; micBtn.classList.remove('listening'); }
+  rec.onresult = (e) => { document.getElementById('cmd-input').value = e.results[0][0].transcript; sendCommand(); };
+  rec.onend = () => { recognizing = false; micBtn.classList.remove('listening'); };
 }
 
-// Simulasi Metrik Sistem Dinamis
+// Simulasi Metrik
 setInterval(() => {
-  const cpu = Math.floor(Math.random() * 25) + 20;
-  const ram = Math.floor(Math.random() * 10) + 58;
-  document.getElementById('cpu-val').innerText = cpu + "%";
-  document.getElementById('cpu-bar').style.width = cpu + "%";
-  document.getElementById('ram-val').innerText = ram + "%";
-  document.getElementById('ram-bar').style.width = ram + "%";
+  const cpu = Math.floor(Math.random() * 25) + 20; const ram = Math.floor(Math.random() * 10) + 58;
+  const cpuVal = document.getElementById('cpu-val'); const cpuBar = document.getElementById('cpu-bar');
+  const ramVal = document.getElementById('ram-val'); const ramBar = document.getElementById('ram-bar');
+  if(cpuVal) cpuVal.innerText = cpu + "%"; if(cpuBar) cpuBar.style.width = cpu + "%";
+  if(ramVal) ramVal.innerText = ram + "%"; if(ramBar) ramBar.style.width = ram + "%";
 }, 3000);
 </script>
 </body>
