@@ -210,11 +210,11 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
     </div>
     <div class="fingerprint-box">
        <div class="fingerprint-frame" id="fg-frame"></div>
-       <i class="fa-solid fa-user-shield fingerprint-icon" id="fg-icon"></i>
+       <i class="fa-solid fa-fingerprint fingerprint-icon" id="fg-icon"></i>
        <div class="fg-scanline" id="fg-scanline"></div>
     </div>
     <div class="mono" id="scan-status" style="font-size: 15px; color: rgba(0, 255, 255, 0.6); letter-spacing: 2px;">
-       MEMINDAI WAJAH PENGGUNA...
+       MEMINDAI SIDIK JARI PENGGUNA...
     </div>
 </div>
 
@@ -1035,19 +1035,17 @@ function startFingerprintScan() {
 
     scanOverlay.style.display = 'flex';
 
-    // Jeda sebentar sebelum simulasi mulai
     setTimeout(() => {
         fgIcon.classList.add('scanning');
         fgScanline.style.display = 'block';
         scanStatus.style.color = '#ff00aa';
-        scanStatus.innerText = "MEMINDAI WAJAH PENGGUNA...";
+        scanStatus.innerText = "MEMINDAI SIDIK JARI PENGGUNA...";
         
         setTimeout(() => {
             const userType = detectDevice().toUpperCase();
             scanStatus.style.color = '#00ffaa';
             scanStatus.innerText = "ACCESS GRANTED: " + userType;
             
-            // Ubah warna ikon jadi hijau saat berhasil
             fgIcon.style.color = '#00ffaa';
             fgIcon.style.filter = 'drop-shadow(0 0 20px #00ffaa)';
             fgScanline.style.background = '#00ffaa';
@@ -1058,9 +1056,9 @@ function startFingerprintScan() {
                 scanOverlay.style.display = 'none';
                 bootScreen.style.display = 'flex';
                 startBootSequence();
-            }, 1800);
-        }, 2500);
-    }, 1500);
+            }, 800);
+        }, 1000);
+    }, 500);
 }
 
 // Fungsi untuk menentukan sapaan formal berdasarkan waktu
