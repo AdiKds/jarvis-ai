@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>J.A.R.V.I.S v6.0 — Cyber Cat Superagent HUD by Mohamad Hartadi</title>
-<meta name="description" content="JARVIS AI — Futuristic AI agent interface with Cyber Cat Avatar, Earth Map, Windy Radar, and 28 Apps Database. Built by Mohamad Hartadi.">
+<meta name="description" content="JARVIS AI — Futuristic AI agent interface with Cyber Cat Avatar, Earth Map, Windy Radar, and Database. Built by Mohamad Hartadi.">
 <meta name="author" content="Mohamad Hartadi">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -68,8 +68,17 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
 #custom-tooltip { position: fixed; background: rgba(0, 15, 30, 0.95); border: 1px solid var(--cyan); padding: 6px 12px; border-radius: 6px; font-size: 12px; color: #fff; font-family: 'Orbitron'; z-index: 10000; pointer-events: none; opacity: 0; transition: opacity 0.2s, transform 0.2s; box-shadow: var(--glow); transform: translateY(5px); }
 #custom-tooltip.show { opacity: 1; transform: translateY(0); }
 
+/* SCAN OVERLAY (WAJAH) */
+#fingerprint-scan-overlay { position: fixed; inset: 0; background: #000208; z-index: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+.fingerprint-box { position: relative; width: 160px; height: 200px; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 20px; border: 2px dashed rgba(0, 255, 255, 0.3); padding: 20px; }
+.fingerprint-icon { font-size: 100px; color: rgba(0, 255, 255, 0.2); transition: all 0.5s; }
+.fingerprint-icon.scanning { color: var(--cyan); filter: drop-shadow(0 0 20px var(--cyan)); animation: pulse 1s infinite; }
+.fg-scanline { position: absolute; top: 0; left: 0; width: 100%; height: 6px; background: var(--pink); box-shadow: 0 0 15px var(--pink); animation: scanline 1.5s linear infinite; display: none; }
+.fingerprint-frame { position: absolute; inset: 0; border: 1px solid transparent; border-radius: 20px; transition: 0.5s; }
+.fingerprint-frame.granted { border-color: #00ffaa; box-shadow: inset 0 0 20px rgba(0,255,170,0.2), 0 0 20px rgba(0,255,170,0.2); }
+
 /* BOOT SCREEN */
-#boot-screen { position: fixed; inset: 0; background: #000208; z-index: 500; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+#boot-screen { position: fixed; inset: 0; background: #000208; z-index: 500; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
 .boot-avatar { width: 150px; height: 150px; margin-bottom: 20px; filter: drop-shadow(0 0 20px rgba(6,182,212,0.6)); animation: pulse 2s infinite; }
 .boot-title { font-size: clamp(20px, 5vw, 28px); letter-spacing: 6px; margin-bottom: 10px; }
 .boot-bar-wrap { width: 280px; height: 4px; background: rgba(0, 255, 255, 0.1); border-radius: 2px; overflow: hidden; margin: 15px 0; border: 1px solid rgba(0, 255, 255, 0.3); }
@@ -136,7 +145,7 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
 #map { width: 100%; height: 100%; background: #000814; }
 .map-overlay-header { position: absolute; top: 10px; left: 10px; z-index: 1000; background: rgba(0, 15, 30, 0.9); border: 1px solid var(--cyan); padding: 6px 12px; border-radius: 6px; font-family: 'Orbitron'; font-size: 11px; color: #00ffaa; box-shadow: 0 0 10px rgba(0,255,255,0.3); pointer-events: none; }
 
-/* Leaflet Customizations for Dark UI harmony */
+/* Leaflet Customizations */
 .leaflet-control-layers { background: rgba(0,20,40,0.9) !important; color: #00ffff !important; border: 1px solid #00ffff !important; font-family: 'Rajdhani', sans-serif !important; border-radius: 8px !important; }
 .leaflet-control-layers-toggle { filter: invert(1) hue-rotate(180deg) brightness(200%); }
 
@@ -194,6 +203,20 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
 <div class="scan-line"></div>
 <div class="corner c-tl"></div><div class="corner c-tr"></div>
 <div class="corner c-bl"></div><div class="corner c-br"></div>
+
+<div id="fingerprint-scan-overlay">
+    <div class="orbitron text-glow" style="font-size:20px; margin-bottom:30px; color:var(--cyan); letter-spacing: 2px; display:flex; align-items:center; gap:10px;">
+      <i class="fa-solid fa-shield-halved"></i> BIOMETRIC AUTHORIZATION
+    </div>
+    <div class="fingerprint-box">
+       <div class="fingerprint-frame" id="fg-frame"></div>
+       <i class="fa-solid fa-user-shield fingerprint-icon" id="fg-icon"></i>
+       <div class="fg-scanline" id="fg-scanline"></div>
+    </div>
+    <div class="mono" id="scan-status" style="font-size: 15px; color: rgba(0, 255, 255, 0.6); letter-spacing: 2px;">
+       MEMINDAI WAJAH PENGGUNA...
+    </div>
+</div>
 
 <div id="boot-screen">
   <div class="boot-avatar">
@@ -256,7 +279,7 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
       <div class="header-clock-pill orbitron" id="top-center-clock" data-tip="Waktu Realtime Server Indonesia Barat (WIB)">MEMUAT WAKTU...</div>
     </div>
     <div class="header-controls">
-      <button class="btn-hud" onclick="openModal('db-modal'); renderDatabase();" data-tip="Kelola Database 28+ Aplikasi Web"><i class="fa-solid fa-database"></i> DATABASE</button>
+      <button class="btn-hud" onclick="openModal('db-modal'); renderDatabase();" data-tip="Kelola Database Aplikasi Web"><i class="fa-solid fa-database"></i> DATABASE</button>
       <button class="btn-hud" onclick="openModal('apps-modal'); renderMyApps();" data-tip="Buka Daftar Aplikasi Web"><i class="fa-solid fa-grid-2"></i> MY APPS</button>
       <button class="btn-hud" onclick="openModal('ss-settings-modal')" data-tip="Pengaturan Screensaver & Waktu"><i class="fa-solid fa-desktop"></i> SETTING SS</button>
       <button class="btn-hud" onclick="openModal('credit-modal'); triggerCreditVoice();" data-tip="Informasi Kreator & Motto Bijak"><i class="fa-solid fa-user-astronaut"></i> KREDIT</button>
@@ -324,7 +347,7 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
           <div class="orbit-ring-3d ring-3"><div class="electron amber"></div></div>
         </div>
         
-        <div class="cat-avatar-wrap" onclick="speakJarvis('Meow! Halo Sir, saya J.A.R.V.I.S Cyber Cat. Ketik cari lokasi semarang pada command untuk membuka Peta Earth InaTEWS, atau ketik radar cuaca untuk Peta Windy!')">
+        <div class="cat-avatar-wrap" onclick="speakJarvis('Meow! Halo, saya J.A.R.V.I.S Cyber Cat. Ketik cari lokasi semarang pada command untuk membuka Peta Earth InaTEWS, atau ketik radar cuaca untuk Peta Windy!')">
           <svg viewBox="0 0 100 100" style="width:100%; height:100%;" xmlns="http://www.w3.org/2000/svg">
               <g class="ear-left"><polygon points="25,45 10,10 45,30" fill="#f8fafc" stroke="#06b6d4" stroke-width="2"/><polygon points="25,38 16,18 38,30" fill="#f472b6"/></g>
               <g class="ear-right"><polygon points="75,45 90,10 55,30" fill="#f8fafc" stroke="#06b6d4" stroke-width="2"/><polygon points="75,38 84,18 62,30" fill="#f472b6"/></g>
@@ -384,7 +407,7 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
       </div>
     </div>
     <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-      <span class="mono" style="font-size: 12px; color: #00ffaa;"><i class="fa-solid fa-circle fa-fade"></i> SERVER: CONNECTED</span>
+      <span class="mono" style="font-size: 12px; color: #00ffaa;" id="footer-connection-status"><i class="fa-solid fa-circle fa-fade"></i> SERVER: CONNECTED</span>
       <button class="btn-hud" onclick="openModal('db-modal'); renderDatabase();" style="padding: 6px 12px;"><i class="fa-solid fa-database"></i> DATABASE APPS</button>
       <button class="btn-hud" onclick="openModal('credit-modal'); triggerCreditVoice();" style="padding: 6px 12px;"><i class="fa-solid fa-address-card"></i> PROFIL & MOTTO</button>
     </div>
@@ -419,9 +442,13 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
         <input type="text" id="db-desc" class="setting-input" placeholder="Deskripsi Singkat">
         <input type="text" id="db-icon" class="setting-input" placeholder="Icon FA (misal: fa-robot)" value="fa-globe">
       </div>
-      <div style="display:flex; gap:8px;">
-        <button class="btn-hud" style="background:rgba(0,255,100,0.3); border-color:#00ffaa; flex:1; justify-content:center;" onclick="saveAppToDb()"><i class="fa-solid fa-save"></i> SIMPAN / SINKRON KAN</button>
-        <button class="btn-hud" style="background:rgba(255,50,50,0.2); border-color:#ff4444; display:none;" id="btn-cancel-db" onclick="resetDbForm()"><i class="fa-solid fa-times"></i> BATAL</button>
+      <div style="display:flex; gap:8px; flex-wrap: wrap;">
+        <button class="btn-hud" style="background:rgba(0,255,100,0.3); border-color:#00ffaa; flex:1; justify-content:center; min-width: 140px;" onclick="saveAppToDb()"><i class="fa-solid fa-save"></i> SIMPAN / SINKRON</button>
+        <button class="btn-hud" style="background:rgba(255,150,0,0.3); border-color:#ffaa00; flex:1; justify-content:center; min-width: 100px;" onclick="resetDatabase()"><i class="fa-solid fa-rotate-right"></i> RESET</button>
+        <button class="btn-hud" style="background:rgba(0,150,255,0.3); border-color:#00aaff; flex:1; justify-content:center; min-width: 100px;" onclick="exportDatabase()"><i class="fa-solid fa-download"></i> EKSPOR</button>
+        <button class="btn-hud" style="background:rgba(200,0,255,0.3); border-color:#cc00ff; flex:1; justify-content:center; min-width: 100px;" onclick="triggerImport()"><i class="fa-solid fa-upload"></i> IMPOR</button>
+        <input type="file" id="import-file" style="display:none;" accept=".json" onchange="importDatabase(event)">
+        <button class="btn-hud" style="background:rgba(255,50,50,0.2); border-color:#ff4444; display:none; min-width: 100px;" id="btn-cancel-db" onclick="resetDbForm()"><i class="fa-solid fa-times"></i> BATAL</button>
       </div>
     </div>
 
@@ -553,7 +580,15 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
-/* 1. DATABASE 28 APLIKASI WEB */
+/* 0. IDENTIFIKASI PERANGKAT PENGGUNA */
+function detectDevice() {
+    const ua = navigator.userAgent;
+    if (/Mobile|Android|iP(hone|od)/.test(ua)) return "Pengguna Smartphone";
+    if (/Tablet|iPad/.test(ua)) return "Pengguna Tablet";
+    return "Pengguna PC/Laptop";
+}
+
+/* 1. DATABASE 33+ APLIKASI WEB */
 let myApps = [
   { n: "JARVIS AI", u: "https://adikds.github.io/jarvis-ai/", i: "fa-cat", d: "Superagent HUD" },
   { n: "EduMarket Pro", u: "https://adikds.github.io/edu-market-pro/", i: "fa-graduation-cap", d: "E-Learning Market" },
@@ -584,6 +619,8 @@ let myApps = [
   { n: "SMILE SYIFA AI", u: "https://adikds.github.io/SMILE-SYIFA-AI/", i: "fa-face-smile", d: "Dental AI" },
   { n: "DOKTER AI EXPERT", u: "https://adikds.github.io/DOKTER-AI/", i: "fa-user-doctor", d: "Medical AI" },
   { n: "Perpustakaan", u: "https://www.f15library.com/", i: "fa-book-open-reader", d: "F15 Library Digital" },
+  { n: "Mega Atlas Geoteknik", u: "https://adikds.github.io/ATLAS-GEOTEKNIK/", i: "fa-earth-americas", d: "Geotechnical Atlas" },
+  { n: "Statistics for Engineers", u: "https://adikds.github.io/STATISTICS_for_ENGINEERS-/", i: "fa-chart-pie", d: "Engineering Stats" },
   { n: "Radio Online", u: "https://famelack.com/radio/id", i: "fa-radio", d: "Streaming Radio ID" },
   { n: "TV Online", u: "https://famelack.com/tv/id", i: "fa-tv", d: "Streaming TV Famelack" }
 ];
@@ -684,6 +721,66 @@ function resetDbForm() {
   document.getElementById('btn-cancel-db').style.display = 'none';
 }
 renderMyApps();
+
+// --- FITUR TAMBAHAN DATABASE J.A.R.V.I.S ---
+
+// 1. Reset Database ke Pengaturan Awal (Default 33 Apps)
+function resetDatabase() {
+  if (confirm("Apakah Anda yakin ingin mereset database ke kondisi semula? Semua aplikasi yang baru saja ditambahkan atau diedit akan hilang.")) {
+    localStorage.removeItem('jarvis_apps_db_v6');
+    speakJarvis("Database dikembalikan ke pengaturan awal pabrik.");
+    setTimeout(() => { location.reload(); }, 1500); 
+  }
+}
+
+// 2. Ekspor Database (Download sebagai file JSON)
+function exportDatabase() {
+  const dataStr = JSON.stringify(myApps, null, 2);
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = "jarvis_database_backup.json";
+  document.body.appendChild(a);
+  a.click();
+  
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  speakJarvis("Database aplikasi berhasil diekspor.");
+}
+
+// 3. Trigger & Impor Database (Upload file JSON)
+function triggerImport() {
+  document.getElementById('import-file').click();
+}
+
+function importDatabase(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const importedData = JSON.parse(e.target.result);
+      if (Array.isArray(importedData)) {
+        myApps = importedData;
+        localStorage.setItem('jarvis_apps_db_v6', JSON.stringify(myApps));
+        renderDatabase();
+        renderMyApps();
+        speakJarvis("Database aplikasi berhasil diimpor dan disinkronisasi.");
+        alert("Database berhasil diimpor!");
+      } else {
+        alert("Format file JSON tidak valid. Pastikan itu adalah file backup J.A.R.V.I.S!");
+      }
+    } catch (err) {
+      alert("Gagal membaca file JSON!");
+      console.error(err);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
 
 /* 2. AUDIO VISUALIZER & TEXT TO SPEECH */
 const synth = window.speechSynthesis;
@@ -810,6 +907,7 @@ function updateAllClocks() {
   const c3 = document.getElementById('center-clock-text'); if(c3) c3.innerText = timeStr;
   const c4 = document.getElementById('center-date-text'); if(c4) c4.innerText = fullDateStr;
   const c5 = document.getElementById('credit-clock-display'); if(c5) c5.innerText = `${fullDateStr} | ${timeStr} WIB`;
+  const footerConn = document.getElementById('footer-connection-status'); if(footerConn) footerConn.innerHTML = `<i class="fa-solid fa-circle fa-fade"></i> SERVER: CONNECTED | ${detectDevice().toUpperCase()}`;
 }
 setInterval(updateAllClocks, 1000); updateAllClocks();
 
@@ -922,25 +1020,83 @@ function triggerMapSearch(queryLocation) {
   }
 }
 
-/* 6. BOOTING SEQUENCE */
+/* 6. VISUAL FINGERPRINT SCAN & BOOTING SEQUENCE */
 let bootProgress = 0;
-const bootSteps = ["INITIALIZING CYBER CAT 3D CORE...", "CALIBRATING ORBITAL ELECTRON RINGS...", "BYPASSING SECURITY (NO PASSWORD MODE)...", "LOADING MOHAMAD HARTADI 28 APPS DATABASE...", "SYSTEM OPTIMAL. LAUNCHING CAT SUPERAGENT..."];
-const bootInterval = setInterval(() => {
-  bootProgress += 2;
-  const pb = document.getElementById('boot-progress'); const pt = document.getElementById('boot-percent'); const st = document.getElementById('boot-step-text');
-  if (pb) pb.style.width = bootProgress + "%";
-  if (pt) pt.innerText = bootProgress + "%";
-  if (st) st.innerText = bootSteps[Math.min(Math.floor((bootProgress / 100) * bootSteps.length), bootSteps.length - 1)];
-  if (bootProgress >= 100) {
-    clearInterval(bootInterval);
+let bootInterval;
+const bootSteps = ["INITIALIZING CYBER CAT 3D CORE...", "CALIBRATING ORBITAL ELECTRON RINGS...", "AUTHORIZING USER DATABASE...", "LOADING SYSTEM APPS...", "SYSTEM OPTIMAL. LAUNCHING CAT SUPERAGENT..."];
+
+function startFingerprintScan() {
+    const scanOverlay = document.getElementById('fingerprint-scan-overlay');
+    const scanStatus = document.getElementById('scan-status');
+    const bootScreen = document.getElementById('boot-screen');
+    const fgIcon = document.getElementById('fg-icon');
+    const fgScanline = document.getElementById('fg-scanline');
+    const fgFrame = document.getElementById('fg-frame');
+
+    scanOverlay.style.display = 'flex';
+
+    // Jeda sebentar sebelum simulasi mulai
     setTimeout(() => {
-      const bs = document.getElementById('boot-screen'); const mh = document.getElementById('main-hud');
-      if(bs) bs.style.display = 'none'; if(mh) mh.style.display = 'flex';
-      speakJarvis(`Meow! System online. Selamat datang Bapak Mohamad Hartadi. Peta Terang InaTEWS, Copilot AI Internet, & Radar Cuaca Windy siap dijalankan.`);
-      addLog("Boot sequence complete. Welcome Mohamad Hartadi (Adi).", "sys");
-    }, 500);
-  }
-}, 35);
+        fgIcon.classList.add('scanning');
+        fgScanline.style.display = 'block';
+        scanStatus.style.color = '#ff00aa';
+        scanStatus.innerText = "MEMINDAI WAJAH PENGGUNA...";
+        
+        setTimeout(() => {
+            const userType = detectDevice().toUpperCase();
+            scanStatus.style.color = '#00ffaa';
+            scanStatus.innerText = "ACCESS GRANTED: " + userType;
+            
+            // Ubah warna ikon jadi hijau saat berhasil
+            fgIcon.style.color = '#00ffaa';
+            fgIcon.style.filter = 'drop-shadow(0 0 20px #00ffaa)';
+            fgScanline.style.background = '#00ffaa';
+            fgScanline.style.boxShadow = '0 0 15px #00ffaa';
+            fgFrame.classList.add('granted');
+            
+            setTimeout(() => {
+                scanOverlay.style.display = 'none';
+                bootScreen.style.display = 'flex';
+                startBootSequence();
+            }, 1800);
+        }, 2500);
+    }, 1500);
+}
+
+// Fungsi untuk menentukan sapaan formal berdasarkan waktu
+function getFormalGreeting() {
+    const hour = new Date().getHours();
+    if (hour >= 4 && hour < 11) return "Assalamualaikum, selamat pagi";
+    if (hour >= 11 && hour < 15) return "Assalamualaikum, selamat siang";
+    if (hour >= 15 && hour < 18) return "Assalamualaikum, selamat sore";
+    return "Assalamualaikum, selamat malam";
+}
+
+function startBootSequence() {
+    bootInterval = setInterval(() => {
+      bootProgress += 2;
+      const pb = document.getElementById('boot-progress'); const pt = document.getElementById('boot-percent'); const st = document.getElementById('boot-step-text');
+      if (pb) pb.style.width = bootProgress + "%";
+      if (pt) pt.innerText = bootProgress + "%";
+      if (st) st.innerText = bootSteps[Math.min(Math.floor((bootProgress / 100) * bootSteps.length), bootSteps.length - 1)];
+      if (bootProgress >= 100) {
+        clearInterval(bootInterval);
+        setTimeout(() => {
+          const bs = document.getElementById('boot-screen'); const mh = document.getElementById('main-hud');
+          if(bs) bs.style.display = 'none'; if(mh) mh.style.display = 'flex';
+          const detectedUser = detectDevice();
+          const greeting = getFormalGreeting();
+          speakJarvis(`${greeting}. System online. Selamat datang ${detectedUser}. Peta Terang InaTEWS, Copilot AI Internet, & Radar Cuaca Windy siap dijalankan.`);
+          addLog(`Boot sequence complete. Welcome ${detectedUser}.`, "sys");
+        }, 500);
+      }
+    }, 35);
+}
+
+// Jalankan animasi Scan Wajah sesaat setelah halaman dirender
+window.onload = () => {
+    setTimeout(startFingerprintScan, 500);
+};
 
 /* 7. MODAL & SCREENSAVER ENGINE */
 function openModal(id) { document.getElementById(id).classList.add('active'); if(id==='credit-modal') renderQuotesList(); }
@@ -955,7 +1111,7 @@ function stopScreensaver() { document.getElementById('screensaver').style.displa
 function testScreensaver() { closeModal('ss-settings-modal'); startScreensaver(); }
 function updateScreensaverTimer() { idleLimit = parseInt(document.getElementById('ss-timer-select').value); resetIdleTimer(); }
 function saveScreensaverSettings() { updateScreensaverTimer(); closeModal('ss-settings-modal'); speakJarvis("Pengaturan screensaver disimpan."); }
-function triggerCreditVoice() { speakJarvis("Memperkenalkan Bapak Mohamad Hartadi. Civil Engineer dan Spesialis Prompt Engineering.", 'credit-mouth'); }
+function triggerCreditVoice() { speakJarvis("Memperkenalkan Bapak Mohamad Hartadi. Lead Architect & Developer untuk sistem ini.", 'credit-mouth'); }
 
 /* 8. ACTIVITY LOG & COPILOT NLP UNIVERSAL (WIKIPEDIA API FETCH) */
 function addLog(text, type = 'user') {
@@ -1008,7 +1164,7 @@ function sendCommand() {
       if (matchedApp) {
           addRichLog(getAppCardHtml(matchedApp)); speakJarvis(`Membuka panduan ${matchedApp.n}.`); setTimeout(() => { window.open(matchedApp.u, '_blank'); }, 1500);
       } else {
-          let appsListUI = `<div style="background:rgba(0,15,30,0.9); border:1px solid var(--amber); padding:12px; border-radius:8px; margin-top:4px; width:100%; box-shadow:0 0 10px rgba(245,158,11,0.1);"><span style="color:var(--amber); font-weight:bold; font-family:'Orbitron'; font-size:12px; border-bottom:1px dashed rgba(245,158,11,0.4); padding-bottom:6px; display:block; margin-bottom:8px;"><i class="fa-solid fa-grid-2" style="margin-right:4px;"></i> PANDUAN EKOSISTEM APLIKASI</span><p style="color:#bbb; font-size:10px; margin-bottom:8px;">Pilih aplikasi web karya Bapak Mohamad Hartadi di bawah ini untuk membukanya:</p><div style="display:flex; flex-direction:column; gap:6px; max-height:180px; overflow-y:auto; padding-right:6px;" class="hide-scrollbar">`;
+          let appsListUI = `<div style="background:rgba(0,15,30,0.9); border:1px solid var(--amber); padding:12px; border-radius:8px; margin-top:4px; width:100%; box-shadow:0 0 10px rgba(245,158,11,0.1);"><span style="color:var(--amber); font-weight:bold; font-family:'Orbitron'; font-size:12px; border-bottom:1px dashed rgba(245,158,11,0.4); padding-bottom:6px; display:block; margin-bottom:8px;"><i class="fa-solid fa-grid-2" style="margin-right:4px;"></i> PANDUAN EKOSISTEM APLIKASI</span><p style="color:#bbb; font-size:10px; margin-bottom:8px;">Pilih aplikasi web di bawah ini untuk membukanya:</p><div style="display:flex; flex-direction:column; gap:6px; max-height:180px; overflow-y:auto; padding-right:6px;" class="hide-scrollbar">`;
           myApps.forEach(app => { appsListUI += `<div style="background:rgba(0,30,60,0.5); padding:8px; border-radius:6px; border:1px solid rgba(0,255,255,0.15); cursor:pointer; display:flex; justify-content:space-between; align-items:center;" onclick="window.open('${app.u}', '_blank')" title="${app.d}"><div style="display:flex; align-items:center; gap:8px;"><div style="width:20px; text-align:center;"><i class="fa-solid ${app.i}" style="color:var(--cyan); font-size:14px;"></i></div><span style="color:#fff; font-size:11px; font-weight:bold;">${app.n}</span></div><span style="font-size:9px; background:rgba(0,255,255,0.15); color:var(--cyan); padding:3px 6px; border-radius:4px; font-weight:bold;">Buka &rarr;</span></div>`; });
           appsListUI += `</div></div>`; addRichLog(appsListUI); speakJarvis("Menampilkan panduan ekosistem aplikasi di layar log Anda.");
       }
@@ -1021,7 +1177,7 @@ function sendCommand() {
 
   // E. COPILOT AI UNIVERSAL ENGINE DENGAN DATA INTERNET (WIKIPEDIA API)
   if (qLow.includes('siapa kamu') || qLow.includes('pembuatmu') || qLow.includes('apa itu jarvis')) { 
-      tampilkanJawabanCopilot("Saya adalah J.A.R.V.I.S v6.0 Cyber Cat, asisten AI cerdas karya Bapak Mohamad Hartadi untuk mengelola ekosistem aplikasi web dan pemantauan."); 
+      tampilkanJawabanCopilot("Saya adalah J.A.R.V.I.S v6.0 Cyber Cat, asisten AI cerdas untuk mengelola ekosistem aplikasi web dan pemantauan."); 
   } 
   else {
       addLog(`[COPILOT AI]: Memindai database internet untuk "${query}"...`, 'warn');
