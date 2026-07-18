@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>J.A.R.V.I.S v6.3 — Cyber Cat Superagent HUD by Mohamad Hartadi</title>
+<title>J.A.R.V.I.S v6.1 — Cyber Cat Superagent HUD by Mohamad Hartadi</title>
 <meta name="description" content="JARVIS AI — Futuristic AI agent interface with Cyber Cat Avatar, Earth Map, Windy Radar, and Database. Built by Mohamad Hartadi.">
 <meta name="author" content="Mohamad Hartadi">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -50,7 +50,43 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
 .eye-right { transform-origin: 65px 50px; animation: blinkR 3.5s infinite; }
 .ear-left { transform-origin: 25px 35px; animation: earL 4s infinite ease-in-out; }
 .ear-right { transform-origin: 75px 35px; animation: earR 4.5s infinite ease-in-out; }
-@keyframes cat-mouth-talk { 0%, 100% { transform: scaleY(0.2) scaleX(0.9); } 25% { transform: scaleY(1.3) scaleX(1.1); } 50% { transform: scaleY(0.7) scaleX(0.95); } 75% { transform: scaleY(1.1) scaleX(1.05); } }
+
+/* Fixed Cat Mouth Animation */
+@keyframes cat-mouth-talk { 0%, 100% { transform: scaleY(0.3); } 25% { transform: scaleY(1); } 50% { transform: scaleY(0.5); } 75% { transform: scaleY(0.8); } }
+.cat-mouth { transform-origin: 50px 68px; }
+
+/* Floating Apps Animation */
+.float-app-btn {
+  position: absolute;
+  background: rgba(0, 30, 60, 0.75);
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 10px;
+  text-decoration: none;
+  white-space: nowrap;
+  pointer-events: auto;
+  box-shadow: 0 0 10px rgba(0,255,255,0.3);
+  display: flex; gap: 6px; align-items: center;
+  z-index: 8;
+  transition: all 0.2s;
+  opacity: 0;
+  animation: floatSideApp 6s linear forwards;
+}
+.float-app-btn:hover {
+  background: rgba(0, 255, 255, 0.2);
+  transform: scale(1.1);
+  box-shadow: var(--glow);
+  z-index: 20;
+}
+@keyframes floatSideApp {
+  0% { opacity: 0; transform: translate(0, 40px) scale(0.8); }
+  20% { opacity: 1; transform: translate(var(--dx), 0) scale(1); }
+  80% { opacity: 1; transform: translate(var(--dx2), -80px) scale(1); }
+  100% { opacity: 0; transform: translate(calc(var(--dx2) + 10px), -100px) scale(0.8); }
+}
 
 /* Color Shift */
 @keyframes color-shift {
@@ -260,7 +296,7 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
         <g class="eye-right"><ellipse cx="65" cy="50" rx="5" ry="7" fill="#020617"/><circle cx="63" cy="48" r="2" fill="#ffffff"/><path d="M 58 45 Q 65 40 72 45" fill="none" stroke="#020617" stroke-width="1.5" stroke-linecap="round"/></g>
         <ellipse cx="25" cy="62" rx="7" ry="4" fill="#f472b6" opacity="0.7"/><ellipse cx="75" cy="62" rx="7" ry="4" fill="#f472b6" opacity="0.7"/>
         <polygon points="47,60 53,60 50,64" fill="#f472b6"/>
-        <path d="M 38 65 Q 44 72 50 66 Q 56 72 62 65" fill="none" stroke="#020617" stroke-width="2" stroke-linecap="round" id="boot-mouth"/>
+        <g class="cat-mouth" id="boot-mouth"><path d="M 38 65 Q 44 72 50 66 Q 56 72 62 65" fill="none" stroke="#020617" stroke-width="2" stroke-linecap="round"/></g>
     </svg>
   </div>
   <div class="boot-title orbitron text-glow">J.A.R.V.I.S CYBER CAT</div>
@@ -286,7 +322,7 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
               <g class="eye-right"><ellipse cx="65" cy="50" rx="5" ry="7" fill="#020617"/><circle cx="63" cy="48" r="2" fill="#ffffff"/><path d="M 58 45 Q 65 40 72 45" fill="none" stroke="#020617" stroke-width="1.5" stroke-linecap="round"/></g>
               <ellipse cx="25" cy="62" rx="7" ry="4" fill="#f472b6" opacity="0.7"/><ellipse cx="75" cy="62" rx="7" ry="4" fill="#f472b6" opacity="0.7"/>
               <polygon points="47,60 53,60 50,64" fill="#f472b6"/>
-              <path d="M 38 65 Q 44 72 50 66 Q 56 72 62 65" fill="none" stroke="#020617" stroke-width="2" stroke-linecap="round" id="ss-mouth"/>
+              <g class="cat-mouth" id="ss-mouth"><path d="M 38 65 Q 44 72 50 66 Q 56 72 62 65" fill="none" stroke="#020617" stroke-width="2" stroke-linecap="round"/></g>
           </svg>
         </div>
       </div>
@@ -368,6 +404,9 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
       <div class="center-stage" id="stage-cat">
         <div id="earth-3d-bg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; border-radius: 10px; overflow: hidden; pointer-events: auto;"></div>
         
+        <!-- FLOATING APPS CONTAINER -->
+        <div id="floating-apps-container" style="position:absolute; inset:0; pointer-events:none; z-index:5; overflow:hidden;"></div>
+
         <div class="center-clock-wrap" onclick="openModal('ss-settings-modal')" style="z-index: 15;">
           <div class="center-time orbitron" id="center-clock-text">00:00:00</div>
           <div class="center-day orbitron" id="center-date-text">SENIN, 01 JAN 2026</div>
@@ -392,7 +431,7 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
               <g class="eye-right"><ellipse cx="65" cy="50" rx="5" ry="7" fill="#020617"/><circle cx="63" cy="48" r="2" fill="#ffffff"/><path d="M 58 45 Q 65 40 72 45" fill="none" stroke="#020617" stroke-width="1.5" stroke-linecap="round"/></g>
               <ellipse cx="25" cy="62" rx="7" ry="4" fill="#f472b6" opacity="0.7"/><ellipse cx="75" cy="62" rx="7" ry="4" fill="#f472b6" opacity="0.7"/>
               <polygon points="47,60 53,60 50,64" fill="#f472b6"/>
-              <path d="M 38 65 Q 44 72 50 66 Q 56 72 62 65" fill="none" stroke="#020617" stroke-width="2" stroke-linecap="round" id="hud-mouth"/>
+              <g class="cat-mouth" id="hud-mouth"><path d="M 38 65 Q 44 72 50 66 Q 56 72 62 65" fill="none" stroke="#020617" stroke-width="2" stroke-linecap="round"/></g>
           </svg>
         </div>
 
@@ -516,7 +555,7 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
             <g class="eye-right"><ellipse cx="65" cy="50" rx="5" ry="7" fill="#020617"/><circle cx="63" cy="48" r="2" fill="#ffffff"/><path d="M 58 45 Q 65 40 72 45" fill="none" stroke="#020617" stroke-width="1.5" stroke-linecap="round"/></g>
             <ellipse cx="25" cy="62" rx="7" ry="4" fill="#f472b6" opacity="0.7"/><ellipse cx="75" cy="62" rx="7" ry="4" fill="#f472b6" opacity="0.7"/>
             <polygon points="47,60 53,60 50,64" fill="#f472b6"/>
-            <path d="M 38 65 Q 44 72 50 66 Q 56 72 62 65" fill="none" stroke="#020617" stroke-width="2" stroke-linecap="round" id="credit-mouth"/>
+            <g class="cat-mouth" id="credit-mouth"><path d="M 38 65 Q 44 72 50 66 Q 56 72 62 65" fill="none" stroke="#020617" stroke-width="2" stroke-linecap="round"/></g>
         </svg>
       </div>
       <div class="quote-box" id="credit-quote-box" onclick="readCurrentQuote()">"Teknologi sejati bukan hanya tentang kecerdasan buatan, melainkan memberi manfaat tak terbatas bagi kemanusiaan."</div>
@@ -1362,9 +1401,47 @@ function initThreeEarth() {
     resizeObserver.observe(container);
 }
 
-// Inisialisasi 3D Earth ketika halaman telah siap
+/* 10. FLOATING APPS ANIMATION */
+function startFloatingApps() {
+    const container = document.getElementById('floating-apps-container');
+    if(!container || !myApps || myApps.length === 0) return;
+
+    setInterval(() => {
+        if(document.getElementById('stage-cat').style.display === 'none') return; // Tampil hanya di mode kucing
+
+        const app = myApps[Math.floor(Math.random() * myApps.length)];
+        const btn = document.createElement('a');
+        btn.href = app.u;
+        btn.target = '_blank';
+        btn.className = 'float-app-btn';
+        btn.innerHTML = `<i class="fa-solid ${app.i}"></i> ${app.n}`;
+
+        // Sisi Kiri (5% - 25%) atau Kanan (70% - 90%)
+        const isLeft = Math.random() > 0.5;
+        const posX = isLeft ? (Math.random() * 20 + 5) : (Math.random() * 20 + 70);
+        const startY = 60 + Math.random() * 25; // 60% sampai 85% dari atas
+
+        btn.style.left = posX + '%';
+        btn.style.top = startY + '%';
+
+        // Menambahkan properti css untuk gerakan drift
+        const dx = (Math.random() - 0.5) * 30 + 'px';
+        const dx2 = (Math.random() - 0.5) * 50 + 'px';
+        btn.style.setProperty('--dx', dx);
+        btn.style.setProperty('--dx2', dx2);
+
+        container.appendChild(btn);
+
+        setTimeout(() => {
+            if(btn.parentNode === container) container.removeChild(btn);
+        }, 6000);
+    }, 1200);
+}
+
+// Inisialisasi 3D Earth dan Floating Apps ketika halaman telah siap
 window.addEventListener('load', () => {
     setTimeout(initThreeEarth, 1200);
+    setTimeout(startFloatingApps, 2000);
 });
 </script>
 </body>
