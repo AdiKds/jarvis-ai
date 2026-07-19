@@ -185,6 +185,12 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
 #map { width: 100%; height: 100%; background: #000814; }
 .map-overlay-header { position: absolute; top: 10px; left: 10px; z-index: 1000; background: rgba(0, 15, 30, 0.9); border: 1px solid var(--cyan); padding: 6px 12px; border-radius: 6px; font-family: 'Orbitron'; font-size: 11px; color: #00ffaa; box-shadow: 0 0 10px rgba(0,255,255,0.3); pointer-events: none; }
 
+/* Map Search Bar Integration */
+.map-search-bar { position: absolute; top: 50px; left: 10px; z-index: 1000; display: flex; gap: 6px; background: rgba(0, 10, 20, 0.85); border: 1px solid var(--cyan); padding: 4px; border-radius: 6px; box-shadow: var(--glow); }
+.map-search-input { background: transparent; border: none; color: #fff; padding: 6px 10px; outline: none; font-size: 13px; font-family: 'Rajdhani'; width: 180px; }
+.map-search-btn { background: rgba(0, 255, 255, 0.2); border: 1px solid var(--cyan); color: var(--cyan); padding: 4px 10px; border-radius: 4px; cursor: pointer; font-family: 'Orbitron'; font-size: 11px; transition: 0.2s; }
+.map-search-btn:hover { background: var(--cyan); color: #000; }
+
 /* Leaflet Customizations */
 .leaflet-control-layers { background: rgba(0,20,40,0.9) !important; color: #00ffff !important; border: 1px solid #00ffff !important; font-family: 'Rajdhani', sans-serif !important; border-radius: 8px !important; }
 .leaflet-control-layers-toggle { filter: invert(1) hue-rotate(180deg) brightness(200%); }
@@ -200,6 +206,7 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
 .log-entry { display: flex; gap: 8px; line-height: 1.4; border-bottom: 1px solid rgba(0, 255, 255, 0.05); padding-bottom: 6px; }
 .log-time { color: rgba(0, 255, 255, 0.5); font-weight: bold; }
 .log-text { color: #d0f0ff; flex: 1; word-break: break-word; }
+.log-text a { color: var(--cyan); text-decoration: underline; font-weight: bold; }
 .log-text.sys { color: #00ffaa; }
 
 /* FOOTER CREDIT BAR */
@@ -339,7 +346,7 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
   <header class="header-bar">
     <div class="header-title orbitron text-glow" data-tip="Just A Rather Very Intelligent System - Cyber Cat Edition">
       <i class="fa-solid fa-cat fa-bounce" style="--fa-animation-duration: 3s; color: var(--pink);"></i>
-      J.A.R.V.I.S <span style="font-size: 11px; color: rgba(0,255,255,0.6); font-family: 'Rajdhani';">v6.0 PRO CAT</span>
+      J.A.R.V.I.S <span style="font-size: 11px; color: rgba(0,255,255,0.6); font-family: 'Rajdhani';">v6.1 PRO CAT</span>
     </div>
     <div class="header-center">
       <div class="header-clock-pill orbitron" id="top-center-clock" data-tip="Waktu Realtime Server Indonesia Barat (WIB)">MEMUAT WAKTU...</div>
@@ -438,17 +445,22 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
         <div class="visualizer-box" id="audio-vis">
           <div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div>
         </div>
-        <div class="main-quote-box" id="hud-quote-box" onclick="readCurrentQuote()">"Teknologi sejati bukan hanya tentang algoritma, melainkan manfaat bagi kemanusiaan."</div>
+        <div class="main-quote-box" id="hud-quote-box" onclick="readCurrentQuote()">"Teknologi sejati bukan hanya tentang algoritma, melainkan manfaat bagi kemainan."</div>
       </div>
 
       <div id="earth-map-container">
         <div class="map-overlay-header"><i class="fa-solid fa-satellite-dish animate-pulse"></i> INATEWS EARTH MAP RADAR V2.2</div>
+        <!-- Local Interface Map Search Integration -->
+        <div class="map-search-bar">
+          <input type="text" id="map-search-input" class="map-search-input" placeholder="Cari koordinat lokasi..." onkeypress="if(event.key==='Enter') executeMapSearch()">
+          <button class="map-search-btn" onclick="executeMapSearch()"><i class="fa-solid fa-magnifying-glass"></i> CARI</button>
+        </div>
         <div id="map"></div>
       </div>
 
       <div id="windy-map-container">
         <div class="map-overlay-header" style="color: #ff00aa; border-color: #ff00aa;"><i class="fa-solid fa-cloud-showers-heavy animate-pulse"></i> WINDY WEATHER RADAR</div>
-        <iframe width="100%" height="100%" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&metricTemp=default&metricWind=default&zoom=5&overlay=wind&product=ecmwf&level=surface&lat=-2.0&lon=118" frameborder="0"></iframe>
+        <iframe id="windy-iframe" width="100%" height="100%" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&metricTemp=default&metricWind=default&zoom=5&overlay=wind&product=ecmwf&level=surface&lat=-2.0&lon=118" frameborder="0"></iframe>
       </div>
 
       <div class="command-box">
@@ -986,7 +998,7 @@ function updateAllClocks() {
 }
 setInterval(updateAllClocks, 1000); updateAllClocks();
 
-/* 5. MULTI-LAYER GOOGLE EARTH / INATEWS SEISMIC MAP ENGINE */
+/* 5. MULTI-LAYER GOOGLE EARTH / INATEWS SEISMIC MAP ENGINE WITH COORDINATE SYNC */
 let leafMap = null;
 let currentMapMarker = null;
 
@@ -1060,7 +1072,6 @@ function toggleCenterMode(mode) {
     catStage.style.display = 'flex';
     btnCat.style.background = 'rgba(0,255,255,0.3)';
     label.innerText = "3D ATOMIC CORE & CYBER CAT";
-    // Memicu tampil kembali Cyber Cat jika sebelumnya ditutup (hide)
     document.getElementById('cyber-cat-wrap').style.display = 'block';
     document.getElementById('audio-vis').style.display = 'flex';
     speakJarvis("Meow! Kembali ke tampilan Cyber Cat 3D Core.");
@@ -1077,24 +1088,54 @@ const locationCoords = {
   "bali": { lat: -8.4095, lng: 115.1889, name: "BALI", info: "Stasiun Peringatan Dini Gempa Laut Selatan." }
 };
 
+/* Synchronized Map and Radar Search Trigger */
 function triggerMapSearch(queryLocation) {
-  toggleCenterMode('map');
   let found = false;
+  let targetLat = -2.0;
+  let targetLng = 118.0;
+  let targetName = "";
+  let targetInfo = "";
+
   for (let key in locationCoords) {
     if (queryLocation.includes(key)) {
       const loc = locationCoords[key];
-      leafMap.flyTo([loc.lat, loc.lng], 11, { duration: 2.5 });
-      setTimeout(() => { addInaTewsMarker(loc.lat, loc.lng, loc.name, loc.info); }, 2000);
-      speakJarvis(`Menampilkan peta untuk wilayah ${loc.name}.`);
-      addLog(`[MAP RADAR]: Mengunci koordinat ${loc.name}...`, 'sys');
-      found = true; break;
+      targetLat = loc.lat;
+      targetLng = loc.lng;
+      targetName = loc.name;
+      targetInfo = loc.info;
+      found = true; 
+      break;
     }
   }
+
   if (!found) {
-    const randomLat = -2.0 + (Math.random() * -6.0); const randomLng = 108.0 + (Math.random() * 15.0);
-    leafMap.flyTo([randomLat, randomLng], 8, { duration: 2 });
-    setTimeout(() => { addInaTewsMarker(randomLat, randomLng, "ZONA EKSPLORASI SEISMIK", `Hasil pemindaian: "${queryLocation}". Status: AMAN.`); }, 1800);
-    speakJarvis(`Memetakan lokasi untuk ${queryLocation}.`);
+    targetLat = -2.0 + (Math.random() * -6.0); 
+    targetLng = 108.0 + (Math.random() * 15.0);
+    targetName = "ZONA EKSPLORASI SEISMIK";
+    targetInfo = `Hasil pemindaian otomatis untuk kata kunci: "${queryLocation}". Status: AMAN.`;
+  }
+
+  // 1. Sinkronisasi & Pemetaan pada Earth Map (Leaflet)
+  toggleCenterMode('map');
+  leafMap.flyTo([targetLat, targetLng], 11, { duration: 2.5 });
+  setTimeout(() => { addInaTewsMarker(targetLat, targetLng, targetName, targetInfo); }, 2000);
+
+  // 2. Sinkronisasi secara Realtime pada Iframe Radar Laut/Cuaca (Windy)
+  const windyIframe = document.getElementById('windy-iframe');
+  if (windyIframe) {
+    windyIframe.src = `https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&metricTemp=default&metricWind=default&zoom=8&overlay=wind&product=ecmwf&level=surface&lat=${targetLat}&lon=${targetLng}`;
+  }
+
+  speakJarvis(`Menampilkan visualisasi data spasial wilayah ${targetName} yang terintegrasi pada Earth Map dan Radar Laut.`);
+  addLog(`[MAP & RADAR SYNC]: Mengunci titik koordinat ${targetName} [${targetLat.toFixed(4)}, ${targetLng.toFixed(4)}]`, 'sys');
+}
+
+/* Local Map Interface Trigger Search function */
+function executeMapSearch() {
+  const input = document.getElementById('map-search-input');
+  const query = input.value.trim().toLowerCase();
+  if (query) {
+    triggerMapSearch(query);
   }
 }
 
@@ -1203,7 +1244,10 @@ function addRichLog(htmlStr) {
 function tampilkanJawabanCopilot(jawaban) {
   const aiBoxHtml = `<div style="background:rgba(0,40,60,0.85); border:1px solid #00ffaa; padding:10px 12px; border-radius:8px; margin-top:4px; box-shadow:0 0 10px rgba(0,255,170,0.2);"><div style="color:#00ffaa; font-family:'Orbitron'; font-size:11px; font-weight:bold; border-bottom:1px solid rgba(0,255,170,0.3); padding-bottom:4px; margin-bottom:6px;"><i class="fa-solid fa-robot" style="margin-right:6px;"></i> COPILOT AI UNIVERSAL</div><div style="color:#fff; font-size:12px; font-family:'Rajdhani'; line-height:1.4;">${jawaban}</div></div>`;
   addRichLog(aiBoxHtml); 
-  const bicara = jawaban.length > 200 ? jawaban.substring(0, 200) + "..." : jawaban;
+  
+  // Membersihkan tag HTML agar pembacaan teks TTS murni dan jernih
+  const plainText = jawaban.replace(/<[^>]*>/g, '');
+  const bicara = plainText.length > 200 ? plainText.substring(0, 200) + "..." : plainText;
   speakJarvis(bicara);
 }
 
@@ -1217,7 +1261,7 @@ function sendCommand() {
   const input = document.getElementById('cmd-input'); const query = input.value.trim(); if (!query) return;
   addLog(`Command: "${query}"`, 'user'); input.value = ''; const qLow = query.toLowerCase();
 
-  // A. PETA BUMI / LOKASI
+  // A. PETA BUMI / LOKASI DENGAN SINKRONISASI
   if (qLow.includes('cari lokasi') || qLow.includes('lokasi') || qLow.includes('peta') || qLow.includes('earth') || qLow.includes('map')) {
     triggerMapSearch(qLow); return;
   }
@@ -1248,9 +1292,9 @@ function sendCommand() {
   if (qLow.includes('info') || qLow.includes('programmer')) { openModal('credit-modal'); triggerCreditVoice(); return; }
   if (qLow.includes('waktu') || qLow.includes('jam')) { const nowStr = new Date().toLocaleTimeString('id-ID'); speakJarvis(`Waktu saat ini adalah pukul ${nowStr} WIB.`); return; }
 
-  // E. COPILOT AI UNIVERSAL ENGINE DENGAN DATA INTERNET (WIKIPEDIA API)
+  // E. COPILOT AI UNIVERSAL ENGINE DENGAN DATA INTERNET (WIKIPEDIA API & SOURCE LINKS)
   if (qLow.includes('siapa kamu') || qLow.includes('pembuatmu') || qLow.includes('apa itu jarvis')) { 
-      tampilkanJawabanCopilot("Saya adalah J.A.R.V.I.S v6.0 Cyber Cat, asisten AI cerdas untuk mengelola ekosistem aplikasi web dan pemantauan."); 
+      tampilkanJawabanCopilot("Saya adalah J.A.R.V.I.S v6.1 Cyber Cat, asisten AI cerdas untuk mengelola ekosistem aplikasi web dan pemantauan data."); 
   } 
   else {
       addLog(`[COPILOT AI]: Memindai database internet untuk "${query}"...`, 'warn');
@@ -1263,13 +1307,17 @@ function sendCommand() {
                 const pages = data.query.pages;
                 const pageId = Object.keys(pages)[0];
                 const extract = pages[pageId].extract;
-                tampilkanJawabanCopilot(`Berdasarkan data dari Internet: ${extract}`);
+                const title = pages[pageId].title;
+                const srcLink = `https://id.wikipedia.org/?curid=${pageId}`;
+                
+                // Menyertakan link sumber asli yang dapat diklik ke dalam respons chatbot detail
+                tampilkanJawabanCopilot(`Berdasarkan rangkuman data resmi dari Internet mengenai <b>${title}</b>: ${extract}<br><br><i class="fa-solid fa-globe" style="color:var(--cyan); margin-right:4px;"></i> Sumber data: <a href="${srcLink}" target="_blank" style="color:var(--cyan); text-decoration:underline;">id.wikipedia.org/wiki/${encodeURIComponent(title)}</a>`);
             } else {
-                tampilkanJawabanCopilot(`Copilot AI tidak menemukan data yang relevan tentang "${query}" di internet. Cobalah gunakan kata kunci lain.`);
+                tampilkanJawabanCopilot(`Copilot AI tidak menemukan data yang relevan tentang "${query}" di internet. Hubungkan API eksternal tambahan atau ganti kata kunci.`);
             }
         })
         .catch(err => {
-            tampilkanJawabanCopilot(`Koneksi internet bermasalah. Tidak dapat mengambil data dari database eksternal.`);
+            tampilkanJawabanCopilot(`Koneksi internet bermasalah atau API Wikipedia menolak permintaan. Tidak dapat mengambil data eksternal.`);
         });
   }
 }
@@ -1298,7 +1346,6 @@ function initThreeEarth() {
     const container = document.getElementById('earth-3d-bg');
     if(!container) return;
     const scene = new THREE.Scene();
-    // Background dibuat luar angkasa gelap agar kontras dengan UI
     scene.background = new THREE.Color(0x000206);
     
     const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
@@ -1407,7 +1454,7 @@ function startFloatingApps() {
     if(!container || !myApps || myApps.length === 0) return;
 
     setInterval(() => {
-        if(document.getElementById('stage-cat').style.display === 'none') return; // Tampil hanya di mode kucing
+        if(document.getElementById('stage-cat').style.display === 'none') return;
 
         const app = myApps[Math.floor(Math.random() * myApps.length)];
         const btn = document.createElement('a');
@@ -1416,15 +1463,13 @@ function startFloatingApps() {
         btn.className = 'float-app-btn';
         btn.innerHTML = `<i class="fa-solid ${app.i}"></i> ${app.n}`;
 
-        // Sisi Kiri (5% - 25%) atau Kanan (70% - 90%)
         const isLeft = Math.random() > 0.5;
         const posX = isLeft ? (Math.random() * 20 + 5) : (Math.random() * 20 + 70);
-        const startY = 60 + Math.random() * 25; // 60% sampai 85% dari atas
+        const startY = 60 + Math.random() * 25;
 
         btn.style.left = posX + '%';
         btn.style.top = startY + '%';
 
-        // Menambahkan properti css untuk gerakan drift
         const dx = (Math.random() - 0.5) * 30 + 'px';
         const dx2 = (Math.random() - 0.5) * 50 + 'px';
         btn.style.setProperty('--dx', dx);
@@ -1438,7 +1483,6 @@ function startFloatingApps() {
     }, 1200);
 }
 
-// Inisialisasi 3D Earth dan Floating Apps ketika halaman telah siap
 window.addEventListener('load', () => {
     setTimeout(initThreeEarth, 1200);
     setTimeout(startFloatingApps, 2000);
