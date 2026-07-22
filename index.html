@@ -145,8 +145,8 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
 
 /* GRID RESPOSIF */
 .hud-grid { display: grid; grid-template-columns: 1fr; gap: 12px; flex: 1; }
-@media (min-width: 900px) { .hud-grid { grid-template-columns: 290px 1fr 320px; } }
-@media (min-width: 1200px) { .hud-grid { grid-template-columns: 320px 1fr 360px; } }
+@media (min-width: 900px) { .hud-grid { grid-template-columns: 290px 1fr 340px; } }
+@media (min-width: 1200px) { .hud-grid { grid-template-columns: 320px 1fr 380px; } }
 
 .panel { background: rgba(0, 15, 30, 0.55); border: var(--border); border-radius: 10px; padding: 14px; position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 10px; backdrop-filter: blur(8px); }
 .panel::before { content: ''; position: absolute; top: 0; left: 0; width: 30px; height: 2px; background: var(--cyan); }
@@ -185,28 +185,23 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
 #map { width: 100%; height: 100%; background: #000814; }
 .map-overlay-header { position: absolute; top: 10px; left: 10px; z-index: 1000; background: rgba(0, 15, 30, 0.9); border: 1px solid var(--cyan); padding: 6px 12px; border-radius: 6px; font-family: 'Orbitron'; font-size: 11px; color: #00ffaa; box-shadow: 0 0 10px rgba(0,255,255,0.3); pointer-events: none; }
 
-/* Map Search Bar Integration */
-.map-search-bar { position: absolute; top: 50px; left: 10px; z-index: 1000; display: flex; gap: 6px; background: rgba(0, 10, 20, 0.85); border: 1px solid var(--cyan); padding: 4px; border-radius: 6px; box-shadow: var(--glow); }
-.map-search-input { background: transparent; border: none; color: #fff; padding: 6px 10px; outline: none; font-size: 13px; font-family: 'Rajdhani'; width: 180px; }
-.map-search-btn { background: rgba(0, 255, 255, 0.2); border: 1px solid var(--cyan); color: var(--cyan); padding: 4px 10px; border-radius: 4px; cursor: pointer; font-family: 'Orbitron'; font-size: 11px; transition: 0.2s; }
-.map-search-btn:hover { background: var(--cyan); color: #000; }
-
 /* Leaflet Customizations */
 .leaflet-control-layers { background: rgba(0,20,40,0.9) !important; color: #00ffff !important; border: 1px solid #00ffff !important; font-family: 'Rajdhani', sans-serif !important; border-radius: 8px !important; }
 .leaflet-control-layers-toggle { filter: invert(1) hue-rotate(180deg) brightness(200%); }
 
 /* COMMAND INPUT */
-.command-box { display: flex; gap: 8px; width: 100%; margin-top: auto; }
-.cmd-input { flex: 1; background: rgba(0, 10, 20, 0.8); border: var(--border); color: var(--cyan); padding: 12px 16px; border-radius: 8px; font-size: 15px; outline: none; transition: 0.3s; }
+.command-box { display: flex; gap: 6px; width: 100%; margin-top: auto; flex-wrap: wrap; align-items: center; }
+.cmd-input { flex: 1; min-width: 140px; background: rgba(0, 10, 20, 0.85); border: var(--border); color: var(--cyan); padding: 10px 14px; border-radius: 8px; font-size: 14px; outline: none; transition: 0.3s; }
 .cmd-input:focus { border-color: #fff; box-shadow: var(--glow); }
-.mic-btn { width: 45px; height: 45px; border-radius: 8px; border: var(--border); background: rgba(0, 255, 255, 0.1); color: var(--cyan); font-size: 18px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.mic-btn { width: 42px; height: 42px; border-radius: 8px; border: var(--border); background: rgba(0, 255, 255, 0.1); color: var(--cyan); font-size: 16px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.mic-btn:hover { background: rgba(0, 255, 255, 0.3); box-shadow: var(--glow); transform: scale(1.05); }
+.mic-btn.listening { background: rgba(255, 0, 127, 0.4); border-color: var(--pink); color: #fff; animation: pulse 1s infinite; }
 
 /* RIGHT PANEL: ACTIVITY LOG */
-.log-container { flex: 1; background: rgba(0, 5, 12, 0.6); border: 1px solid rgba(0, 255, 255, 0.15); border-radius: 6px; padding: 10px; overflow-x: hidden; overflow-y: auto; max-height: 350px; display: flex; flex-direction: column; gap: 8px; font-size: 12px; }
+.log-container { flex: 1; background: rgba(0, 5, 12, 0.6); border: 1px solid rgba(0, 255, 255, 0.15); border-radius: 6px; padding: 10px; overflow-x: hidden; overflow-y: auto; max-height: 380px; display: flex; flex-direction: column; gap: 8px; font-size: 12px; }
 .log-entry { display: flex; gap: 8px; line-height: 1.4; border-bottom: 1px solid rgba(0, 255, 255, 0.05); padding-bottom: 6px; }
 .log-time { color: rgba(0, 255, 255, 0.5); font-weight: bold; }
 .log-text { color: #d0f0ff; flex: 1; word-break: break-word; }
-.log-text a { color: var(--cyan); text-decoration: underline; font-weight: bold; }
 .log-text.sys { color: #00ffaa; }
 
 /* FOOTER CREDIT BAR */
@@ -419,14 +414,13 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
           <div class="center-day orbitron" id="center-date-text">SENIN, 01 JAN 2026</div>
         </div>
         
-        <div class="radar-ring r1"></div><div class="radar-ring r2"></div>
         <div class="atom-orbit-container">
           <div class="orbit-ring-3d ring-1"><div class="electron"></div></div>
           <div class="orbit-ring-3d ring-2"><div class="electron"></div></div>
           <div class="orbit-ring-3d ring-3"><div class="electron amber"></div></div>
         </div>
         
-        <div class="cat-avatar-wrap" id="cyber-cat-wrap" onclick="speakJarvis('Meow! Halo, saya J.A.R.V.I.S Cyber Cat. Ketik cari lokasi semarang pada command untuk membuka Peta Earth InaTEWS, atau ketik radar cuaca untuk Peta Windy!')">
+        <div class="cat-avatar-wrap" id="cyber-cat-wrap" onclick="speakJarvis('Meow! Halo, saya J.A.R.V.I.S Cyber Cat. Ketik my aplikasi untuk melihat aplikasi Anda, atau tanya info apapun di internet!')">
           <button class="btn-close-cat" onclick="event.stopPropagation(); document.getElementById('cyber-cat-wrap').style.display='none'; document.getElementById('audio-vis').style.display='none'; speakJarvis('Meow! Kucing Cyber Disembunyikan.');">&times;</button>
           <svg viewBox="0 0 100 100" style="width:100%; height:100%;" xmlns="http://www.w3.org/2000/svg">
               <g class="ear-left"><polygon points="25,45 10,10 45,30" fill="#f8fafc" stroke="#06b6d4" stroke-width="2"/><polygon points="25,38 16,18 38,30" fill="#f472b6"/></g>
@@ -445,27 +439,25 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
         <div class="visualizer-box" id="audio-vis">
           <div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div>
         </div>
-        <div class="main-quote-box" id="hud-quote-box" onclick="readCurrentQuote()">"Teknologi sejati bukan hanya tentang algoritma, melainkan manfaat bagi kemainan."</div>
+        <div class="main-quote-box" id="hud-quote-box" onclick="readCurrentQuote()">"Teknologi sejati bukan hanya tentang algoritma, melainkan manfaat bagi kemanusiaan."</div>
       </div>
 
       <div id="earth-map-container">
         <div class="map-overlay-header"><i class="fa-solid fa-satellite-dish animate-pulse"></i> INATEWS EARTH MAP RADAR V2.2</div>
-        <!-- Local Interface Map Search Integration -->
-        <div class="map-search-bar">
-          <input type="text" id="map-search-input" class="map-search-input" placeholder="Cari koordinat lokasi..." onkeypress="if(event.key==='Enter') executeMapSearch()">
-          <button class="map-search-btn" onclick="executeMapSearch()"><i class="fa-solid fa-magnifying-glass"></i> CARI</button>
-        </div>
         <div id="map"></div>
       </div>
 
       <div id="windy-map-container">
         <div class="map-overlay-header" style="color: #ff00aa; border-color: #ff00aa;"><i class="fa-solid fa-cloud-showers-heavy animate-pulse"></i> WINDY WEATHER RADAR</div>
-        <iframe id="windy-iframe" width="100%" height="100%" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&metricTemp=default&metricWind=default&zoom=5&overlay=wind&product=ecmwf&level=surface&lat=-2.0&lon=118" frameborder="0"></iframe>
+        <iframe width="100%" height="100%" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&metricTemp=default&metricWind=default&zoom=5&overlay=wind&product=ecmwf&level=surface&lat=-2.0&lon=118" frameborder="0"></iframe>
       </div>
 
+      <!-- COMMAND INPUT DENGAN TOMBOL KIRIM DAN TTS VOICE SWITCHER -->
       <div class="command-box">
-        <input type="text" class="cmd-input" id="cmd-input" placeholder="Ketik: 'cari lokasi jakarta', 'radar cuaca', atau tanya Copilot AI..." onkeypress="if(event.key==='Enter') sendCommand()">
-        <button class="mic-btn" id="mic-btn" onclick="toggleVoice()"><i class="fa-solid fa-microphone"></i></button>
+        <input type="text" class="cmd-input" id="cmd-input" placeholder="Ketik: 'my aplikasi', 'cari lokasi jakarta', atau tanya Copilot AI..." onkeypress="if(event.key==='Enter') sendCommand()">
+        <button class="mic-btn" id="send-btn" onclick="sendCommand()" title="Kirim Perintah"><i class="fa-solid fa-paper-plane"></i></button>
+        <button class="mic-btn" id="mic-btn" onclick="toggleVoice()" title="Mikrofon Voice Command"><i class="fa-solid fa-microphone"></i></button>
+        <button class="btn-hud" id="tts-btn" onclick="toggleTtsVoice()" style="height:42px; font-size:11px; padding:0 12px; border-color:var(--cyan);" title="Merotasi Gaya Suara Pembaca TTS"><i class="fa-solid fa-headphones"></i> 🎧SUARA</button>
       </div>
     </div>
 
@@ -473,7 +465,7 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
       <div class="panel-title"><span><i class="fa-solid fa-list-check"></i> TERMINAL / COPILOT AI</span> <span class="mono">LIVE</span></div>
       <div class="log-container mono hide-scrollbar" id="log-box">
         <div class="log-entry"><span class="log-time">[SYS]</span> <span class="log-text sys">Cyber Cat 3D Core & InaTEWS Map initialized.</span></div>
-        <div class="log-entry"><span class="log-time">[AI]</span> <span class="log-text user">Copilot AI Knowledge Engine Online. Siap menjawab segala topik dari Internet.</span></div>
+        <div class="log-entry"><span class="log-time">[AI]</span> <span class="log-text user">Copilot AI Knowledge Engine Online. Ketik "my aplikasi" untuk membuka seluruh ekosistem aplikasi Anda.</span></div>
       </div>
       <div style="display: flex; gap: 6px; margin-top: 5px;">
         <button class="btn-hud" style="flex: 1; justify-content: center; font-size: 10px;" onclick="addLog('System diagnostics nominal. Copilot AI & InaTEWS Map ready.', 'sys')">DIAGNOSTICS</button>
@@ -487,7 +479,7 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
     <div class="dev-info">
       <i class="fa-solid fa-laptop-code dev-icon"></i>
       <div>
-        <div class="orbitron" style="font-size: 13px; font-weight: bold; color: #fff;">MOHAMAD HARTADI (ADI)</div>
+        <div class="orbitron" style="font-size: 13px; font-weight: bold; color: #fff;">MOHAMAD HARTADI & KELUARGA</div>
         <div style="font-size: 11px; color: rgba(0,255,255,0.6);">Civil Engineer | Software Engineer | Prompt Engineering Specialist</div>
       </div>
     </div>
@@ -553,7 +545,7 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
     <button class="modal-close" onclick="closeModal('credit-modal')">&times;</button>
     <div class="credit-content">
       <div class="orbitron" style="font-size: 12px; color: #00ffaa; letter-spacing: 3px;">LEAD ARCHITECT & DEVELOPER</div>
-      <h2 class="orbitron text-glow" style="font-size: 24px; color: #fff;">MOHAMAD HARTADI (ADI)</h2>
+      <h2 class="orbitron text-glow" style="font-size: 24px; color: #fff;">MOHAMAD HARTADI & KELUARGA</h2>
       <div class="orbitron mono" style="background: rgba(0,255,255,0.1); padding: 4px 16px; border-radius: 20px; font-size: 13px; border: var(--border);" id="credit-clock-display">SENIN, 01 JAN 2026 | 00:00:00</div>
       <div class="credit-robot-wrap" onclick="triggerCreditVoice()">
         <div class="orbit-ring-3d ring-1" style="width:100%; height:100%;"><div class="electron"></div></div>
@@ -621,7 +613,7 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
   <div class="modal-box" style="max-width: 850px;">
     <button class="modal-close" onclick="closeModal('help-modal')">&times;</button>
     <h2 class="orbitron text-glow" style="font-size: 18px; margin-bottom: 5px;"><i class="fa-solid fa-circle-question"></i> HELP SYSTEM & FITUR METRIK J.A.R.V.I.S</h2>
-    <p style="font-size: 13px; color: rgba(0,255,255,0.6); margin-bottom: 15px;">Panduan lengkap spesifikasi antarmuka Cyber Cat Superagent HUD v6.0 karya Mohamad Hartadi:</p>
+    <p style="font-size: 13px; color: rgba(0,255,255,0.6); margin-bottom: 15px;">Panduan lengkap spesifikasi antarmuka Cyber Cat Superagent HUD v6.1 karya Mohamad Hartadi & Keluarga:</p>
     
     <div style="overflow-x:auto;">
       <table class="help-table">
@@ -630,29 +622,24 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
         </thead>
         <tbody>
           <tr>
-            <td class="orbitron" style="color:#00ffaa;">Peta Bumi Multi-Layer</td>
-            <td>Menampilkan Peta Satelit, Street (Terang), Topografi 3D, dan Gelap ala InaTEWS v2.2.</td>
-            <td>Ketik "cari lokasi jakarta" di command, atau klik tombol "EARTH MAP". Ubah layer di pojok kanan atas peta.</td>
+            <td class="orbitron" style="color:#00ffaa;">Command "my aplikasi"</td>
+            <td>Menampilkan seluruh aplikasi yang tersimpan dalam sistem langsung di panel kanan.</td>
+            <td>Ketik "my aplikasi" pada kolom command lalu tekan tombol kirim.</td>
           </tr>
           <tr>
-            <td class="orbitron" style="color:#ff00aa;">Radar Cuaca Windy</td>
-            <td>Menampilkan Radar Cuaca interaktif realtime menggunakan layanan Windy.com.</td>
-            <td>Ketik "radar cuaca" atau klik tombol "RADAR CUACA" berwarna pink di panel tengah atas.</td>
+            <td class="orbitron" style="color:#00ffff;">Tombol TTS Suara 🎧SUARA</td>
+            <td>Merotasi gaya suara pembaca otomatis (suara Pria / Wanita) pada browser.</td>
+            <td>Klik tombol 🎧SUARA di samping kolom command input untuk mengganti profil suara.</td>
           </tr>
           <tr>
-            <td class="orbitron" style="color:#0088ff;">Copilot AI Universal</td>
-            <td>Mampu menjawab SEGALA HAL dengan mencari dan mengekstrak data dari internet / Wikipedia.</td>
-            <td>Tanyakan apa saja di command prompt (Misal: "apa itu kecerdasan buatan"), AI akan merespons langsung.</td>
+            <td class="orbitron" style="color:#ff00aa;">Copilot AI Universal</td>
+            <td>Menjawab pertanyaan umum dengan link sumber ke Wikipedia, Google, dan Google AI.</td>
+            <td>Ketik pertanyaan apa saja di command box, sistem akan memproses data dan memberikan tautan referensi.</td>
           </tr>
           <tr>
-            <td class="orbitron" style="color:#00ffff;">28+ Apps Database</td>
-            <td>Manajemen seluruh portofolio aplikasi web terintegrasi dengan fitur sinkronisasi live.</td>
-            <td>Klik tombol DATABASE di atas untuk menambah atau mengedit URL link aplikasi.</td>
-          </tr>
-          <tr>
-            <td class="orbitron" style="color:#f59e0b;">Top Center Clock</td>
-            <td>Menampilkan Hari dan Waktu realtime WIB dengan animasi bercahaya di tengah header.</td>
-            <td>Berganti warna otomatis setiap beberapa detik, menjadi fokus navigasi utama.</td>
+            <td class="orbitron" style="color:#0088ff;">Peta Bumi Multi-Layer</td>
+            <td>Menampilkan Peta Satelit, Street, Topografi 3D, dan Gelap InaTEWS.</td>
+            <td>Ketik "cari lokasi jakarta" di command, atau klik tombol "EARTH MAP".</td>
           </tr>
         </tbody>
       </table>
@@ -718,6 +705,7 @@ if (localStorage.getItem('jarvis_apps_db_v6')) {
 
 function renderMyApps() {
   const container = document.getElementById('apps-grid-container');
+  if (!container) return;
   container.innerHTML = '';
   myApps.forEach((app, idx) => {
     const card = document.createElement('div');
@@ -739,6 +727,7 @@ function renderMyApps() {
 
 function renderDatabase() {
   const tbody = document.getElementById('db-table-body');
+  if(!tbody) return;
   tbody.innerHTML = '';
   myApps.forEach((app, idx) => {
     const tr = document.createElement('tr');
@@ -809,9 +798,6 @@ function resetDbForm() {
 }
 renderMyApps();
 
-// --- FITUR TAMBAHAN DATABASE J.A.R.V.I.S ---
-
-// 1. Reset Database ke Pengaturan Awal (Default 33 Apps)
 function resetDatabase() {
   if (confirm("Apakah Anda yakin ingin mereset database ke kondisi semula? Semua aplikasi yang baru saja ditambahkan atau diedit akan hilang.")) {
     localStorage.removeItem('jarvis_apps_db_v6');
@@ -820,7 +806,6 @@ function resetDatabase() {
   }
 }
 
-// 2. Ekspor Database (Download sebagai file JSON)
 function exportDatabase() {
   const dataStr = JSON.stringify(myApps, null, 2);
   const blob = new Blob([dataStr], { type: "application/json" });
@@ -837,7 +822,6 @@ function exportDatabase() {
   speakJarvis("Database aplikasi berhasil diekspor.");
 }
 
-// 3. Trigger & Impor Database (Upload file JSON)
 function triggerImport() {
   document.getElementById('import-file').click();
 }
@@ -858,26 +842,58 @@ function importDatabase(event) {
         speakJarvis("Database aplikasi berhasil diimpor dan disinkronisasi.");
         alert("Database berhasil diimpor!");
       } else {
-        alert("Format file JSON tidak valid. Pastikan itu adalah file backup J.A.R.V.I.S!");
+        alert("Format file JSON tidak valid!");
       }
     } catch (err) {
       alert("Gagal membaca file JSON!");
-      console.error(err);
     }
   };
   reader.readAsText(file);
   event.target.value = '';
 }
 
-/* 2. AUDIO VISUALIZER & TEXT TO SPEECH */
+/* 2. AUDIO VISUALIZER & TEXT TO SPEECH (TTS VOICE SWITCHER ENHANCED) */
 const synth = window.speechSynthesis;
 let jarvisVoice = null;
+let availableVoices = [];
+let currentVoiceIndex = 0;
+
 function loadVoices() {
-  const voices = synth.getVoices();
-  jarvisVoice = voices.find(v => (v.name.includes('Indonesian') || v.name.includes('ID') || v.name.includes('Female') || v.name.includes('Daniel'))) || voices[0];
+  if (!synth) return;
+  availableVoices = synth.getVoices();
+  if (availableVoices.length > 0) {
+    // Utamakan suara Bahasa Indonesia atau suara berkualitas bawaan
+    const prefVoice = availableVoices.find(v => v.lang.includes('id') || v.lang.includes('ID') || v.name.includes('Indonesian'));
+    jarvisVoice = prefVoice || availableVoices[currentVoiceIndex];
+  }
 }
 if (synth.onvoiceschanged !== undefined) { synth.onvoiceschanged = loadVoices; }
 loadVoices();
+
+/* FITUR BARU: ROTA/GANTI GAYA SUARA TTS */
+function toggleTtsVoice() {
+  if (!synth) return;
+  availableVoices = synth.getVoices();
+  if (availableVoices.length === 0) {
+    alert("Fitur TTS sedang dimuat atau tidak tersedia pada browser Anda.");
+    return;
+  }
+  
+  currentVoiceIndex = (currentVoiceIndex + 1) % availableVoices.length;
+  jarvisVoice = availableVoices[currentVoiceIndex];
+  
+  const voiceName = jarvisVoice.name || `Voice #${currentVoiceIndex + 1}`;
+  const isFemale = /female|woman|zira|susan|gadget|google indonesia|id-id/i.test(voiceName);
+  const genderLabel = isFemale ? "Wanita" : "Pria";
+  
+  const ttsBtn = document.getElementById('tts-btn');
+  if (ttsBtn) {
+    ttsBtn.innerHTML = `<i class="fa-solid fa-headphones"></i> 🎧SUARA (${genderLabel})`;
+  }
+  
+  speakJarvis(`Gaya suara diganti ke ${genderLabel}. Profil suara: ${voiceName.substring(0, 20)}.`);
+  addLog(`[TTS]: Gaya suara berganti ke ${voiceName} [${genderLabel}]`, 'sys');
+}
 
 function toggleVisualizer(active) {
   const bars = document.querySelectorAll('.vis-bar');
@@ -898,7 +914,7 @@ function speakJarvis(text, mouthElementId = 'hud-mouth') {
   const utterance = new SpeechSynthesisUtterance(text);
   if (jarvisVoice) utterance.voice = jarvisVoice;
   utterance.rate = 0.96;
-  utterance.pitch = 1.1; 
+  utterance.pitch = 1.05; 
   
   const mouth = document.getElementById(mouthElementId);
   utterance.onstart = () => { 
@@ -975,7 +991,7 @@ function deleteQuote(idx) {
 }
 renderQuotesList();
 
-/* 4. CLOCK & DATE HANDLER (SAFE DOM) */
+/* 4. CLOCK & DATE HANDLER */
 const daysID = ['MINGGU', 'SENIN', 'SELASA', 'RABU', 'KAMIS', 'JUMAT', 'SABTU'];
 const monthsID = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGU', 'SEP', 'OKT', 'NOV', 'DES'];
 
@@ -998,26 +1014,22 @@ function updateAllClocks() {
 }
 setInterval(updateAllClocks, 1000); updateAllClocks();
 
-/* 5. MULTI-LAYER GOOGLE EARTH / INATEWS SEISMIC MAP ENGINE WITH COORDINATE SYNC */
+/* 5. MULTI-LAYER GOOGLE EARTH / INATEWS SEISMIC MAP ENGINE */
 let leafMap = null;
 let currentMapMarker = null;
 
 function initLeafletMap() {
   if (leafMap) return;
   
-  // Peta Jalan Terang (OpenStreetMap Default)
   const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' });
-  // Peta Satelit Citra
   const satelit = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: '© Esri' });
-  // Peta Topografi 3D
   const topo3d = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { maxZoom: 17, attribution: '© OpenTopoMap' });
-  // Peta Gelap Radar InaTEWS
   const darkMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 19, attribution: '© CartoDB' });
 
   leafMap = L.map('map', { 
     zoomControl: true, 
     attributionControl: false,
-    layers: [osm] // Default Terang Street
+    layers: [osm]
   }).setView([-6.9825, 110.4323], 6);
   
   const baseMaps = {
@@ -1088,54 +1100,24 @@ const locationCoords = {
   "bali": { lat: -8.4095, lng: 115.1889, name: "BALI", info: "Stasiun Peringatan Dini Gempa Laut Selatan." }
 };
 
-/* Synchronized Map and Radar Search Trigger */
 function triggerMapSearch(queryLocation) {
+  toggleCenterMode('map');
   let found = false;
-  let targetLat = -2.0;
-  let targetLng = 118.0;
-  let targetName = "";
-  let targetInfo = "";
-
   for (let key in locationCoords) {
     if (queryLocation.includes(key)) {
       const loc = locationCoords[key];
-      targetLat = loc.lat;
-      targetLng = loc.lng;
-      targetName = loc.name;
-      targetInfo = loc.info;
-      found = true; 
-      break;
+      leafMap.flyTo([loc.lat, loc.lng], 11, { duration: 2.5 });
+      setTimeout(() => { addInaTewsMarker(loc.lat, loc.lng, loc.name, loc.info); }, 2000);
+      speakJarvis(`Menampilkan peta untuk wilayah ${loc.name}.`);
+      addLog(`[MAP RADAR]: Mengunci koordinat ${loc.name}...`, 'sys');
+      found = true; break;
     }
   }
-
   if (!found) {
-    targetLat = -2.0 + (Math.random() * -6.0); 
-    targetLng = 108.0 + (Math.random() * 15.0);
-    targetName = "ZONA EKSPLORASI SEISMIK";
-    targetInfo = `Hasil pemindaian otomatis untuk kata kunci: "${queryLocation}". Status: AMAN.`;
-  }
-
-  // 1. Sinkronisasi & Pemetaan pada Earth Map (Leaflet)
-  toggleCenterMode('map');
-  leafMap.flyTo([targetLat, targetLng], 11, { duration: 2.5 });
-  setTimeout(() => { addInaTewsMarker(targetLat, targetLng, targetName, targetInfo); }, 2000);
-
-  // 2. Sinkronisasi secara Realtime pada Iframe Radar Laut/Cuaca (Windy)
-  const windyIframe = document.getElementById('windy-iframe');
-  if (windyIframe) {
-    windyIframe.src = `https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&metricTemp=default&metricWind=default&zoom=8&overlay=wind&product=ecmwf&level=surface&lat=${targetLat}&lon=${targetLng}`;
-  }
-
-  speakJarvis(`Menampilkan visualisasi data spasial wilayah ${targetName} yang terintegrasi pada Earth Map dan Radar Laut.`);
-  addLog(`[MAP & RADAR SYNC]: Mengunci titik koordinat ${targetName} [${targetLat.toFixed(4)}, ${targetLng.toFixed(4)}]`, 'sys');
-}
-
-/* Local Map Interface Trigger Search function */
-function executeMapSearch() {
-  const input = document.getElementById('map-search-input');
-  const query = input.value.trim().toLowerCase();
-  if (query) {
-    triggerMapSearch(query);
+    const randomLat = -2.0 + (Math.random() * -6.0); const randomLng = 108.0 + (Math.random() * 15.0);
+    leafMap.flyTo([randomLat, randomLng], 8, { duration: 2 });
+    setTimeout(() => { addInaTewsMarker(randomLat, randomLng, "ZONA EKSPLORASI SEISMIK", `Hasil pemindaian: "${queryLocation}". Status: AMAN.`); }, 1800);
+    speakJarvis(`Memetakan lokasi untuk ${queryLocation}.`);
   }
 }
 
@@ -1226,9 +1208,9 @@ function stopScreensaver() { document.getElementById('screensaver').style.displa
 function testScreensaver() { closeModal('ss-settings-modal'); startScreensaver(); }
 function updateScreensaverTimer() { idleLimit = parseInt(document.getElementById('ss-timer-select').value); resetIdleTimer(); }
 function saveScreensaverSettings() { updateScreensaverTimer(); closeModal('ss-settings-modal'); speakJarvis("Pengaturan screensaver disimpan."); }
-function triggerCreditVoice() { speakJarvis("Memperkenalkan Bapak Mohamad Hartadi. Lead Architect & Developer untuk sistem ini.", 'credit-mouth'); }
+function triggerCreditVoice() { speakJarvis("Memperkenalkan Bapak Mohamad Hartadi dan keluarga. Lead Architect & Developer untuk sistem ini.", 'credit-mouth'); }
 
-/* 8. ACTIVITY LOG & COPILOT NLP UNIVERSAL (WIKIPEDIA API FETCH) */
+/* 8. ACTIVITY LOG & COPILOT NLP UNIVERSAL (FEATURING "MY APLIKASI" & GOOGLE/WIKI LINKS) */
 function addLog(text, type = 'user') {
   const logBox = document.getElementById('log-box'); const now = new Date().toLocaleTimeString('id-ID', { hour12: false });
   const entry = document.createElement('div'); entry.className = 'log-entry'; entry.innerHTML = `<span class="log-time">[${now}]</span> <span class="log-text ${type}">${text}</span>`;
@@ -1241,27 +1223,47 @@ function addRichLog(htmlStr) {
   logBox.prepend(entry);
 }
 
-function tampilkanJawabanCopilot(jawaban) {
-  const aiBoxHtml = `<div style="background:rgba(0,40,60,0.85); border:1px solid #00ffaa; padding:10px 12px; border-radius:8px; margin-top:4px; box-shadow:0 0 10px rgba(0,255,170,0.2);"><div style="color:#00ffaa; font-family:'Orbitron'; font-size:11px; font-weight:bold; border-bottom:1px solid rgba(0,255,170,0.3); padding-bottom:4px; margin-bottom:6px;"><i class="fa-solid fa-robot" style="margin-right:6px;"></i> COPILOT AI UNIVERSAL</div><div style="color:#fff; font-size:12px; font-family:'Rajdhani'; line-height:1.4;">${jawaban}</div></div>`;
-  addRichLog(aiBoxHtml); 
-  
-  // Membersihkan tag HTML agar pembacaan teks TTS murni dan jernih
-  const plainText = jawaban.replace(/<[^>]*>/g, '');
-  const bicara = plainText.length > 200 ? plainText.substring(0, 200) + "..." : plainText;
-  speakJarvis(bicara);
-}
+/* FITUR BARU: BILA DITANYAKAN DILUAR TOPIK, MEMBERIKAN INFORMASI BESERTA LINK WIKIPEDIA, GOOGLE & GOOGLE AI */
+function tampilkanJawabanCopilot(query, jawaban, wikiUrl = null) {
+  const encQuery = encodeURIComponent(query);
+  const googleSearchUrl = `https://www.google.com/search?q=${encQuery}`;
+  const wikipediaSearchUrl = wikiUrl || `https://id.wikipedia.org/wiki/Special:Search?search=${encQuery}`;
+  const googleAiUrl = `https://gemini.google.com/`;
 
-function getAppCardHtml(app) {
-    return `<div style="background:rgba(0,30,50,0.8); border:1px solid var(--cyan); padding:12px; border-radius:8px; margin-top:4px; width:100%; box-shadow:0 0 10px rgba(0,255,255,0.1);"><span style="color:var(--cyan); font-weight:bold; font-family:'Orbitron'; font-size:13px; border-bottom:1px solid rgba(0,255,255,0.3); padding-bottom:6px; display:block; margin-bottom:8px;"><i class="fa-solid ${app.i}" style="color:var(--amber); margin-right:4px;"></i> ${app.n.toUpperCase()}</span><p style="color:#d0f0ff; font-size:11px; margin-bottom:10px; line-height:1.4;">${app.d}</p><a href="${app.u}" target="_blank" style="display:inline-block; background:linear-gradient(90deg, rgba(0,255,255,0.2), rgba(0,100,255,0.2)); border:1px solid var(--cyan); color:#fff; padding:6px 12px; border-radius:4px; text-decoration:none; font-size:10px; font-weight:bold;"><i class="fa-solid fa-arrow-up-right-from-square"></i> BUKA SEKARANG</a></div>`;
+  const aiBoxHtml = `
+    <div style="background:rgba(0,30,50,0.9); border:1px solid #00ffaa; padding:12px; border-radius:8px; margin-top:6px; box-shadow:0 0 12px rgba(0,255,170,0.2);">
+      <div style="color:#00ffaa; font-family:'Orbitron'; font-size:11px; font-weight:bold; border-bottom:1px solid rgba(0,255,170,0.3); padding-bottom:6px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+        <span><i class="fa-solid fa-robot"></i> COPILOT AI — HASIL PENELUSURAN</span>
+        <span style="font-size:10px; color:var(--cyan);"><i class="fa-solid fa-globe"></i> INTERNET</span>
+      </div>
+      <div style="color:#fff; font-size:12px; font-family:'Rajdhani'; line-height:1.5; margin-bottom:10px;">
+        ${jawaban}
+      </div>
+      <div style="border-top:1px dashed rgba(0,255,255,0.2); padding-top:8px; display:flex; gap:6px; flex-wrap:wrap;">
+        <a href="${wikipediaSearchUrl}" target="_blank" style="background:rgba(255,255,255,0.1); border:1px solid #fff; color:#fff; padding:4px 8px; border-radius:4px; font-size:10px; text-decoration:none; font-family:'Orbitron'; display:inline-flex; align-items:center; gap:4px;"><i class="fa-brands fa-wikipedia-w"></i> Wikipedia</a>
+        <a href="${googleSearchUrl}" target="_blank" style="background:rgba(66,133,244,0.2); border:1px solid #4285f4; color:#8ab4f8; padding:4px 8px; border-radius:4px; font-size:10px; text-decoration:none; font-family:'Orbitron'; display:inline-flex; align-items:center; gap:4px;"><i class="fa-brands fa-google"></i> Google Search</a>
+        <a href="${googleAiUrl}" target="_blank" style="background:rgba(171,71,188,0.2); border:1px solid #ab47bc; color:#e1bee7; padding:4px 8px; border-radius:4px; font-size:10px; text-decoration:none; font-family:'Orbitron'; display:inline-flex; align-items:center; gap:4px;"><i class="fa-solid fa-wand-magic-sparkles"></i> Google AI (Gemini)</a>
+      </div>
+    </div>
+  `;
+  addRichLog(aiBoxHtml); 
+  const bicara = jawaban.length > 180 ? jawaban.substring(0, 180) + "..." : jawaban;
+  speakJarvis(bicara);
 }
 
 function quickAction(msg) { addLog(`Action executed: ${msg}`, 'user'); speakJarvis(msg); }
 
+/* EKSEKUSI PEMROSESAN PERINTAH COMMAND INPUT */
 function sendCommand() {
-  const input = document.getElementById('cmd-input'); const query = input.value.trim(); if (!query) return;
-  addLog(`Command: "${query}"`, 'user'); input.value = ''; const qLow = query.toLowerCase();
+  const input = document.getElementById('cmd-input'); 
+  const query = input.value.trim(); 
+  if (!query) return;
+  
+  addLog(`Command: "${query}"`, 'user'); 
+  input.value = ''; 
+  const qLow = query.toLowerCase();
 
-  // A. PETA BUMI / LOKASI DENGAN SINKRONISASI
+  // A. PETA BUMI / LOKASI
   if (qLow.includes('cari lokasi') || qLow.includes('lokasi') || qLow.includes('peta') || qLow.includes('earth') || qLow.includes('map')) {
     triggerMapSearch(qLow); return;
   }
@@ -1269,36 +1271,43 @@ function sendCommand() {
   if (qLow.includes('radar cuaca') || qLow.includes('cuaca windy') || qLow.includes('windy')) {
     toggleCenterMode('windy'); addLog(`[COMMAND]: Menampilkan Radar Cuaca Windy...`, 'sys'); return;
   }
-  // C. PANDUAN APLIKASI
-  if (qLow === 'perpustakaan' || qLow === 'library') { const app = { n: "Perpustakaan", u: "https://www.f15library.com/", i: "fa-book-open-reader", d: "F15 Library Digital" }; addRichLog(getAppCardHtml(app)); speakJarvis("Membuka panduan aplikasi."); setTimeout(() => { window.open(app.u, '_blank'); }, 1500); return; }
-  if (qLow === 'radio' || qLow === 'radio online') { const app = { n: "Radio Online", u: "https://famelack.com/radio/id", i: "fa-radio", d: "Streaming Radio ID" }; addRichLog(getAppCardHtml(app)); speakJarvis("Membuka panduan aplikasi."); setTimeout(() => { window.open(app.u, '_blank'); }, 1500); return; }
-  if (qLow === 'tv' || qLow === 'tv online') { const app = { n: "TV Online", u: "https://famelack.com/tv/id", i: "fa-tv", d: "Streaming TV Famelack" }; addRichLog(getAppCardHtml(app)); speakJarvis("Membuka panduan aplikasi."); setTimeout(() => { window.open(app.u, '_blank'); }, 1500); return; }
-  if (qLow === 'quran' || qLow === 'al quran') { const app = { n: "Al-Quran Karim", u: "https://adikds.github.io/Al-Quran-Karim/", i: "fa-book-quran", d: "Digital Quran" }; addRichLog(getAppCardHtml(app)); speakJarvis("Membuka panduan aplikasi."); setTimeout(() => { window.open(app.u, '_blank'); }, 1500); return; }
 
-  if (qLow.includes('buka') || qLow === 'aplikasi' || qLow === 'app' || qLow === 'my app' || qLow === 'help') {
-      let matchedApp = null; let querySubject = qLow.replace('buka', '').replace('aplikasi', '').trim();
-      if (querySubject.length > 2) { for (let app of myApps) { if (app.n.toLowerCase().includes(querySubject) || app.d.toLowerCase().includes(querySubject)) { matchedApp = app; break; } } }
-      if (matchedApp) {
-          addRichLog(getAppCardHtml(matchedApp)); speakJarvis(`Membuka panduan ${matchedApp.n}.`); setTimeout(() => { window.open(matchedApp.u, '_blank'); }, 1500);
-      } else {
-          let appsListUI = `<div style="background:rgba(0,15,30,0.9); border:1px solid var(--amber); padding:12px; border-radius:8px; margin-top:4px; width:100%; box-shadow:0 0 10px rgba(245,158,11,0.1);"><span style="color:var(--amber); font-weight:bold; font-family:'Orbitron'; font-size:12px; border-bottom:1px dashed rgba(245,158,11,0.4); padding-bottom:6px; display:block; margin-bottom:8px;"><i class="fa-solid fa-grid-2" style="margin-right:4px;"></i> PANDUAN EKOSISTEM APLIKASI</span><p style="color:#bbb; font-size:10px; margin-bottom:8px;">Pilih aplikasi web di bawah ini untuk membukanya:</p><div style="display:flex; flex-direction:column; gap:6px; max-height:180px; overflow-y:auto; padding-right:6px;" class="hide-scrollbar">`;
-          myApps.forEach(app => { appsListUI += `<div style="background:rgba(0,30,60,0.5); padding:8px; border-radius:6px; border:1px solid rgba(0,255,255,0.15); cursor:pointer; display:flex; justify-content:space-between; align-items:center;" onclick="window.open('${app.u}', '_blank')" title="${app.d}"><div style="display:flex; align-items:center; gap:8px;"><div style="width:20px; text-align:center;"><i class="fa-solid ${app.i}" style="color:var(--cyan); font-size:14px;"></i></div><span style="color:#fff; font-size:11px; font-weight:bold;">${app.n}</span></div><span style="font-size:9px; background:rgba(0,255,255,0.15); color:var(--cyan); padding:3px 6px; border-radius:4px; font-weight:bold;">Buka &rarr;</span></div>`; });
-          appsListUI += `</div></div>`; addRichLog(appsListUI); speakJarvis("Menampilkan panduan ekosistem aplikasi di layar log Anda.");
-      }
+  /* C. FITUR BARU: "my aplikasi" MENAMPILKAN SEMUA APLIKASI DI INTERFACE COMMAND KANAN */
+  if (qLow.includes('my aplikasi') || qLow === 'aplikasi' || qLow === 'my app' || qLow.includes('semua aplikasi') || qLow === 'apps') {
+      let allAppsHtml = `
+      <div style="background:rgba(0,20,40,0.95); border:1px solid var(--cyan); padding:12px; border-radius:8px; margin-top:6px; width:100%; box-shadow:0 0 15px rgba(0,255,255,0.2);">
+        <div style="color:var(--cyan); font-weight:bold; font-family:'Orbitron'; font-size:12px; border-bottom:1px solid rgba(0,255,255,0.3); padding-bottom:6px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+          <span><i class="fa-solid fa-grid-2" style="color:var(--amber);"></i> DAFTAR APLIKASI WEB (${myApps.length})</span>
+          <span style="font-size:10px; color:#00ffaa;">SINKRON</span>
+        </div>
+        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap:8px; max-height:280px; overflow-y:auto; padding-right:4px;" class="hide-scrollbar">
+      `;
+      myApps.forEach(app => {
+        allAppsHtml += `
+          <a href="${app.u}" target="_blank" style="background:rgba(0,40,80,0.6); border:1px solid rgba(0,255,255,0.2); border-radius:6px; padding:8px; text-decoration:none; color:#fff; display:flex; flex-direction:column; align-items:center; text-align:center; gap:4px; transition:0.2s;" onmouseover="this.style.borderColor='var(--cyan)'; this.style.background='rgba(0,255,255,0.2)';" onmouseout="this.style.borderColor='rgba(0,255,255,0.2)'; this.style.background='rgba(0,40,80,0.6)';">
+            <i class="fa-solid ${app.i}" style="color:var(--cyan); font-size:16px;"></i>
+            <span style="font-size:11px; font-weight:bold; font-family:'Orbitron'; word-break:break-word;">${app.n}</span>
+            <span style="font-size:9px; color:rgba(0,255,255,0.6); line-height:1.2;">${app.d}</span>
+          </a>
+        `;
+      });
+      allAppsHtml += `</div></div>`;
+      addRichLog(allAppsHtml);
+      speakJarvis(`Menampilkan seluruh ${myApps.length} aplikasi pada antarmuka command disamping kanan.`);
       return;
   }
 
-  // D. INFO / LAIN-LAIN
-  if (qLow.includes('info') || qLow.includes('programmer')) { openModal('credit-modal'); triggerCreditVoice(); return; }
+  // D. INFO / PROFIL
+  if (qLow.includes('info') || qLow.includes('programmer') || qLow.includes('pencipta')) { openModal('credit-modal'); triggerCreditVoice(); return; }
   if (qLow.includes('waktu') || qLow.includes('jam')) { const nowStr = new Date().toLocaleTimeString('id-ID'); speakJarvis(`Waktu saat ini adalah pukul ${nowStr} WIB.`); return; }
 
-  // E. COPILOT AI UNIVERSAL ENGINE DENGAN DATA INTERNET (WIKIPEDIA API & SOURCE LINKS)
+  // E. COPILOT AI UNIVERSAL (MENJAWAB PERTANYAAN LUAR TOPIK DENGAN GOOGLE, WIKI, DAN GOOGLE AI)
   if (qLow.includes('siapa kamu') || qLow.includes('pembuatmu') || qLow.includes('apa itu jarvis')) { 
-      tampilkanJawabanCopilot("Saya adalah J.A.R.V.I.S v6.1 Cyber Cat, asisten AI cerdas untuk mengelola ekosistem aplikasi web dan pemantauan data."); 
+      tampilkanJawabanCopilot(query, "Saya adalah J.A.R.V.I.S v6.1 Cyber Cat, asisten AI cerdas karya Mohamad Hartadi & Keluarga untuk mengelola ekosistem aplikasi web dan pemantauan infrastruktur."); 
   } 
   else {
-      addLog(`[COPILOT AI]: Memindai database internet untuk "${query}"...`, 'warn');
-      const searchUrl = `https://id.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exsentences=3&exintro=1&explaintext=1&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrlimit=1&origin=*`;
+      addLog(`[COPILOT AI]: Memindai database internet untuk "${query}"...`, 'sys');
+      const searchUrl = `https://id.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exsentences=4&exintro=1&explaintext=1&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrlimit=1&origin=*`;
       
       fetch(searchUrl)
         .then(response => response.json())
@@ -1307,17 +1316,15 @@ function sendCommand() {
                 const pages = data.query.pages;
                 const pageId = Object.keys(pages)[0];
                 const extract = pages[pageId].extract;
-                const title = pages[pageId].title;
-                const srcLink = `https://id.wikipedia.org/?curid=${pageId}`;
-                
-                // Menyertakan link sumber asli yang dapat diklik ke dalam respons chatbot detail
-                tampilkanJawabanCopilot(`Berdasarkan rangkuman data resmi dari Internet mengenai <b>${title}</b>: ${extract}<br><br><i class="fa-solid fa-globe" style="color:var(--cyan); margin-right:4px;"></i> Sumber data: <a href="${srcLink}" target="_blank" style="color:var(--cyan); text-decoration:underline;">id.wikipedia.org/wiki/${encodeURIComponent(title)}</a>`);
+                const pageTitle = pages[pageId].title;
+                const wikiPageUrl = `https://id.wikipedia.org/wiki/${encodeURIComponent(pageTitle)}`;
+                tampilkanJawabanCopilot(query, extract, wikiPageUrl);
             } else {
-                tampilkanJawabanCopilot(`Copilot AI tidak menemukan data yang relevan tentang "${query}" di internet. Hubungkan API eksternal tambahan atau ganti kata kunci.`);
+                tampilkanJawabanCopilot(query, `Informasi untuk "${query}" tidak ditemukan di rangkuman utama. Silakan jelajahi penelusuran lebih mendalam melalui tautan sumber di bawah ini.`);
             }
         })
         .catch(err => {
-            tampilkanJawabanCopilot(`Koneksi internet bermasalah atau API Wikipedia menolak permintaan. Tidak dapat mengambil data eksternal.`);
+            tampilkanJawabanCopilot(query, `Penelusuran siap dilakukan. Anda dapat mengakses informasi lengkap tentang "${query}" secara langsung melalui pilihan mesin pencari dan AI di bawah.`);
         });
   }
 }
@@ -1327,7 +1334,7 @@ function toggleVoice() {
   const micBtn = document.getElementById('mic-btn');
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) { alert("Voice Recognition tidak didukung di browser ini."); return; }
   const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition; const rec = new SpeechRec(); rec.lang = 'id-ID';
-  if (!recognizing) { rec.start(); recognizing = true; micBtn.classList.add('listening'); addLog("Mendengarkan perintah suara...", "warn"); } 
+  if (!recognizing) { rec.start(); recognizing = true; micBtn.classList.add('listening'); addLog("Mendengarkan perintah suara...", "sys"); } 
   else { rec.stop(); recognizing = false; micBtn.classList.remove('listening'); }
   rec.onresult = (e) => { document.getElementById('cmd-input').value = e.results[0][0].transcript; sendCommand(); };
   rec.onend = () => { recognizing = false; micBtn.classList.remove('listening'); };
@@ -1341,7 +1348,7 @@ setInterval(() => {
   if(ramVal) ramVal.innerText = ram + "%"; if(ramBar) ramBar.style.width = ram + "%";
 }, 3000);
 
-/* --- 9. 3D EARTH BACKGROUND (THREE.JS) --- */
+/* 9. 3D EARTH BACKGROUND (THREE.JS) */
 function initThreeEarth() {
     const container = document.getElementById('earth-3d-bg');
     if(!container) return;
