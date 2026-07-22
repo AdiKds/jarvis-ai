@@ -125,7 +125,7 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
 .boot-bar-fill { height: 100%; width: 0%; background: var(--cyan); box-shadow: 0 0 12px var(--cyan); transition: width 0.1s linear; }
 
 /* SCREENSAVER */
-#screensaver { position: fixed; inset: 0; background: rgba(0, 3, 10, 0.96); z-index: 400; display: none; flex-direction: column; align-items: center; justify-content: space-evenly; backdrop-filter: blur(12px); cursor: pointer; padding: 20px 10px; }
+#screensaver { position: fixed; inset: 0; background: rgba(0, 5, 12, 0.5); z-index: 400; display: none; flex-direction: column; align-items: center; justify-content: space-evenly; cursor: pointer; padding: 20px 10px; }
 .ss-time { font-size: clamp(40px, 8vw, 86px); font-weight: 900; letter-spacing: 4px; text-shadow: 0 0 35px var(--cyan); line-height: 1; margin-bottom: 10px; }
 .ss-date { font-size: clamp(14px, 2.5vw, 24px); color: #88ccff; letter-spacing: 6px; margin-bottom: 15px; }
 
@@ -307,8 +307,11 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
   <div class="orbitron" style="font-size: 14px;" id="boot-percent">0%</div>
 </div>
 
+<!-- SCREENSAVER DENGAN 3D EARTH BACKGROUND -->
 <div id="screensaver" onclick="stopScreensaver()">
-  <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; width:100%;">
+  <div id="screensaver-3d-bg" style="position: absolute; inset: 0; z-index: 1; pointer-events: none;"></div>
+  
+  <div style="position: relative; z-index: 5; flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; width:100%;">
       <div class="atom-orbit-container" style="position:relative; width:200px; height:200px; margin-top:20px;">
         <div class="orbit-ring-3d ring-1"><div class="electron"></div></div>
         <div class="orbit-ring-3d ring-2"><div class="electron"></div></div>
@@ -329,12 +332,12 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
         </div>
       </div>
   </div>
-  <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; width:100%;">
+  <div style="position: relative; z-index: 5; flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; width:100%;">
       <div class="ss-time orbitron" id="ss-clock">00:00:00</div>
       <div class="ss-date orbitron" id="ss-date">SENIN, 01 JAN 2026</div>
       <div class="main-quote-box" id="ss-quote-box" style="max-width: 600px; margin: 15px auto;">"Teknologi sejati adalah yang memberi manfaat bagi kemanusiaan."</div>
   </div>
-  <div class="ss-hint orbitron" style="margin-top:20px;">TAP OR CLICK ANYWHERE TO RESUME HUD</div>
+  <div class="ss-hint orbitron" style="position: relative; z-index: 5; margin-top:20px;">TAP OR CLICK ANYWHERE TO RESUME HUD</div>
 </div>
 
 <div id="main-hud">
@@ -452,12 +455,12 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
         <iframe width="100%" height="100%" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&metricTemp=default&metricWind=default&zoom=5&overlay=wind&product=ecmwf&level=surface&lat=-2.0&lon=118" frameborder="0"></iframe>
       </div>
 
-      <!-- COMMAND INPUT DENGAN TOMBOL KIRIM DAN TTS VOICE SWITCHER -->
+      <!-- COMMAND INPUT DENGAN TOMBOL KIRIM DAN TTS VOICE SWITCHER (UPDATED MODAL) -->
       <div class="command-box">
         <input type="text" class="cmd-input" id="cmd-input" placeholder="Ketik: 'my aplikasi', 'cari lokasi jakarta', atau tanya Copilot AI..." onkeypress="if(event.key==='Enter') sendCommand()">
         <button class="mic-btn" id="send-btn" onclick="sendCommand()" title="Kirim Perintah"><i class="fa-solid fa-paper-plane"></i></button>
         <button class="mic-btn" id="mic-btn" onclick="toggleVoice()" title="Mikrofon Voice Command"><i class="fa-solid fa-microphone"></i></button>
-        <button class="btn-hud" id="tts-btn" onclick="toggleTtsVoice()" style="height:42px; font-size:11px; padding:0 12px; border-color:var(--cyan);" title="Merotasi Gaya Suara Pembaca TTS"><i class="fa-solid fa-headphones"></i> 🎧SUARA</button>
+        <button class="btn-hud" id="tts-btn" onclick="openVoiceModal()" style="height:42px; font-size:11px; padding:0 12px; border-color:var(--cyan);" title="Pilih Gaya Suara Pembaca TTS"><i class="fa-solid fa-headphones"></i> 🎧SUARA</button>
       </div>
     </div>
 
@@ -490,6 +493,23 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
     </div>
   </footer>
 
+</div>
+
+<!-- ALL MODALS BELOW -->
+
+<!-- NEW VOICE SELECTION MODAL -->
+<div class="modal-overlay" id="voice-modal" onclick="closeModalOutside(event, 'voice-modal')">
+  <div class="modal-box" style="max-width: 500px;">
+    <button class="modal-close" onclick="closeModal('voice-modal')">&times;</button>
+    <h2 class="orbitron text-glow" style="font-size: 16px; margin-bottom: 15px;"><i class="fa-solid fa-headphones"></i> PILIH GAYA SUARA (TTS)</h2>
+    <p style="font-size: 12px; color: rgba(0,255,255,0.6); margin-bottom: 10px;">Pilih jenis suara asisten AI yang tersedia dari browser sistem Anda:</p>
+    <div style="background:rgba(0,10,20,0.8); border:1px solid var(--cyan); padding:12px; border-radius:8px; max-height:280px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;" class="hide-scrollbar" id="voice-list-container">
+      <!-- Voice options will be dynamically injected here -->
+    </div>
+    <div style="margin-top: 15px; text-align:right;">
+      <button class="btn-hud" onclick="closeModal('voice-modal')" style="background:rgba(0,255,255,0.2);"><i class="fa-solid fa-check"></i> TUTUP</button>
+    </div>
+  </div>
 </div>
 
 <div class="modal-overlay" id="apps-modal" onclick="closeModalOutside(event, 'apps-modal')">
@@ -628,8 +648,8 @@ body { background: var(--bg-obsidian); color: var(--cyan); overflow-x: hidden; m
           </tr>
           <tr>
             <td class="orbitron" style="color:#00ffff;">Tombol TTS Suara 🎧SUARA</td>
-            <td>Merotasi gaya suara pembaca otomatis (suara Pria / Wanita) pada browser.</td>
-            <td>Klik tombol 🎧SUARA di samping kolom command input untuk mengganti profil suara.</td>
+            <td>Membuka daftar opsi gaya suara pembaca otomatis pada browser Anda.</td>
+            <td>Klik tombol 🎧SUARA di samping kolom command input untuk memunculkan modal daftar gaya suara.</td>
           </tr>
           <tr>
             <td class="orbitron" style="color:#ff00aa;">Copilot AI Universal</td>
@@ -852,7 +872,7 @@ function importDatabase(event) {
   event.target.value = '';
 }
 
-/* 2. AUDIO VISUALIZER & TEXT TO SPEECH (TTS VOICE SWITCHER ENHANCED) */
+/* 2. AUDIO VISUALIZER & TEXT TO SPEECH (MODAL DAFTAR SUARA BARU) */
 const synth = window.speechSynthesis;
 let jarvisVoice = null;
 let availableVoices = [];
@@ -862,27 +882,69 @@ function loadVoices() {
   if (!synth) return;
   availableVoices = synth.getVoices();
   if (availableVoices.length > 0) {
-    // Utamakan suara Bahasa Indonesia atau suara berkualitas bawaan
     const prefVoice = availableVoices.find(v => v.lang.includes('id') || v.lang.includes('ID') || v.name.includes('Indonesian'));
     jarvisVoice = prefVoice || availableVoices[currentVoiceIndex];
+    if (prefVoice) {
+      currentVoiceIndex = availableVoices.indexOf(prefVoice);
+    }
   }
 }
 if (synth.onvoiceschanged !== undefined) { synth.onvoiceschanged = loadVoices; }
 loadVoices();
 
-/* FITUR BARU: ROTA/GANTI GAYA SUARA TTS */
-function toggleTtsVoice() {
-  if (!synth) return;
+/* FITUR BARU: BUKA MODAL PILIH GAYA SUARA */
+function openVoiceModal() {
+  if (!synth) { alert("Voice Synthesis tidak didukung di browser ini."); return; }
   availableVoices = synth.getVoices();
+  
   if (availableVoices.length === 0) {
-    alert("Fitur TTS sedang dimuat atau tidak tersedia pada browser Anda.");
+    alert("Fitur TTS sedang dimuat atau tidak tersedia pada browser Anda. Coba klik kembali beberapa saat lagi.");
     return;
   }
   
-  currentVoiceIndex = (currentVoiceIndex + 1) % availableVoices.length;
-  jarvisVoice = availableVoices[currentVoiceIndex];
+  const container = document.getElementById('voice-list-container');
+  container.innerHTML = '';
   
-  const voiceName = jarvisVoice.name || `Voice #${currentVoiceIndex + 1}`;
+  availableVoices.forEach((voice, index) => {
+    const isSelected = (jarvisVoice && jarvisVoice.name === voice.name) || (!jarvisVoice && index === currentVoiceIndex);
+    const isFemale = /female|woman|zira|susan|gadget|google indonesia|id-id/i.test(voice.name);
+    const genderLabel = isFemale ? "Wanita" : "Pria / Default";
+    
+    const btn = document.createElement('button');
+    btn.className = 'btn-hud';
+    btn.style.width = '100%';
+    btn.style.textAlign = 'left';
+    btn.style.marginBottom = '6px';
+    btn.style.display = 'flex';
+    btn.style.justifyContent = 'space-between';
+    btn.style.alignItems = 'center';
+    
+    if (isSelected) {
+      btn.style.background = 'rgba(0,255,170,0.3)';
+      btn.style.borderColor = '#00ffaa';
+      btn.innerHTML = `<span style="font-family:'Rajdhani'; font-size:13px; color:#fff;">${voice.name} (${voice.lang})</span> <span style="font-size:10px; color:#00ffaa; font-weight:bold;"><i class="fa-solid fa-check"></i> AKTIF (${genderLabel})</span>`;
+    } else {
+      btn.innerHTML = `<span style="font-family:'Rajdhani'; font-size:13px;">${voice.name} (${voice.lang})</span> <span style="font-size:10px; color:rgba(0,255,255,0.6);">${genderLabel}</span>`;
+    }
+    
+    btn.onclick = () => {
+      selectVoice(index);
+      closeModal('voice-modal');
+    };
+    
+    container.appendChild(btn);
+  });
+  
+  openModal('voice-modal');
+}
+
+/* EKSEKUSI PEMILIHAN SUARA DARI MODAL */
+function selectVoice(index) {
+  if (!availableVoices || availableVoices.length === 0) return;
+  currentVoiceIndex = index;
+  jarvisVoice = availableVoices[index];
+  
+  const voiceName = jarvisVoice.name;
   const isFemale = /female|woman|zira|susan|gadget|google indonesia|id-id/i.test(voiceName);
   const genderLabel = isFemale ? "Wanita" : "Pria";
   
@@ -891,7 +953,7 @@ function toggleTtsVoice() {
     ttsBtn.innerHTML = `<i class="fa-solid fa-headphones"></i> 🎧SUARA (${genderLabel})`;
   }
   
-  speakJarvis(`Gaya suara diganti ke ${genderLabel}. Profil suara: ${voiceName.substring(0, 20)}.`);
+  speakJarvis(`Gaya suara diganti ke ${voiceName}.`);
   addLog(`[TTS]: Gaya suara berganti ke ${voiceName} [${genderLabel}]`, 'sys');
 }
 
@@ -1223,7 +1285,6 @@ function addRichLog(htmlStr) {
   logBox.prepend(entry);
 }
 
-/* FITUR BARU: BILA DITANYAKAN DILUAR TOPIK, MEMBERIKAN INFORMASI BESERTA LINK WIKIPEDIA, GOOGLE & GOOGLE AI */
 function tampilkanJawabanCopilot(query, jawaban, wikiUrl = null) {
   const encQuery = encodeURIComponent(query);
   const googleSearchUrl = `https://www.google.com/search?q=${encQuery}`;
@@ -1272,7 +1333,7 @@ function sendCommand() {
     toggleCenterMode('windy'); addLog(`[COMMAND]: Menampilkan Radar Cuaca Windy...`, 'sys'); return;
   }
 
-  /* C. FITUR BARU: "my aplikasi" MENAMPILKAN SEMUA APLIKASI DI INTERFACE COMMAND KANAN */
+  // C. FITUR "my aplikasi" MENAMPILKAN SEMUA APLIKASI DI INTERFACE COMMAND KANAN
   if (qLow.includes('my aplikasi') || qLow === 'aplikasi' || qLow === 'my app' || qLow.includes('semua aplikasi') || qLow === 'apps') {
       let allAppsHtml = `
       <div style="background:rgba(0,20,40,0.95); border:1px solid var(--cyan); padding:12px; border-radius:8px; margin-top:6px; width:100%; box-shadow:0 0 15px rgba(0,255,255,0.2);">
@@ -1348,18 +1409,21 @@ setInterval(() => {
   if(ramVal) ramVal.innerText = ram + "%"; if(ramBar) ramBar.style.width = ram + "%";
 }, 3000);
 
-/* 9. 3D EARTH BACKGROUND (THREE.JS) */
-function initThreeEarth() {
-    const container = document.getElementById('earth-3d-bg');
+/* 9. 3D EARTH BACKGROUND (OPTIMIZED REUSABLE FUNCTION UNTUK HUD & SCREENSAVER) */
+function createEarthScene(containerId) {
+    const container = document.getElementById(containerId);
     if(!container) return;
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x000206);
     
-    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+    // Mencegah error pembagian dengan nol ketika container di-hide secara default
+    const aspect = container.clientWidth > 0 ? container.clientWidth / container.clientHeight : 1;
+    const camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000);
     camera.position.z = 10;
     
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(container.clientWidth, container.clientHeight);
+    // Default ukuran layar penuh jika masih dalam status display:none
+    renderer.setSize(container.clientWidth || window.innerWidth, container.clientHeight || window.innerHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     container.appendChild(renderer.domElement);
     
@@ -1437,16 +1501,21 @@ function initThreeEarth() {
     
     const animate = function () {
         requestAnimationFrame(animate);
-        globe.rotation.y += 0.0012;
-        cloudMesh.rotation.y += 0.0016;
-        starField.rotation.y += 0.0002;
-        controls.update();
-        renderer.render(scene, camera);
+        
+        // Optimasi: Hanya merender dan memakai CPU/GPU jika layarnya tidak tersembunyi
+        if (container.offsetParent !== null) {
+            globe.rotation.y += 0.0012;
+            cloudMesh.rotation.y += 0.0016;
+            starField.rotation.y += 0.0002;
+            controls.update();
+            renderer.render(scene, camera);
+        }
     };
     animate();
     
     const resizeObserver = new ResizeObserver(() => {
-        if(container.clientWidth > 0 && container.clientHeight > 0) {
+        // Melakukan penyesuaian rasio (aspect-ratio) secara otomatis saat layar menjadi terlihat atau di-resize
+        if(container.clientWidth > 0 && container.clientHeight > 0 && container.offsetParent !== null) {
             camera.aspect = container.clientWidth / container.clientHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(container.clientWidth, container.clientHeight);
@@ -1490,8 +1559,12 @@ function startFloatingApps() {
     }, 1200);
 }
 
+// Inisialisasi 3D Earth untuk HUD dan SCREENSAVER
 window.addEventListener('load', () => {
-    setTimeout(initThreeEarth, 1200);
+    setTimeout(() => {
+        createEarthScene('earth-3d-bg');
+        createEarthScene('screensaver-3d-bg');
+    }, 1200);
     setTimeout(startFloatingApps, 2000);
 });
 </script>
