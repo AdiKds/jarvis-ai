@@ -577,7 +577,7 @@ setInterval(updateDataStream,200);updateDataStream();
 let synth=speechSynthesis;
 function speak(t){if(!synth)return;const u=new SpeechSynthesisUtterance(t);u.rate=.9;u.pitch=.6;u.volume=.8;const vs=synth.getVoices(),m=vs.find(v=>v.name.includes('Female')||v.name.includes('Samantha')||v.name.includes('Google UK English Female'))||vs.find(v=>v.name.includes('Male')||v.name.includes('Daniel'));if(m)u.voice=m;synth.speak(u);const mouth=document.getElementById('robot-mouth');mouth.classList.add('talking');document.getElementById('core-status').textContent='SPEAKING';u.onend=()=>{mouth.classList.remove('talking');document.getElementById('core-status').textContent='ONLINE'}}
 let rec=null,ls=false;
-function initSpeech(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(SR){rec=new SR();rec.continuous=false;rec.interimResults=true;rec.lang='en-US';rec.onresult=e=>{const t=e.results[e.results.length-1][0].transcript;document.getElementById('chat-input').value=t;if(e.results[e.results.length-1].isFinal)sendMsgEnhanced()};rec.onend=()=>{ls=false;document.getElementById('mic-btn').classList.remove('mic-active')};rec.onerror=()=>{ls=false;document.getElementById('mic-btn').classList.remove('mic-active')}}}
+function initSpeech(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(SR){rec=new SR();rec.continuous=false;rec.interimResults=true;rec.lang='en-US';rec.onresult=e=>{const t=e.results[e.results.length-1][0].transcript;document.getElementById('chat-input').value=t;if(e.results[e.results.length-1].isFinal){document.getElementById('chat-input').value=e.results[e.results.length-1][0].transcript;sendMsgEnhanced()}};rec.onend=()=>{ls=false;document.getElementById('mic-btn').classList.remove('mic-active')};rec.onerror=()=>{ls=false;document.getElementById('mic-btn').classList.remove('mic-active')}}}
 function toggleVoice(){if(!rec){speak('Voice not available');return}if(ls){rec.stop();return}ls=true;document.getElementById('mic-btn').classList.add('mic-active');try{rec.start()}catch(e){ls=false;document.getElementById('mic-btn').classList.remove('mic-active')}}
 
 /* OFFLINE fallback responses */
@@ -602,7 +602,7 @@ if(!response){document.getElementById('core-status').textContent='PROCESS';await
 
 td.textContent=response;log.scrollTop=log.scrollHeight;speakEnhanced(response);document.getElementById('core-status').textContent='ONLINE'
 }
-function quickCmd(c){const map={time:'What time is it?',date:'What is todays date?',joke:'Tell me a joke',status:'System status'};document.getElementById('chat-input').value=map[c]||c;sendMsgEnhanced()}
+function quickCmd(c){const map={time:'What time is it?',date:'What is todays date?',joke:'Tell me a joke',status:'System status'};document.getElementById('chat-input').value=map[c]||c;setTimeout(sendMsgEnhanced,10)}
 
 function switchModule(mod){const t={weather:'Weather',time:'Time',calc:'Calculator',sys:'Diagnostics',health:'Health',space:'Space'},c={weather:'<div style="color:#0ff">Jakarta, ID</div><div>28C | Feels 31C</div><div>Humidity: 65%</div><div>Wind: 12km/h NW</div><div>UV: 7 High</div><div style="margin-top:4px;color:rgba(0,255,255,.5)">Partly cloudy</div>',time:'<div style="color:#0ff;font-size:16px" class="orbitron">'+new Date().toLocaleTimeString('en-GB')+'</div><div>GMT+7 Jakarta</div><div>'+new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})+'</div>',calc:'<input type="text" id="ci" placeholder="Expression..." onkeypress="if(event.key===\'Enter\'){try{document.getElementById(\'cr\').textContent=\'= \'+eval(this.value)}catch(e){document.getElementById(\'cr\').textContent=\'Error\'}}"><div class="orbitron" style="font-size:16px;margin-top:4px;color:#0ff" id="cr">= 0</div>',sys:'<div style="color:#0ff">Operational</div><div>Core: ACTIVE</div><div>Neural: 1.2B params</div><div>Memory: 62%/128GB</div><div>Storage: 45%/2TB</div><div>Security: SECURE</div>',health:'<div style="color:#0ff">Monitor</div><div>Heart: 72 BPM</div><div>O2: 98%</div><div>Temp: 36.5C</div><div>Steps: 8,432</div><div>Sleep: 7.2h</div>',space:'<div style="color:#0ff">Space</div><div>ISS: 408km</div><div>Velocity: 27,600km/h</div><div>Moon: Waxing</div><div>Solar: Low</div><div>Sats: 7,832</div>'};document.getElementById('module-title').textContent=t[mod]||'Module';document.getElementById('module-content').innerHTML=c[mod]||'N/A'}
 
@@ -627,42 +627,14 @@ async function wikiSearch(query){
   return{found:false}
 }
 
-/* ENHANCED OFFLINE with Wikipedia fallback */
+/* offlineRespondSmart - kept for backwards compat, now uses new search */
 async function offlineRespondSmart(msg){
-  const m=msg.toLowerCase();
-  let r=offlineRespond(msg);
-  /* If offline says "limited capabilities" → try Wikipedia + Google + Copilot */
-  if(r.includes('limited capabilities')||r.includes('For full AI responses')){
-    const w=await wikiSearch(msg);
-    const gUrl='https://www.google.com/search?q='+encodeURIComponent(msg);
-    const cUrl='https://copilot.microsoft.com/?q='+encodeURIComponent(msg);
-    if(w.found){
-      r='[HASIL WIKIPEDIA]\n\n'+w.extract+'\n\nSumber: '+w.title+'\n'+w.wikiUrl+'\n\nCari lebih lanjut:\nGoogle: '+gUrl+'\nCopilot AI: '+cUrl;
-    }else{
-      r='Informasi tentang "'+msg+'" tidak ada di database lokal.\n\nCari di:\nWikipedia: https://id.wikipedia.org/w/index.php?search='+encodeURIComponent(msg)+'\nGoogle: '+gUrl+'\nCopilot AI: '+cUrl;
-    }
-  }
-  return r;
+  return await searchWikipediaAndGoogle(msg);
 }
 
-/* Enhanced sendMsg with Wikipedia fallback */
+/* sendMsgSmart - wrapper that calls sendMsgEnhanced */
 async function sendMsgSmart(){
-  const inp=document.getElementById('chat-input'),msg=inp.value.trim();if(!msg)return;inp.value='';
-  const log=document.getElementById('chat-log');
-  const ud=document.createElement('div');ud.className='chat-msg chat-user';ud.textContent=msg;log.appendChild(ud);log.scrollTop=log.scrollHeight;
-  document.getElementById('core-status').textContent='PROCESSING';
-  const td=document.createElement('div');td.className='chat-msg chat-ai';td.textContent=getGeminiKey()?'Thinking...':'Searching...';log.appendChild(td);log.scrollTop=log.scrollHeight;
-
-  let response=null;
-  if(getGeminiKey()){
-    document.getElementById('core-status').textContent='AI THINKING';
-    response=await callGemini(msg);
-  }
-  if(!response){
-    document.getElementById('core-status').textContent='SEARCHING';
-    response=await offlineRespondSmart(msg);
-  }
-  td.textContent=response;log.scrollTop=log.scrollHeight;speakEnhanced(response);document.getElementById('core-status').textContent='ONLINE'
+  sendMsgEnhanced();
 }
 
 /* ============================================
@@ -913,27 +885,116 @@ function speakEnhanced(t){
   u.onend=()=>{if(mouth)mouth.classList.remove('talking');document.getElementById('core-status').textContent='ONLINE'}
 }
 
-/* ENHANCED sendMsg with Google Earth command + Wikipedia fallback */
-function sendMsgEnhanced(){
+/* ENHANCED sendMsg - handles ALL commands with Wikipedia + Google search */
+async function sendMsgEnhanced(){
   const inp=document.getElementById('chat-input'),msg=inp.value.trim();
-  if(!msg)return;inp.value='';
+  if(!msg)return;
+  inp.value='';
   const m=msg.toLowerCase();
+  const log=document.getElementById('chat-log');
+  
+  /* Add user message to chat */
+  const ud=document.createElement('div');ud.className='chat-msg chat-user';ud.textContent=msg;log.appendChild(ud);log.scrollTop=log.scrollHeight;
+  
   /* Google Earth 3D command */
   if(m.includes('google earth')||m.includes('earth 3d')||m.includes('buka earth')||m.includes('peta 3d')){
     const query=msg.replace(/.*?(?:buka|tampilkan|lihat|show|open)?\s*(?:google\s*earth|earth\s*3d|peta\s*3d)/i,'').trim();
     openGoogleEarth(query);
-    const log=document.getElementById('chat-log');
-    const ud=document.createElement('div');ud.className='chat-msg chat-user';ud.textContent=msg;log.appendChild(ud);
     const td=document.createElement('div');td.className='chat-msg chat-ai';td.textContent=query?'Membuka Google Earth 3D untuk: '+query:'Membuka Google Earth 3D, sir.';log.appendChild(td);log.scrollTop=log.scrollHeight;
     speakEnhanced(query?'Opening Google Earth 3D for '+query:'Opening Google Earth 3D, sir.');
     return;
   }
+  
   /* Screensaver command */
   if(m.includes('screensaver')||m.includes('screen saver')){
     activateScreensaver();
     return;
   }
-  sendMsgSmart();
+  
+  /* Show typing indicator */
+  document.getElementById('core-status').textContent='PROCESSING';
+  const td=document.createElement('div');td.className='chat-msg chat-ai';td.textContent=getGeminiKey()?'Thinking...':'Searching...';log.appendChild(td);log.scrollTop=log.scrollHeight;
+  
+  let response=null;
+  
+  /* Try Gemini AI first if key is set */
+  if(getGeminiKey()){
+    document.getElementById('core-status').textContent='AI THINKING';
+    response=await callGemini(msg);
+  }
+  
+  /* If no Gemini response, try offline first for known commands */
+  if(!response){
+    const offlineR=offlineRespond(msg);
+    /* Check if it's a known command (not the "limited capabilities" fallback) */
+    if(offlineR && !offlineR.includes('limited capabilities') && !offlineR.includes('For full AI responses') && !offlineR.includes('I heard:')){
+      response=offlineR;
+    }
+  }
+  
+  /* If still no response, search Wikipedia + Google */
+  if(!response){
+    document.getElementById('core-status').textContent='SEARCHING WIKIPEDIA';
+    td.textContent='Mencari di Wikipedia & Google...';
+    response=await searchWikipediaAndGoogle(msg);
+  }
+  
+  /* Display response */
+  td.textContent=response;
+  log.scrollTop=log.scrollHeight;
+  document.getElementById('core-status').textContent='SPEAKING';
+  speakEnhanced(response);
+  document.getElementById('core-status').textContent='ONLINE';
+}
+
+/* ============================================
+   WIKIPEDIA + GOOGLE SEARCH with detailed results
+   ============================================ */
+async function searchWikipediaAndGoogle(query){
+  const gUrl='https://www.google.com/search?q='+encodeURIComponent(query);
+  const cUrl='https://copilot.microsoft.com/?q='+encodeURIComponent(query);
+  const wikiSearchUrl='https://id.wikipedia.org/w/index.php?search='+encodeURIComponent(query);
+  
+  /* Try Wikipedia ID first */
+  let wikiResult=await wikiSearch(query);
+  
+  /* If not found in ID, try English Wikipedia */
+  if(!wikiResult.found){
+    wikiResult=await wikiSearchEN(query);
+  }
+  
+  if(wikiResult.found){
+    let r='\u{1F4D6} *HASIL WIKIPEDIA*\n\n';
+    r+='*'+wikiResult.title+'*\n\n';
+    r+=wikiResult.extract+'\n\n';
+    r+='\u{1F517} Sumber Wikipedia:\n'+wikiResult.wikiUrl+'\n\n';
+    r+='\u{1F50D} Cari lebih lanjut:\n';
+    r+='Google: '+gUrl+'\n';
+    r+='Copilot AI: '+cUrl;
+    return r;
+  }else{
+    let r='\u{1F50D} *Pencarian untuk:* "'+query+'"\n\n';
+    r+='Topik tidak ditemukan di Wikipedia. Berikut link pencarian:\n\n';
+    r+='\u{1F517} Wikipedia:\n'+wikiSearchUrl+'\n\n';
+    r+='\u{1F517} Google Search:\n'+gUrl+'\n\n';
+    r+='\u{1F517} Copilot AI:\n'+cUrl;
+    return r;
+  }
+}
+
+/* English Wikipedia search */
+async function wikiSearchEN(query){
+  try{
+    const url='https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exsentences=5&exintro=1&explaintext=1&generator=search&gsrsearch='+encodeURIComponent(query)+'&gsrlimit=1&origin=*';
+    const r=await fetch(url);
+    const d=await r.json();
+    if(d.query&&d.query.pages){
+      const pages=d.query.pages;
+      const pid=Object.keys(pages)[0];
+      return{extract:pages[pid].extract,title:pages[pid].title,wikiUrl:'https://en.wikipedia.org/wiki/'+encodeURIComponent(pages[pid].title.replace(/ /g,'_')),found:true};
+    }
+  }catch(e){}
+  return{found:false};
 }
 
 /* Enhanced offlineRespond with Google Earth */
