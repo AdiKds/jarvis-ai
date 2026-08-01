@@ -22,8 +22,10 @@
 {"@context":"https://schema.org","@type":"WebApplication","name":"JARVIS AI","description":"Futuristic AI agent interface with holographic HUD, cyber-avatar, voice commands, and Gemini AI integration.","url":"https://adikds.github.io/jarvis-ai/","author":{"@type":"Person","name":"Mohamad Hartadi"},"applicationCategory":"AIAssistant","operatingSystem":"Web Browser","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
 </script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
+.hidden{display:none!important}
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Rajdhani',sans-serif}
 html{height:100%}
 body{background:#000;color:#0ff;width:100%;min-height:100%;overflow-y:auto;overflow-x:hidden}
@@ -232,6 +234,7 @@ input:focus{border-color:#0ff;box-shadow:0 0 10px rgba(0,255,255,.3)}
 <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div>
 <div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
 
+<div id="earth-3d-bg" style="position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.15;transition:opacity .5s"></div>
 <div class="hud" id="main-hud" style="display:none">
 
 <div class="top-bar">
@@ -386,22 +389,26 @@ input:focus{border-color:#0ff;box-shadow:0 0 10px rgba(0,255,255,.3)}
 </div>
 
 
-<!-- SCREENSAVER: Motivasi, Petuah Bijak & Doa dari Al-Quran -->
-<div id="jarvisScreensaver" class="hidden" style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);backdrop-filter:blur(8px);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;opacity:0;transition:opacity .5s;font-family:'Rajdhani',sans-serif">
+<!-- SCREENSAVER: 3D Earth Orbit + Motivasi, Petuah Bijak & Doa Al-Quran -->
+<div id="jarvisScreensaver" class="hidden" onclick="if(event.target===this||event.target.id==='scEarthContainer')deactivateScreensaver()" style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.95);overflow:hidden;opacity:0;transition:opacity .5s">
   <button onclick="deactivateScreensaver()" style="position:absolute;top:12px;right:12px;z-index:50;background:rgba(20,20,40,.8);border:1px solid rgba(0,255,255,.3);color:rgba(0,255,255,.6);padding:8px 16px;border-radius:8px;font-size:11px;cursor:pointer;font-family:'Orbitron'"><i class="fa-solid fa-power-off"></i> TUTUP</button>
-  <div style="text-align:center;padding:20px;max-width:90%;position:relative;z-index:10">
-    <div id="scClock" class="orbitron" style="font-size:clamp(40px,10vw,90px);font-weight:900;background:linear-gradient(90deg,#06b6d4,#a855f7,#10b981);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 20px rgba(6,182,212,.4))">00:00:00</div>
+  <!-- 3D Earth canvas will be injected here when screensaver activates -->
+  <div id="scEarthContainer" style="position:absolute;inset:0;z-index:1"></div>
+  <!-- Content overlay -->
+  <div style="position:relative;z-index:10;text-align:center;padding:20px;max-width:90%;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh">
+    <div id="scClock" class="orbitron" style="font-size:clamp(36px,9vw,80px);font-weight:900;background:linear-gradient(90deg,#06b6d4,#a855f7,#10b981);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 20px rgba(6,182,212,.4))">00:00:00</div>
     <div id="scDate" style="color:rgba(0,255,255,.5);font-size:clamp(10px,2vw,14px);letter-spacing:3px;text-transform:uppercase;margin-top:8px;font-family:'Orbitron'">--</div>
-    <div style="margin-top:30px;max-width:600px;border:1px solid rgba(0,255,255,.15);border-radius:16px;padding:24px 30px;background:rgba(0,20,40,.5);backdrop-filter:blur(10px);min-height:180px;display:flex;flex-direction:column;justify-content:center">
+    <div style="margin-top:24px;max-width:600px;border:1px solid rgba(0,255,255,.15);border-radius:16px;padding:20px 28px;background:rgba(0,20,40,.6);backdrop-filter:blur(10px);min-height:160px;display:flex;flex-direction:column;justify-content:center">
       <div id="scContent" style="transition:opacity 1s;opacity:1">
-        <div id="scIcon" style="font-size:28px;margin-bottom:10px"><i class="fa-solid fa-hands-praying" style="color:#fbbf24"></i></div>
+        <div id="scIcon" style="font-size:28px;margin-bottom:8px"><i class="fa-solid fa-hands-praying" style="color:#fbbf24"></i></div>
         <div id="scCategory" style="color:#10b981;font-size:11px;font-family:'Orbitron';letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">PETUAH BIJAK</div>
         <div id="scArabic" style="font-size:clamp(18px,4vw,32px);color:#fbbf24;text-align:center;line-height:2;margin-bottom:12px" dir="rtl"></div>
         <div id="scText" style="color:rgba(255,255,255,.85);font-size:clamp(12px,2.5vw,16px);line-height:1.6;text-align:center"></div>
         <div id="scSource" style="color:rgba(0,255,255,.4);font-size:10px;margin-top:10px;text-align:center;font-family:'Orbitron'"></div>
       </div>
     </div>
-    <div style="margin-top:30px;color:rgba(0,255,255,.3);font-size:10px;letter-spacing:3px;text-transform:uppercase;animation:pulse 2s infinite"><i class="fa-solid fa-keyboard"></i> Klik atau gerakkan kursor untuk kembali</div>
+    <button id="scReadBtn" onclick="readScreensaverContent()" style="margin-top:16px;background:rgba(16,185,129,.2);border:1px solid rgba(16,185,129,.5);color:#10b981;padding:8px 20px;border-radius:8px;font-size:11px;cursor:pointer;font-family:'Orbitron';letter-spacing:1px"><i class="fa-solid fa-volume-high"></i> BACAKAN</button>
+    <div style="margin-top:20px;color:rgba(0,255,255,.3);font-size:10px;letter-spacing:3px;text-transform:uppercase;animation:pulse 2s infinite"><i class="fa-solid fa-keyboard"></i> Klik atau gerakkan kursor untuk kembali</div>
   </div>
 </div>
 
@@ -670,25 +677,104 @@ function openGoogleEarth(query){
 }
 
 /* ============================================
-   SCREENSAVER: Petuah Bijak, Motivasi, Doa Al-Quran
+   SCREENSAVER: 3D Earth + Petuah Bijak, Motivasi, Doa Al-Quran + Voice
    ============================================ */
 const wisdomData=[
   {cat:'PETUAH BIJAK',icon:'fa-lightbulb',ar:'',text:'Ilmu tanpa amal bagai pohon tanpa buah. Beramallah dengan ilmu yang kau miliki.',source:'Petuah Bijak'},
   {cat:'MOTIVASI',icon:'fa-rocket',ar:'',text:'Kesuksesan bukan tentang seberapa cepat kamu sampai, tapi tentang tidak pernah menyerah dalam perjalanan.',source:'Motivasi'},
-  {cat:'DOA AL-QURAN',icon:'fa-hands-praying',ar:'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',text:'Ya Tuhan kami, berikanlah kami kebaikan di dunia dan kebaikan di akhirat, dan lindungilah kami dari siksa api neraka.',source:'QS. Al-Baqarah: 201'},
-  {cat:'DOA AL-QURAN',icon:'fa-hands-praying',ar:'رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي',text:'Ya Tuhanku, lapangkanlah dadaku dan mudahkanlah urusanku untukku.',source:'QS. Thaha: 25-26'},
+  {cat:'DOA AL-QURAN',icon:'fa-hands-praying',ar:'\u0631\u064E\u0628\u0651\u064E\u0646\u064E\u0627 \u0622\u062A\u0650\u0646\u064E\u0627 \u0641\u0650\u064A \u0627\u0644\u062F\u0651\u064F\u0646\u0652\u064A\u064E\u0627 \u062D\u064E\u0633\u064E\u0646\u064E\u0629\u064B \u0648\u064E\u0641\u0650\u064A \u0627\u0644\u0652\u0622\u062E\u0650\u0631\u064E\u0629\u0650 \u062D\u064E\u0633\u064E\u0646\u064E\u0629\u064B \u0648\u064E\u0642\u0650\u0646\u064E\u0627 \u0639\u064E\u0630\u064E\u0627\u0628\u064E \u0627\u0644\u0646\u0651\u064E\u0627\u0631\u0650',text:'Ya Tuhan kami, berikanlah kami kebaikan di dunia dan kebaikan di akhirat, dan lindungilah kami dari siksa api neraka.',source:'QS. Al-Baqarah: 201'},
+  {cat:'DOA AL-QURAN',icon:'fa-hands-praying',ar:'\u0631\u064E\u0628\u0651\u0650 \u0627\u0634\u0652\u0631\u064E\u062D\u0652 \u0644\u0650\u064A \u0635\u064E\u062F\u0652\u0631\u0650\u064A \u0648\u064E\u064A\u064E\u0633\u0651\u0650\u0631\u0652 \u0644\u0650\u064A \u0623\u064E\u0645\u0652\u0631\u0650\u064A',text:'Ya Tuhanku, lapangkanlah dadaku dan mudahkanlah urusanku untukku.',source:'QS. Thaha: 25-26'},
   {cat:'MOTIVASI',icon:'fa-fire',ar:'',text:'Orang yang kuat bukanlah mereka yang tidak pernah jatuh, melainkan mereka yang selalu bangkit setiap kali jatuh.',source:'Motivasi'},
-  {cat:'DOA AL-QURAN',icon:'fa-hands-praying',ar:'رَبَّنَا ظَلَمْنَا أَنفُسَنَا وَإِن لَّمْ تَغْفِرْ لَنَا وَتَرْحَمْنَا لَنَكُونَنَّ مِنَ الْخَاسِرِينَ',text:'Ya Tuhan kami, kami telah menganiaya diri kami sendiri, dan jika Engkau tidak mengampuni kami dan memberi rahmat kepada kami, niscaya pastilah kami termasuk orang-orang yang merugi.',source:'QS. Al-Araf: 23'},
+  {cat:'DOA AL-QURAN',icon:'fa-hands-praying',ar:'\u0631\u064E\u0628\u0651\u064E\u0646\u064E\u0627 \u0638\u064E\u0644\u064E\u0645\u0652\u0646\u064E\u0627 \u0623\u064E\u0646\u0641\u064F\u0633\u064E\u0646\u064E\u0627',text:'Ya Tuhan kami, kami telah menganiaya diri kami sendiri, dan jika Engkau tidak mengampuni kami dan memberi rahmat kepada kami, niscaya pastilah kami termasuk orang-orang yang merugi.',source:'QS. Al-Araf: 23'},
   {cat:'PETUAH BIJAK',icon:'fa-book-open',ar:'',text:'Orang bijak belajar dari pengalaman orang lain. Orang bodoh belajar dari kesalahan sendiri.',source:'Petuah Bijak'},
-  {cat:'DOA AL-QURAN',icon:'fa-hands-praying',ar:'رَبِّ هَبْ لِي مِن لَّدُنكَ ذُرِّيَّةً طَيِّبَةً ۖ إِنَّكَ سَمِيعُ الدُّعَاءِ',text:'Ya Tuhanku, berilah aku dari sisi Engkau seorang anak yang baik. Sesungguhnya Engkau Maha Pendengar doa.',source:'QS. Ali Imran: 38'},
+  {cat:'DOA AL-QURAN',icon:'fa-hands-praying',ar:'\u0631\u064E\u0628\u0651\u0650 \u0647\u064E\u0628\u0652 \u0644\u0650\u064A \u0645\u0650\u0646 \u0644\u0651\u064E\u062F\u064F\u0646\u0643\u064E \u0630\u064F\u0631\u0651\u0650\u064A\u064E\u0629\u064B \u0637\u064E\u064A\u0651\u0650\u064A\u0628\u064E\u0629\u064B',text:'Ya Tuhanku, berilah aku dari sisi Engkau seorang anak yang baik. Sesungguhnya Engkau Maha Pendengar doa.',source:'QS. Ali Imran: 38'},
   {cat:'MOTIVASI',icon:'fa-mountain',ar:'',text:'Jadilah seperti pohon yang lebat buahnya, hidup di tepi jalan dan dilempari batu, tetapi dibalas dengan buah.',source:'Motivasi'},
-  {cat:'DOA AL-QURAN',icon:'fa-hands-praying',ar:'رَبَّنَا اغْفِرْ لَنَا ذُنُوبَنَا وَإِسْرَافَنَا فِي أَمْرِنَا',text:'Ya Tuhan kami, ampunilah dosa-dosa kami dan kelancuran kami dalam urusan kami.',source:'QS. Ali Imran: 147'},
+  {cat:'DOA AL-QURAN',icon:'fa-hands-praying',ar:'\u062D\u064E\u0633\u0652\u0628\u064F\u0646\u064E\u0627 \u0627\u0644\u0644\u0651\u064E\u0647\u064F \u0648\u064E\u0646\u0650\u0639\u0652\u0645\u064E \u0627\u0644\u0652\u0648\u064E\u0643\u0650\u064A\u0644\u064F',text:'Cukuplah Allah bagi kami, dan Dia adalah sebaik-baik penolong.',source:'QS. Ali Imran: 173'},
   {cat:'PETUAH BIJAK',icon:'fa-compass',ar:'',text:'Jangan menunduk karena masalah, melainkan mendongak untuk melihat solusi.',source:'Petuah Bijak'},
-  {cat:'DOA AL-QURAN',icon:'fa-hands-praying',ar:'حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ',text:'Cukuplah Allah bagi kami, dan Dia adalah sebaik-baik penolong.',source:'QS. Ali Imran: 173'},
   {cat:'MOTIVASI',icon:'fa-star',ar:'',text:'Sulit bukan berarti tidak mungkin. Tetap semangat, setiap usaha pasti ada hasilnya.',source:'Motivasi'},
-  {cat:'DOA AL-QURAN',icon:'fa-hands-praying',ar:'رَبِّ زِدْنِي عِلْمًا',text:'Ya Tuhanku, tambahkanlah ilmu kepadaku.',source:'QS. Thaha: 114'},
+  {cat:'DOA AL-QURAN',icon:'fa-hands-praying',ar:'\u0631\u064E\u0628\u0651\u0650 \u0632\u0650\u062F\u0652\u0646\u0650\u064A \u0639\u0650\u0644\u0652\u0645\u064B\u0627',text:'Ya Tuhanku, tambahkanlah ilmu kepadaku.',source:'QS. Thaha: 114'},
 ];
-let scIdx=0,scTimer=null,idleTimer=null;
+let scIdx=0,scTimer=null,idleTimer=null,scEarthRenderer=null,scEarthScene=null,scEarthCamera=null,scEarthGlobe=null,scEarthClouds=null;
+
+/* 3D EARTH for screensaver */
+function initScreensaverEarth(){
+  if(scEarthRenderer||typeof THREE==='undefined')return;
+  const container=document.getElementById('scEarthContainer');
+  if(!container)return;
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,0.1,1000);
+  camera.position.z=10;
+  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  container.appendChild(renderer.domElement);
+  const ambient=new THREE.AmbientLight(0xffffff,0.4);
+  scene.add(ambient);
+  const dir=new THREE.DirectionalLight(0xffffff,1.2);
+  dir.position.set(5,3,5);
+  scene.add(dir);
+  const tl=new THREE.TextureLoader();
+  const earthTex=tl.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg');
+  const cloudsTex=tl.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_1024.png');
+  const earthGeo=new THREE.SphereGeometry(3.5,64,64);
+  const earthMat=new THREE.MeshStandardMaterial({map:earthTex,roughness:0.5});
+  const globe=new THREE.Mesh(earthGeo,earthMat);
+  scene.add(globe);
+  const cloudGeo=new THREE.SphereGeometry(3.53,64,64);
+  const cloudMat=new THREE.MeshStandardMaterial({map:cloudsTex,transparent:true,opacity:0.8});
+  const clouds=new THREE.Mesh(cloudGeo,cloudMat);
+  scene.add(clouds);
+  scEarthScene=scene;scEarthCamera=camera;scEarthRenderer=renderer;scEarthGlobe=globe;scEarthClouds=clouds;
+  function animate(){
+    requestAnimationFrame(animate);
+    if(globe)globe.rotation.y+=0.0012;
+    if(clouds)clouds.rotation.y+=0.0016;
+    renderer.render(scene,camera);
+  }
+  animate();
+  window.addEventListener('resize',()=>{
+    camera.aspect=window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth,window.innerHeight);
+  });
+}
+
+/* Also init 3D Earth as background (always running, low opacity) */
+function initBgEarth(){
+  if(typeof THREE==='undefined')return;
+  const container=document.getElementById('earth-3d-bg');
+  if(!container||container.children.length>0)return;
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,0.1,1000);
+  camera.position.z=8;
+  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  container.appendChild(renderer.domElement);
+  const ambient=new THREE.AmbientLight(0xffffff,0.3);
+  scene.add(ambient);
+  const dir=new THREE.DirectionalLight(0xffffff,0.8);
+  dir.position.set(5,3,5);
+  scene.add(dir);
+  const tl=new THREE.TextureLoader();
+  const earthTex=tl.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg');
+  const earthGeo=new THREE.SphereGeometry(2.5,32,32);
+  const earthMat=new THREE.MeshStandardMaterial({map:earthTex,roughness:0.5});
+  const globe=new THREE.Mesh(earthGeo,earthMat);
+  scene.add(globe);
+  function animate(){
+    requestAnimationFrame(animate);
+    globe.rotation.y+=0.0008;
+    renderer.render(scene,camera);
+  }
+  animate();
+  window.addEventListener('resize',()=>{
+    camera.aspect=window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth,window.innerHeight);
+  });
+}
+
 function cycleScreensaverContent(){
   const w=wisdomData[scIdx];
   const el=document.getElementById('scContent');
@@ -702,15 +788,41 @@ function cycleScreensaverContent(){
     document.getElementById('scText').textContent=w.text;
     document.getElementById('scSource').textContent=w.source;
     el.style.opacity='1';
+    /* Auto-read each new content with TTS */
+    readScreensaverContent();
   },800);
   scIdx++;
   if(scIdx>=wisdomData.length)scIdx=0;
 }
+
+function readScreensaverContent(){
+  if(!synth)return;
+  synth.cancel();
+  const w=wisdomData[scIdx===0?wisdomData.length-1:scIdx-1];
+  if(!w)return;
+  const textToRead=w.cat+'. '+w.text+'. '+w.source;
+  const u=new SpeechSynthesisUtterance(textToRead);
+  u.rate=jarvisRate||0.9;
+  u.pitch=jarvisPitch||0.6;
+  u.volume=jarvisVolume||0.8;
+  const vs=synth.getVoices();
+  if(jarvisVoice){
+    const sel=vs.find(v=>v.name===jarvisVoice);
+    if(sel)u.voice=sel;
+  }
+  synth.speak(u);
+}
+
 function activateScreensaver(){
   const el=document.getElementById('jarvisScreensaver');
+  if(!el)return;
   el.classList.remove('hidden');
-  el.style.display='flex';
   el.style.opacity='0';
+  /* Boost 3D Earth opacity when screensaver is active */
+  const bg=document.getElementById('earth-3d-bg');
+  if(bg)bg.style.opacity='0.6';
+  /* Init screensaver earth if not already */
+  if(!scEarthRenderer)initScreensaverEarth();
   setTimeout(()=>{el.style.opacity='1'},30);
   cycleScreensaverContent();
   clearInterval(scTimer);
@@ -718,9 +830,13 @@ function activateScreensaver(){
 }
 function deactivateScreensaver(){
   clearInterval(scTimer);
+  if(synth)synth.cancel();
   const el=document.getElementById('jarvisScreensaver');
+  if(!el)return;
   el.style.opacity='0';
-  setTimeout(()=>{el.classList.add('hidden');el.style.display='none'},500);
+  const bg=document.getElementById('earth-3d-bg');
+  if(bg)bg.style.opacity='0.15';
+  setTimeout(()=>{el.classList.add('hidden')},500);
 }
 /* Idle detection - activate screensaver after 2 min */
 function resetIdleTimer(){
@@ -842,7 +958,7 @@ function updateScClock(){
 setInterval(updateScClock,1000);
 
 
-function initAll(){initParticles();initHudCanvas();initNeural();initSpeech();updateStats();updateAIStatus();loadVoiceSettings();if(synth.onvoiceschanged!==undefined)synth.onvoiceschanged=populateVoices;resetIdleTimer()}
+function initAll(){initParticles();initHudCanvas();initNeural();initSpeech();updateStats();updateAIStatus();loadVoiceSettings();if(synth.onvoiceschanged!==undefined)synth.onvoiceschanged=populateVoices;resetIdleTimer();setTimeout(initBgEarth,500)}
 </script>
 </body>
 </html>
