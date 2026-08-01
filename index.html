@@ -110,8 +110,24 @@ html,body{height:100%;overflow:hidden}
 .chat-log{flex:1;min-height:100px;max-height:220px;overflow-y:auto;padding:4px 0;-webkit-overflow-scrolling:touch}
 @media(min-width:900px){.chat-log{min-height:0;max-height:none}}
 .chat-msg{max-width:85%;padding:8px 14px;border-radius:10px;margin:4px 0;font-size:14px;animation:fadeIn .3s;word-wrap:break-word;overflow-wrap:break-word}
-.chat-ai{background:rgba(0,255,255,.1);border:1px solid rgba(0,255,255,.3);color:#0ff;align-self:flex-start;border-radius:10px 10px 10px 0}
+.chat-ai{background:rgba(0,255,255,.08);border:1px solid rgba(0,255,255,.3);color:#c0f;align-self:flex-start;border-radius:10px 10px 10px 0;position:relative}
 .chat-user{background:rgba(0,150,255,.15);border:1px solid rgba(0,150,255,.3);color:#aef;align-self:flex-end;border-radius:10px 10px 0 10px}
+.chat-ai .rich-title{color:#fbbf24;font-weight:700;font-size:15px;display:block;margin-bottom:6px;text-shadow:0 0 8px rgba(251,191,36,.4)}
+.chat-ai .rich-body{color:#d1f5e0;line-height:1.5;font-size:13px;white-space:pre-wrap}
+.chat-ai .rich-source{display:block;margin-top:8px;padding-top:6px;border-top:1px solid rgba(0,255,255,.15)}
+.chat-ai .rich-src-label{color:#10b981;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.chat-ai a.rich-link{display:inline-flex;align-items:center;gap:4px;color:#06b6d4;text-decoration:none;font-size:11px;padding:2px 8px;border-radius:6px;border:1px solid rgba(6,182,212,.4);background:rgba(6,182,212,.1);margin:3px 3px 0 0;cursor:pointer;transition:all .2s;word-break:break-all}
+.chat-ai a.rich-link:hover{color:#fff;background:rgba(6,182,212,.4);border-color:#06b6d4;box-shadow:0 0 8px rgba(6,182,212,.5)}
+.chat-ai a.rich-link.wiki{color:#10b981;border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.1)}
+.chat-ai a.rich-link.wiki:hover{color:#fff;background:rgba(16,185,129,.4);border-color:#10b981;box-shadow:0 0 8px rgba(16,185,129,.5)}
+.chat-ai a.rich-link.google{color:#4285f4;border-color:rgba(66,133,244,.4);background:rgba(66,133,244,.1)}
+.chat-ai a.rich-link.google:hover{color:#fff;background:rgba(66,133,244,.4);border-color:#4285f4;box-shadow:0 0 8px rgba(66,133,244,.5)}
+.chat-ai a.rich-link.earth{color:#f59e0b;border-color:rgba(245,158,11,.4);background:rgba(245,158,11,.1)}
+.chat-ai a.rich-link.earth:hover{color:#fff;background:rgba(245,158,11,.4);border-color:#f59e0b;box-shadow:0 0 8px rgba(245,158,11,.5)}
+.chat-ai a.rich-link.windy{color:#0ea5e9;border-color:rgba(14,165,233,.4);background:rgba(14,165,233,.1)}
+.chat-ai a.rich-link.windy:hover{color:#fff;background:rgba(14,165,233,.4);border-color:#0ea5e9;box-shadow:0 0 8px rgba(14,165,233,.5)}
+.chat-ai .rich-divider{color:rgba(0,255,255,.2);margin:4px 0}
+.chat-ai .rich-emoji{font-size:16px}
 .chat-input-row{display:flex;gap:6px;align-items:center;flex-shrink:0;margin-top:6px}
 
 input{background:rgba(0,20,40,.6);border:1px solid rgba(0,255,255,.3);color:#0ff;padding:10px 14px;border-radius:8px;outline:none;font-family:'Rajdhani';font-size:15px;width:100%;min-width:0}
@@ -389,6 +405,39 @@ input:focus{border-color:#0ff;box-shadow:0 0 10px rgba(0,255,255,.3)}
 </div>
 
 
+<!-- WINDY WEATHER RADAR MODAL -->
+<div id="windyModal" class="hidden" style="position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.9);backdrop-filter:blur(8px);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity .3s">
+  <button onclick="closeWindyModal()" style="position:absolute;top:12px;right:12px;z-index:50;background:rgba(20,20,40,.8);border:1px solid rgba(0,255,255,.3);color:rgba(0,255,255,.6);padding:8px 16px;border-radius:8px;font-size:11px;cursor:pointer;font-family:'Orbitron'"><i class="fa-solid fa-power-off"></i> TUTUP</button>
+  <div style="text-align:center;margin-bottom:12px">
+    <div class="orbitron" style="font-size:16px;color:#0ea5e9;text-shadow:0 0 10px rgba(14,165,233,.5);letter-spacing:2px"><i class="fa-solid fa-cloud-bolt"></i> WINDY RADAR CUACA</div>
+    <div style="color:rgba(0,255,255,.4);font-size:10px;margin-top:4px" id="windyLocationLabel">Loading...</div>
+  </div>
+  <div style="width:95%;max-width:800px;height:60vh;max-height:500px;border:1px solid rgba(0,255,255,.3);border-radius:12px;overflow:hidden;box-shadow:0 0 30px rgba(0,255,255,.2)">
+    <iframe id="windyFrame" style="width:100%;height:100%;border:0" src="" allowfullscreen></iframe>
+  </div>
+  <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+    <button onclick="switchWindyLayer('wind')" style="background:rgba(0,255,255,.15);border:1px solid rgba(0,255,255,.4);color:#0ff;padding:6px 14px;border-radius:8px;font-size:10px;cursor:pointer;font-family:'Orbitron'"><i class="fa-solid fa-wind"></i> WIND</button>
+    <button onclick="switchWindyLayer('rain')" style="background:rgba(0,255,255,.15);border:1px solid rgba(0,255,255,.4);color:#0ff;padding:6px 14px;border-radius:8px;font-size:10px;cursor:pointer;font-family:'Orbitron'"><i class="fa-solid fa-cloud-rain"></i> RAIN</button>
+    <button onclick="switchWindyLayer('temp')" style="background:rgba(0,255,255,.15);border:1px solid rgba(0,255,255,.4);color:#0ff;padding:6px 14px;border-radius:8px;font-size:10px;cursor:pointer;font-family:'Orbitron'"><i class="fa-solid fa-temperature-half"></i> TEMP</button>
+    <button onclick="switchWindyLayer('clouds')" style="background:rgba(0,255,255,.15);border:1px solid rgba(0,255,255,.4);color:#0ff;padding:6px 14px;border-radius:8px;font-size:10px;cursor:pointer;font-family:'Orbitron'"><i class="fa-solid fa-cloud"></i> CLOUDS</button>
+    <button onclick="switchWindyLayer('radar')" style="background:rgba(0,255,255,.15);border:1px solid rgba(0,255,255,.4);color:#0ff;padding:6px 14px;border-radius:8px;font-size:10px;cursor:pointer;font-family:'Orbitron'"><i class="fa-solid fa-satellite-dish"></i> RADAR</button>
+  </div>
+</div>
+
+<!-- EARTH MAP MODAL -->
+<div id="earthMapModal" class="hidden" style="position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.95);backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity .3s">
+  <button onclick="closeEarthMapModal()" style="position:absolute;top:12px;right:12px;z-index:50;background:rgba(20,20,40,.8);border:1px solid rgba(0,255,255,.3);color:rgba(0,255,255,.6);padding:8px 16px;border-radius:8px;font-size:11px;cursor:pointer;font-family:'Orbitron'"><i class="fa-solid fa-power-off"></i> TUTUP</button>
+  <div style="text-align:center;margin-bottom:10px">
+    <div class="orbitron" style="font-size:16px;color:#f59e0b;text-shadow:0 0 10px rgba(245,158,11,.5);letter-spacing:2px"><i class="fa-solid fa-earth-americas"></i> EARTH MAP</div>
+    <div style="color:rgba(0,255,255,.4);font-size:10px;margin-top:4px" id="earthMapLabel">Loading...</div>
+  </div>
+  <div style="width:95%;max-width:900px;height:70vh;max-height:600px;border:1px solid rgba(245,158,11,.3);border-radius:12px;overflow:hidden;box-shadow:0 0 30px rgba(245,158,11,.2)">
+    <iframe id="earthMapFrame" style="width:100%;height:100%;border:0" src="" allowfullscreen></iframe>
+  </div>
+</div>
+
+<!-- SCREENSAVER: 3D Earth Orbit
+
 <!-- SCREENSAVER: 3D Earth Orbit + Motivasi, Petuah Bijak & Doa Al-Quran -->
 <div id="jarvisScreensaver" class="hidden" onclick="if(event.target===this||event.target.id==='scEarthContainer')deactivateScreensaver()" style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.95);overflow:hidden;opacity:0;transition:opacity .5s">
   <button onclick="deactivateScreensaver()" style="position:absolute;top:12px;right:12px;z-index:50;background:rgba(20,20,40,.8);border:1px solid rgba(0,255,255,.3);color:rgba(0,255,255,.6);padding:8px 16px;border-radius:8px;font-size:11px;cursor:pointer;font-family:'Orbitron'"><i class="fa-solid fa-power-off"></i> TUTUP</button>
@@ -490,45 +539,50 @@ Downloads SmolLM-135M (~270MB) to your browser. After download, JARVIS can think
 <script>
 const apps=[
 {u:"https://adikds.github.io/jarvis-ai/",i:"fa-robot",n:"JARVIS AI",d:"Superagent HUD"},
-{u:"https://adikds.github.io/edu-market-pro/",i:"fa-graduation-cap",n:"EduMarket Pro",d:"E-Learning Market"},
-{u:"https://adikds.github.io/iptv-terminal/",i:"fa-tv",n:"IPTV Terminal",d:"Streaming TV ID"},
-{u:"https://adikds.github.io/TV-streaming-live/",i:"fa-signal",n:"TV Streaming Live",d:"Live TV Broadcast"},
-{u:"https://adikds.github.io/Al-Quran-Karim/",i:"fa-book-quran",n:"Al-Quran Karim",d:"Digital Quran"},
-{u:"https://adikds.github.io/-MEGA-ATLAS-FKG/",i:"fa-tooth",n:"Mega Atlas FKG",d:"Dental Atlas"},
-{u:"https://adikds.github.io/SISTEM-MONITORING-SEISMIK-PERINGATAN-TSUNAMI/",i:"fa-wave-square",n:"Tsunami Alert",d:"Seismic Warning"},
-{u:"https://adikds.github.io/MONITORING-PREDIKSI-STATUS-EI-NI-O-LA-NI-A/",i:"fa-temperature-half",n:"El Nino La Nina",d:"Climate Predict"},
-{u:"https://adikds.github.io/MONITORING-PREDIKSI-ANGIN-MUSON-INDONESIA/",i:"fa-wind",n:"Angin Muson",d:"Monsoon Predict"},
-{u:"https://adikds.github.io/INTEGRATED-DAM-ANALYTICS-ASSESSMENT-SYSTEM/",i:"fa-water",n:"Dam Analytics",d:"Integrated Assessment"},
-{u:"https://adikds.github.io/WAY-APU-DAM/",i:"fa-building-shield",n:"Way Apu Dam",d:"Dam Analysis"},
-{u:"https://adikds.github.io/EVENT-DRIVEN-ARCHITECTURE-FOR-AI-AGENTS/",i:"fa-sitemap",n:"EDA AI Agents",d:"Event Architecture"},
-{u:"https://adikds.github.io/GeoStructPro-15-Essential-Geotechnical-Formulas/",i:"fa-mountain",n:"GeoStructPro 15",d:"Geo Formulas"},
-{u:"https://adikds.github.io/GEOSTRUCT-PRO-20-FORMULA-GEOTECHNICAL/",i:"fa-layer-group",n:"GeoStruct Pro 20",d:"20 Geo Formula"},
-{u:"https://adikds.github.io/UNIFIED-SOIL-CLASSIFICATION-SYSTEM/",i:"fa-cubes",n:"USCS Soil",d:"Soil Classify"},
-{u:"https://adikds.github.io/AERORADAR-PRO/",i:"fa-plane",n:"AeroRadar Pro",d:"Aviation Radar"},
+{u:"https://adikds.github.io/-Doa-Digital-Pro/",i:"fa-hands-praying",n:"Doa Digital Pro",d:"Cyber Islamic"},
+{u:"https://adikds.github.io/Al-Quran-Karim/",i:"fa-book-quran",n:"Al-Quran Karim",d:"Digital Mushaf"},
+{u:"https://adikds.github.io/ai-meeting-assistant/",i:"fa-microphone",n:"AI Meeting Pro",d:"Notulen & Voice"},
+{u:"https://adikds.github.io/NEXUS-PAGE-AGENT-VER.1.0/",i:"fa-network-wired",n:"Nexus Page Agent",d:"Agent Simulator"},
+{u:"https://adikds.github.io/APEX-Foundations-v3.1-Geotechnical-AI-/",i:"fa-building",n:"Apex Foundations",d:"Geotechnical AI"},
+{u:"https://adikds.github.io/ANALISIS-PONDASI-TELAPAK-/",i:"fa-layer-group",n:"Analisis Pondasi",d:"Telapak & Tiang"},
+{u:"https://adikds.github.io/AASHTO-SOIL-CLASSIFIER/",i:"fa-mountain",n:"AASHTO Soil",d:"Soil Classifier"},
+{u:"https://adikds.github.io/ATLAS-GEOTEKNIK/",i:"fa-earth-americas",n:"Atlas Geoteknik",d:"Expert Validation"},
+{u:"https://adikds.github.io/GeoStructPro-15-Essential-Geotechnical-Formulas/",i:"fa-calculator",n:"GeoStructPro 15",d:"Geotech Solver"},
+{u:"https://adikds.github.io/GEOSTRUCT-PRO-20-FORMULA-GEOTECHNICAL/",i:"fa-square-root-variable",n:"GeoStruct Pro 20",d:"20 Formula"},
+{u:"https://adikds.github.io/UNIFIED-SOIL-CLASSIFICATION-SYSTEM/",i:"fa-flask",n:"USCS Soil",d:"Unified Soil"},
+{u:"https://adikds.github.io/WAY-APU-DAM/",i:"fa-water",n:"Way Apu Dam",d:"Dam System"},
+{u:"https://adikds.github.io/INTEGRATED-DAM-ANALYTICS-ASSESSMENT-SYSTEM/",i:"fa-database",n:"Dam Analytics",d:"Assessment"},
+{u:"https://adikds.github.io/SISTEM-MONITORING-SEISMIK-PERINGATAN-TSUNAMI/",i:"fa-wave-square",n:"Tsunami Alert",d:"Seismic Monitor"},
+{u:"https://adikds.github.io/MONITORING-PREDIKSI-STATUS-EI-NI-O-LA-NI-A/",i:"fa-temperature-half",n:"El Nino La Nina",d:"Climate Pred"},
+{u:"https://adikds.github.io/MONITORING-PREDIKSI-ANGIN-MUSON-INDONESIA/",i:"fa-wind",n:"Angin Muson",d:"Monsoon Pred"},
+{u:"https://adikds.github.io/AERORADAR-PRO/",i:"fa-satellite-dish",n:"AeroRadar Pro",d:"Aviation Radar"},
 {u:"https://adikds.github.io/HYDRACANAL-PRO-GEOMETRIC-DESIGN/",i:"fa-water-ladder",n:"HydraCanal Pro",d:"Canal Design"},
-{u:"https://adikds.github.io/financial-planner/",i:"fa-chart-line",n:"Financial Planner",d:"OTW 1 Milyar"},
-{u:"https://adikds.github.io/business-suite/",i:"fa-chart-bar",n:"Business Suite",d:"AppSuite Manager"},
-{u:"https://adikds.github.io/stock-manager/",i:"fa-boxes-stacked",n:"Stock Manager",d:"Inventory System"},
+{u:"https://adikds.github.io/EVENT-DRIVEN-ARCHITECTURE-FOR-AI-AGENTS/",i:"fa-diagram-project",n:"EDA AI Agents",d:"Event Driven"},
+{u:"https://adikds.github.io/edu-market-pro/",i:"fa-graduation-cap",n:"EduMarket Pro",d:"E-Learning"},
+{u:"https://adikds.github.io/iptv-terminal/",i:"fa-tv",n:"IPTV Terminal",d:"Streaming TV"},
+{u:"https://adikds.github.io/TV-streaming-live/",i:"fa-signal",n:"TV Streaming Live",d:"Live TV"},
 {u:"https://adikds.github.io/pos-system/",i:"fa-cash-register",n:"POS Terminal Pro",d:"Cashier System"},
-{u:"https://adikds.github.io/ai-meeting-assistant/",i:"fa-microphone-lines",n:"AI Meeting Pro",d:"Notulen Rapat AI"},
-{u:"https://adikds.github.io/Aplikasi_Point_of_Sale_-POS-_atau_sistem_kasir/",i:"fa-cash-register",n:"POS Kasir",d:"Point of Sale"},
-{u:"https://adikds.github.io/KEUANGANKU/",i:"fa-wallet",n:"Keuanganku",d:"Keuangan Pribadi"},
-{u:"https://adikds.github.io/DARUSSYIFA-MEDIKA/",i:"fa-hospital",n:"Darussyifa Medika",d:"Klinik Medis AI"},
-{u:"https://adikds.github.io/SKIN_SYIFA_AI/",i:"fa-magnifying-glass-chart",n:"Skin Syifa",d:"Dermatologi AI"},
-{u:"https://adikds.github.io/NEURO-PSYCH_AI/",i:"fa-brain",n:"Neuro-Psych",d:"Neurologi AI"},
-{u:"https://adikds.github.io/SMILE-SYIFA-AI/",i:"fa-face-smile",n:"Smile Syifa",d:"Dental AI"},
-{u:"https://adikds.github.io/DOKTER-AI/",i:"fa-user-doctor",n:"Dokter AI",d:"Konsultasi Dokter"},
-{u:"https://www.f15library.com/",i:"fa-book-open-reader",n:"F15 Library",d:"Perpustakaan Digital"},
-{u:"https://adikds.github.io/ATLAS-GEOTEKNIK/",i:"fa-earth-americas",n:"Atlas Geoteknik",d:"Atlas Geoteknik"},
-{u:"https://adikds.github.io/STATISTICS_for_ENGINEERS-/",i:"fa-chart-pie",n:"Stats Engineers",d:"Statistik Teknik"},
-{u:"https://famelack.com/radio/id",i:"fa-radio",n:"Radio Online",d:"Streaming Radio"},
-{u:"https://famelack.com/tv/id",i:"fa-tv",n:"TV Famelack",d:"Streaming TV"},
-{u:"https://adikds.github.io/Mega-Atlas-Kedokteran-Neurologi-Bedah-Syaraf/",i:"fa-brain",n:"Neurology Atlas",d:"Atlas Neurologi"},
+{u:"https://adikds.github.io/Aplikasi_Point_of_Sale_-POS-_atau_sistem_kasir/",i:"fa-store",n:"POS Kasir",d:"Point of Sale"},
+{u:"https://adikds.github.io/business-suite/",i:"fa-briefcase",n:"Business Suite",d:"Multi-Module"},
+{u:"https://adikds.github.io/stock-manager/",i:"fa-boxes-stacked",n:"Stock Manager",d:"Inventory"},
+{u:"https://adikds.github.io/financial-planner/",i:"fa-chart-line",n:"Financial Planner",d:"OTW 1 Milyar"},
+{u:"https://adikds.github.io/KEUANGANKU/",i:"fa-wallet",n:"Keuanganku",d:"Finance"},
+{u:"https://adikds.github.io/DOKTER-AI/",i:"fa-stethoscope",n:"Dokter AI",d:"Expert System"},
+{u:"https://adikds.github.io/DARUSSYIFA-MEDIKA/",i:"fa-hospital",n:"Darussyifa Medika",d:"Klinik & Apotek"},
+{u:"https://adikds.github.io/SMILE-SYIFA-AI/",i:"fa-tooth",n:"Smile Syifa",d:"Dental Diag"},
+{u:"https://adikds.github.io/SKIN_SYIFA_AI/",i:"fa-hand-dots",n:"Skin Syifa",d:"Skin Diag"},
+{u:"https://adikds.github.io/NEURO-PSYCH_AI/",i:"fa-brain",n:"Neuro-Psych",d:"Neuro Atlas"},
+{u:"https://adikds.github.io/Mega-Atlas-Kedokteran-Neurologi-Bedah-Syaraf/",i:"fa-user-doctor",n:"Neurology Atlas",d:"Neuro Surgery"},
+{u:"https://adikds.github.io/-MEGA-ATLAS-FKG/",i:"fa-teeth",n:"Mega Atlas FKG",d:"12 Modul Dentistry"},
+{u:"https://adikds.github.io/STATISTICS_for_ENGINEERS-/",i:"fa-chart-bar",n:"Stats Engineers",d:"Engineering Stats"},
 {u:"https://adikds.github.io/Adi_Newbie/",i:"fa-user-astronaut",n:"Adi Newbie",d:"Portfolio"},
-{u:"https://adikds.github.io/-Doa-Digital-Pro/",i:"fa-hands-praying",n:"Doa Digital Pro",d:"Ensiklopedia Doa"},
-{u:"https://adikds.github.io/AASHTO-SOIL-CLASSIFIER/",i:"fa-road",n:"AASHTO Soil",d:"Klasifikasi Tanah"},
-{u:"https://adikds.github.io/APEX-Foundations-v3.1-Geotechnical-AI-/",i:"fa-foundation",n:"Apex Foundations",d:"Pondasi AI"},
-{u:"https://adikds.github.io/ANALISIS-PONDASI-TELAPAK-/",i:"fa-foundation",n:"Analisis Pondasi",d:"Pondasi Telapak"},
+{u:"https://adikds.github.io/AI-VIDEO-EDITOR/",i:"fa-film",n:"AI Video Editor",d:"5 AI Features"},
+{u:"https://adikds.github.io/SIMULASI-DAN-JADWAL-SERTA-SCOR-WORLD-CUP-2026/",i:"fa-futbol",n:"World Cup 2026",d:"Schedule & Score"},
+{u:"https://www.f15library.com/",i:"fa-book",n:"F15 Library",d:"Digital Library"},
+{u:"https://famelack.com/radio/id",i:"fa-radio",n:"Radio Online",d:"Live Radio"},
+{u:"https://famelack.com/tv/id",i:"fa-tv",n:"TV Famelack",d:"Live Streaming"},
+{u:"https://adikds.github.io/FREE-CLAUDE-CODE/",i:"fa-code",n:"Free Claude Code",d:"Code Tool"},
+{u:"https://newbieonline7.blogspot.com/",i:"fa-blog",n:"Blog Newbie",d:"Personal Blog"},
 ];
 function openApps(){const ov=document.getElementById('appsOverlay'),grid=document.getElementById('appsGrid');grid.innerHTML='';apps.forEach((a,idx)=>{const c=document.createElement('a');c.href=a.u;c.target='_blank';c.className='app-card';c.style.animationDelay=(idx*0.04)+'s';c.innerHTML=`<div class="ico"><i class="fa-solid ${a.i}"></i></div><div class="nm">${a.n}</div><div class="ds">${a.d}</div>`;grid.appendChild(c)});ov.classList.add('active')}
 function closeApps(){document.getElementById('appsOverlay').classList.remove('active')}
@@ -549,7 +603,7 @@ function hasWebGPU(){return'gpu'in navigator}
 function updateWebLLMStatus(){const el=document.getElementById('webllm-status');if(!el)return;if(webllmEngine){el.textContent='Offline AI Ready (SmolLM-135M)';el.style.color='#0f8'}else if(webllmLoading){el.textContent='Loading model... please wait'}else if(hasWebGPU()){el.textContent='WebGPU detected. Click to download offline AI (~270MB).'}else{el.textContent='WebGPU not available. Requires Chrome/Edge desktop.'}}
 async function initWebLLM(){if(webllmEngine||webllmLoading)return;if(!hasWebGPU()){speak('WebGPU not available on this device.');return}webllmLoading=true;updateWebLLMStatus();try{const{CreateMLCEngine}=await import('https://esm.sh/@mlc-ai/web-llm@0.2.78');webllmEngine=await CreateMLCEngine('SmolLM-135M-Instruct-q4f16_1-MLC',{initProgress:(p)=>{const el=document.getElementById('webllm-status');if(el)el.textContent='Downloading offline AI: '+Math.round((p.progress||0)*100)+'%'}});webllmLoading=false;updateWebLLMStatus();speakEnhanced('Offline AI brain loaded. I can now think without internet.');localStorage.setItem('jarvis_webllm','1')}catch(e){webllmLoading=false;speakEnhanced('Failed to load offline AI.');console.error(e)}}
 async function callWebLLM(msg){if(!webllmEngine)return null;try{const rep=await webllmEngine.chat.completions.create({messages:[{role:'system',content:'You are JARVIS, a helpful AI. Keep responses under 100 words.'},{role:'user',content:msg}],max_tokens:200,temperature:0.7});return rep.choices[0]?.message?.content||null}catch(e){return null}}
-function offlineRespond(msg){const m=msg.toLowerCase();let r='';const now=new Date();const days=['MINGGU','SENIN','SELASA','RABU','KAMIS','JUMAT','SABTU'];const months=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];const mathM=m.match(/(\d+)\s*([+\-*/x])\s*(\d+)/);if(mathM){const a=parseInt(mathM[1]),b=parseInt(mathM[3]);let res;if(mathM[2]==='+')res=a+b;else if(mathM[2]==='-')res=a-b;else if(mathM[2]==='*'||mathM[2]==='x')res=a*b;else if(mathM[2]==='/')res=b!==0?(a/b).toFixed(2):'undefined';r=a+' '+mathM[2]+' '+b+' = '+res+', sir.'}else if(m.includes('hello')||m.includes('hi')||m.includes('hey')||m.includes('halo')||m.includes('hai'))r='Hello sir. All systems operational. How may I assist you?';else if(m.includes('time')||m.includes('jam')||m.includes('pukul'))r='Current time: '+now.toLocaleTimeString('en-GB',{timeZone:'Asia/Jakarta'})+' WIB, sir.';else if(m.includes('date')||m.includes('today')||m.includes('hari ini')||m.includes('tanggal'))r='Today is '+days[now.getDay()]+' '+now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear()+', sir.';else if(m.includes('weather')||m.includes('cuaca')){r='28C, partly cloudy. Humidity 65%.';switchModule('weather')}else if(m.includes('thank'))r='You are most welcome, sir.';else if(m.includes('joke')||m.includes('lawak')||m.includes('lucu'))r=['Why dont atoms trust each other? They make up everything.','I told my computer I need a break. It went to sleep.','Why did the AI cross the road? To optimize the chicken route.'][Math.floor(Math.random()*3)];else if(m.includes('who are you')||m.includes('siapa kamu'))r='I am JARVIS - Just A Rather Very Intelligent System.';else if(m.includes('help')||m.includes('bantu')||m.includes('tolong'))r='I can assist with time, date, calculations, system info. Tap AI button to connect Gemini for full intelligence, sir.';else if(m.includes('status')||m.includes('system')||m.includes('sistem')){r='All nominal. CPU '+(30+Math.floor(Math.random()*40))+'%. Memory stable.';switchModule('sys')}else if(m.includes('health')){r='Heart: 72 BPM. O2: 98%.';switchModule('health')}else if(m.includes('space')){r='ISS: 408km altitude.';switchModule('space')}else if(m.includes('calc')||m.includes('calculate')||m.includes('hitung')){const ex=msg.replace(/[^0-9+\-*/.() ]/g,'');if(ex&&ex.length>1){try{r='Result: '+eval(ex)}catch(e){r='Invalid expression'}}else r='Try: calculate 25 * 4'}else if(m.includes('app')||m.includes('open')||m.includes('launch')||m.includes('aplikasi')){openApps();r='Opening applications panel...'}else if(m.includes('jarvis'))r='Yes, sir? I am listening.';else if(m.includes('bye')||m.includes('exit')||m.includes('quit')||m.includes('keluar'))r='Goodbye, sir. JARVIS standing by.';else r='I heard: "'+msg+'". For full AI responses, tap the AI button to connect Gemini. Offline mode has limited capabilities.';return r}
+function offlineRespond(msg){const m=msg.toLowerCase();let r='';const now=new Date();const days=['MINGGU','SENIN','SELASA','RABU','KAMIS','JUMAT','SABTU'];const months=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];const mathM=m.match(/(\d+)\s*([+\-*/x])\s*(\d+)/);if(mathM){const a=parseInt(mathM[1]),b=parseInt(mathM[3]);let res;if(mathM[2]==='+')res=a+b;else if(mathM[2]==='-')res=a-b;else if(mathM[2]==='*'||mathM[2]==='x')res=a*b;else if(mathM[2]==='/')res=b!==0?(a/b).toFixed(2):'undefined';r=a+' '+mathM[2]+' '+b+' = '+res+', sir.'}else if(m.includes('hello')||m.includes('hi')||m.includes('hey')||m.includes('halo')||m.includes('hai'))r='Hello sir. All systems operational. How may I assist you?';else if(m.includes('time')||m.includes('jam')||m.includes('pukul'))r='Current time: '+now.toLocaleTimeString('en-GB',{timeZone:'Asia/Jakarta'})+' WIB, sir.';else if(m.includes('date')||m.includes('today')||m.includes('hari ini')||m.includes('tanggal'))r='Today is '+days[now.getDay()]+' '+now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear()+', sir.';else if(m.includes('weather')||m.includes('cuaca')||m.includes('suhu')||m.includes('temperature')){r=null/* Handled by Windy radar */}else if(m.includes('thank'))r='You are most welcome, sir.';else if(m.includes('joke')||m.includes('lawak')||m.includes('lucu'))r=['Why dont atoms trust each other? They make up everything.','I told my computer I need a break. It went to sleep.','Why did the AI cross the road? To optimize the chicken route.'][Math.floor(Math.random()*3)];else if(m.includes('who are you')||m.includes('siapa kamu'))r='I am JARVIS - Just A Rather Very Intelligent System.';else if(m.includes('help')||m.includes('bantu')||m.includes('tolong'))r='I can assist with time, date, calculations, system info. Tap AI button to connect Gemini for full intelligence, sir.';else if(m.includes('status')||m.includes('system')||m.includes('sistem')){r='All nominal. CPU '+(30+Math.floor(Math.random()*40))+'%. Memory stable.';switchModule('sys')}else if(m.includes('health')){r='Heart: 72 BPM. O2: 98%.';switchModule('health')}else if(m.includes('space')){r='ISS: 408km altitude.';switchModule('space')}else if(m.includes('calc')||m.includes('calculate')||m.includes('hitung')){const ex=msg.replace(/[^0-9+\-*/.() ]/g,'');if(ex&&ex.length>1){try{r='Result: '+eval(ex)}catch(e){r='Invalid expression'}}else r='Try: calculate 25 * 4'}else if(m.includes('app')||m.includes('open')||m.includes('launch')||m.includes('aplikasi')){openApps();r='Opening applications panel...'}else if(m.includes('jarvis'))r='Yes, sir? I am listening.';else if(m.includes('bye')||m.includes('exit')||m.includes('quit')||m.includes('keluar'))r='Goodbye, sir. JARVIS standing by.';else r='I heard: "'+msg+'". For full AI responses, tap the AI button to connect Gemini. Offline mode has limited capabilities.';return r}
 async function callGemini(userMsg){const key=getGeminiKey();if(key){try{const r=await fetch(PROXY_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:userMsg,apiKey:key})});const d=await r.json();if(d.response)return d.response}catch(e){}}if(webllmEngine){const llmR=await callWebLLM(userMsg);if(llmR)return llmR}return offlineRespond(userMsg)}
 
 let bp=0;const bi=setInterval(()=>{bp+=Math.random()*8+2;if(bp>=100){bp=100;clearInterval(bi);setTimeout(()=>{document.getElementById('boot').style.display='none';document.getElementById('main-hud').style.display='flex';initAll();updateAIStatus();speakEnhanced('Systems online. I am JARVIS, your AI assistant.')},500)}document.getElementById('boot-bar').style.width=bp+'%';document.getElementById('boot-pct').textContent=Math.floor(bp)+'%'},100);
@@ -911,6 +965,32 @@ async function sendMsgEnhanced(){
     return;
   }
   
+  /* Windy weather command */
+  if((m.includes('cuaca')||m.includes('weather')||m.includes('suhu')||m.includes('temperature'))&&!m.includes('what is')){
+    const locMatch=query.match(/(?:cuaca|weather|suhu|temperature)\s+(?:di\s+|in\s+|at\s+|for\s+|dalam\s+)?(.+)/i);
+    const loc=locMatch&&locMatch[1]?locMatch[1].trim():'Indonesia';
+    openWindyModal(loc,'wind');
+    const gUrl='https://www.google.com/search?q='+encodeURIComponent('cuaca '+loc+' hari ini');
+    const wUrl='https://id.wikipedia.org/w/index.php?search='+encodeURIComponent('iklim '+loc);
+    const ud2=document.createElement('div');ud2.className='chat-msg chat-user';ud2.textContent=msg;log.appendChild(ud2);log.scrollTop=log.scrollHeight;
+    const td2=document.createElement('div');td2.className='chat-msg chat-ai';renderRichResponse(td2,'CUACA: '+loc.toUpperCase(),'Membuka Windy Radar untuk: '+loc+'. Pilih layer Wind, Rain, Temp, Clouds, atau Radar untuk detail cuaca real-time.',[{url:'https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&metricTemp=default&metricWind=default&zoom=5&overlay=wind&product=ecmwf&level=surface&lat=-2.5&lon=118',label:'Windy Radar',cls:'windy',icon:'fa-cloud-bolt'},{url:gUrl,label:'Google: Cuaca '+loc,cls:'google',icon:'fa-magnifying-glass'},{url:wUrl,label:'Wikipedia: Iklim '+loc,cls:'wiki',icon:'fa-book'}]);log.appendChild(td2);log.scrollTop=log.scrollHeight;
+    speakEnhanced('Menampilkan radar cuaca untuk '+loc+'.');
+    return;
+  }
+  
+  /* Earth Map command */
+  if((m.includes('peta')||m.includes('map of')||m.includes('dimana')||m.includes('where is')||m.includes('lokasi')||m.includes('location of'))&&!m.includes('google earth')){
+    const locMatch=query.match(/(?:peta|map of|dimana|where is|lokasi|location of)\s+(.+)/i);
+    const loc=locMatch&&locMatch[1]?locMatch[1].trim():'Indonesia';
+    openEarthMapModal(loc);
+    const gUrl='https://www.google.com/search?q='+encodeURIComponent('lokasi '+loc);
+    const wUrl='https://id.wikipedia.org/w/index.php?search='+encodeURIComponent(loc);
+    const ud2=document.createElement('div');ud2.className='chat-msg chat-user';ud2.textContent=msg;log.appendChild(ud2);log.scrollTop=log.scrollHeight;
+    const td2=document.createElement('div');td2.className='chat-msg chat-ai';renderRichResponse(td2,'PETA 3D: '+loc.toUpperCase(),'Menampilkan '+loc+' di Google Earth 3D. Gunakan mouse untuk rotate, zoom, dan explore dengan presisi.',[{url:'https://earth.google.com/web/search/'+encodeURIComponent(loc),label:'Google Earth 3D',cls:'earth',icon:'fa-earth-americas'},{url:gUrl,label:'Google: '+loc,cls:'google',icon:'fa-magnifying-glass'},{url:wUrl,label:'Wikipedia: '+loc,cls:'wiki',icon:'fa-book'}]);log.appendChild(td2);log.scrollTop=log.scrollHeight;
+    speakEnhanced('Menampilkan peta tiga dimensi untuk '+loc+'.');
+    return;
+  }
+  
   /* Show typing indicator */
   document.getElementById('core-status').textContent='PROCESSING';
   const td=document.createElement('div');td.className='chat-msg chat-ai';td.textContent=getGeminiKey()?'Thinking...':'Searching...';log.appendChild(td);log.scrollTop=log.scrollHeight;
@@ -940,20 +1020,84 @@ async function sendMsgEnhanced(){
   }
   
   /* Display response */
-  td.textContent=response;
+  if(response&&typeof response==='object'&&response.type){
+    /* Rich HTML response */
+    renderRichResponse(td,response.title,response.body,response.sources);
+    /* Speak the text version */
+    const speakText=(response.title?response.title+'. ':'')+(response.body||'')+(response.sources?' Sumber tersedia di bawah.':'');
+    speakEnhanced(speakText);
+  }else if(typeof response==='string'){
+    /* Plain text response - also make it rich */
+    if(response.includes('\n')){
+      const lines=response.split('\n');
+      const title=lines[0].replace(/[*#]/g,'');
+      const body=lines.slice(1).join('\n').trim();
+      const urls=[...response.matchAll(/https?:\/\/[\S]+/g)].map(m=>m[0].replace(/[*\s]/g,''));
+      if(urls.length>0){
+        const sources=urls.map(u=>{
+          let cls='',icon='fa-link',label=u.length>40?u.substring(0,37)+'...':u;
+          if(u.includes('wikipedia')){cls='wiki';icon='fa-book';label='Wikipedia'}
+          else if(u.includes('google')){cls='google';icon='fa-magnifying-glass';label='Google'}
+          else if(u.includes('copilot')){icon='fa-robot';label='Copilot AI'}
+          return{url:u,label,cls,icon};
+        });
+        renderRichResponse(td,title,body,sources);
+      }else{
+        renderRichResponse(td,title,body,null);
+      }
+    }else{
+      td.textContent=response;
+    }
+    speakEnhanced(response);
+  }else{
+    td.textContent='Maaf, saya tidak dapat memproses permintaan tersebut.';
+    speakEnhanced('Sorry, I could not process that request.');
+  }
   log.scrollTop=log.scrollHeight;
-  document.getElementById('core-status').textContent='SPEAKING';
-  speakEnhanced(response);
   document.getElementById('core-status').textContent='ONLINE';
 }
 
 /* ============================================
-   WIKIPEDIA + GOOGLE SEARCH with detailed results
+   RICH HTML RESPONSE RENDERER
+   ============================================ */
+function renderRichResponse(el, title, body, sources, extraLinks){
+  let html='<div class="rich-title">'+(title||'')+'</div>';
+  html+='<div class="rich-body">'+(body||'')+'</div>';
+  if(sources&&sources.length>0){
+    html+='<div class="rich-source"><span class="rich-src-label">SUMBER & LINK:</span><br/>';
+    for(const s of sources){
+      html+='<a class="rich-link '+s.cls+'" href="'+s.url+'" target="_blank" rel="noopener"><i class="fa-solid '+s.icon+'"></i> '+s.label+'</a> ';
+    }
+    html+='</div>';
+  }
+  if(extraLinks&&extraLinks.length>0){
+    html+='<div style="margin-top:6px">';
+    for(const s of extraLinks){
+      html+='<a class="rich-link '+s.cls+'" href="'+s.url+'" target="_blank" rel="noopener"><i class="fa-solid '+s.icon+'"></i> '+s.label+'</a> ';
+    }
+    html+='</div>';
+  }
+  el.innerHTML=html;
+}
+
+/* ============================================
+   WIKIPEDIA + GOOGLE SEARCH with rich HTML output
    ============================================ */
 async function searchWikipediaAndGoogle(query){
   const gUrl='https://www.google.com/search?q='+encodeURIComponent(query);
   const cUrl='https://copilot.microsoft.com/?q='+encodeURIComponent(query);
   const wikiSearchUrl='https://id.wikipedia.org/w/index.php?search='+encodeURIComponent(query);
+  
+  /* Check if it's a weather/location query */
+  const m=query.toLowerCase();
+  if(m.includes('cuaca')||m.includes('weather')||m.includes('suhu')||m.includes('temperature')){
+    return handleWeatherQuery(query);
+  }
+  
+  /* Check if it's a map/location query */
+  if(m.includes('peta')||m.includes('map')||m.includes('lokasi')||m.includes('location')||m.includes('dimana')||m.includes('where is')){
+    return handleMapQuery(query);
+  }
   
   /* Try Wikipedia ID first */
   let wikiResult=await wikiSearch(query);
@@ -964,22 +1108,141 @@ async function searchWikipediaAndGoogle(query){
   }
   
   if(wikiResult.found){
-    let r='\u{1F4D6} *HASIL WIKIPEDIA*\n\n';
-    r+='*'+wikiResult.title+'*\n\n';
-    r+=wikiResult.extract+'\n\n';
-    r+='\u{1F517} Sumber Wikipedia:\n'+wikiResult.wikiUrl+'\n\n';
-    r+='\u{1F50D} Cari lebih lanjut:\n';
-    r+='Google: '+gUrl+'\n';
-    r+='Copilot AI: '+cUrl;
-    return r;
+    return {type:'wiki',title:wikiResult.title,body:wikiResult.extract,
+      sources:[
+        {url:wikiResult.wikiUrl,label:'Wikipedia: '+wikiResult.title,cls:'wiki',icon:'fa-book'},
+        {url:gUrl,label:'Google Search',cls:'google',icon:'fa-magnifying-glass'},
+        {url:cUrl,label:'Copilot AI',cls:'',icon:'fa-robot'}
+      ]};
   }else{
-    let r='\u{1F50D} *Pencarian untuk:* "'+query+'"\n\n';
-    r+='Topik tidak ditemukan di Wikipedia. Berikut link pencarian:\n\n';
-    r+='\u{1F517} Wikipedia:\n'+wikiSearchUrl+'\n\n';
-    r+='\u{1F517} Google Search:\n'+gUrl+'\n\n';
-    r+='\u{1F517} Copilot AI:\n'+cUrl;
-    return r;
+    return {type:'search',title:'Pencarian: "'+query+'"',
+      body:'Topik tidak ditemukan di Wikipedia. Gunakan link di bawah untuk mencari lebih lanjut.',
+      sources:[
+        {url:wikiSearchUrl,label:'Cari di Wikipedia',cls:'wiki',icon:'fa-book'},
+        {url:gUrl,label:'Google Search',cls:'google',icon:'fa-magnifying-glass'},
+        {url:cUrl,label:'Copilot AI',cls:'',icon:'fa-robot'}
+      ]};
   }
+}
+
+/* ============================================
+   WEATHER QUERY - Windy Radar
+   ============================================ */
+function handleWeatherQuery(query){
+  const m=query.toLowerCase();
+  let location='';
+  const locPatterns=[
+    /cuaca\s+(?:di\s+|dalam\s+)?(.+)/i,
+    /weather\s+(?:in|at|for)\s+(.+)/i,
+    /suhu\s+(?:di\s+|dalam\s+)?(.+)/i
+  ];
+  for(const p of locPatterns){
+    const r=query.match(p);
+    if(r&&r[1]){location=r[1].trim();break}
+  }
+  if(!location)location='Indonesia';
+  
+  const windyUrl='https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&metricTemp=default&metricWind=default&zoom=5&overlay=wind&product=ecmwf&level=surface&lat=-2.5&lon=118';
+  openWindyModal(location,'wind');
+  
+  const gUrl='https://www.google.com/search?q='+encodeURIComponent('cuaca '+location);
+  const wikiUrl='https://id.wikipedia.org/w/index.php?search='+encodeURIComponent('iklim '+location);
+  
+  return {type:'weather',title:'CUACA: '+location.toUpperCase(),
+    body:'Membuka Windy Radar untuk lokasi: '+location+'. Peta cuaca real-time ditampilkan dengan overlay wind, rain, temperature, dan radar. Gunakan tombol di bawah peta untuk switch layer.',
+    sources:[
+      {url:windyUrl,label:'Windy Radar',cls:'windy',icon:'fa-cloud-bolt'},
+      {url:'https://www.google.com/search?q='+encodeURIComponent('cuaca '+location+' hari ini'),label:'Google: Cuaca '+location,cls:'google',icon:'fa-magnifying-glass'},
+      {url:wikiUrl,label:'Wikipedia: Iklim '+location,cls:'wiki',icon:'fa-book'}
+    ]};
+}
+
+/* ============================================
+   MAP QUERY - Earth 3D Map
+   ============================================ */
+function handleMapQuery(query){
+  const m=query.toLowerCase();
+  let location='';
+  const locPatterns=[
+    /peta\s+(?:dari|of|untuk)?\s*(.+)/i,
+    /(?:dimana|where is)\s+(.+)/i,
+    /lokasi\s+(.+)/i,
+    /map\s+(?:of|for)?\s*(.+)/i
+  ];
+  for(const p of locPatterns){
+    const r=query.match(p);
+    if(r&&r[1]){location=r[1].trim();break}
+  }
+  if(!location)location='Indonesia';
+  
+  openEarthMapModal(location);
+  
+  const gUrl='https://www.google.com/search?q='+encodeURIComponent('lokasi '+location);
+  const wikiUrl='https://id.wikipedia.org/w/index.php?search='+encodeURIComponent(location);
+  
+  return {type:'map',title:'PETA 3D: '+location.toUpperCase(),
+    body:'Menampilkan '+location+' di Google Earth 3D. Gunakan mouse untuk rotate, zoom, dan explore. Peta real-time dengan koordinat presisi.',
+    sources:[
+      {url:'https://earth.google.com/web/search/'+encodeURIComponent(location),label:'Google Earth 3D',cls:'earth',icon:'fa-earth-americas'},
+      {url:gUrl,label:'Google: '+location,cls:'google',icon:'fa-magnifying-glass'},
+      {url:wikiUrl,label:'Wikipedia: '+location,cls:'wiki',icon:'fa-book'}
+    ]};
+}
+
+/* ============================================
+   WINDY MODAL FUNCTIONS
+   ============================================ */
+let windyCurrentLocation='Indonesia';
+let windyCurrentLayer='wind';
+function openWindyModal(location,layer){
+  windyCurrentLocation=location||'Indonesia';
+  windyCurrentLayer=layer||'wind';
+  const el=document.getElementById('windyModal');
+  if(!el)return;
+  el.classList.remove('hidden');
+  el.style.opacity='0';
+  setTimeout(()=>{el.style.opacity='1'},30);
+  document.getElementById('windyLocationLabel').textContent='Lokasi: '+windyCurrentLocation+' | Layer: '+windyCurrentLayer.toUpperCase();
+  updateWindyFrame();
+}
+function closeWindyModal(){
+  const el=document.getElementById('windyModal');
+  if(!el)return;
+  el.style.opacity='0';
+  setTimeout(()=>{el.classList.add('hidden')},300);
+}
+function switchWindyLayer(layer){
+  windyCurrentLayer=layer;
+  document.getElementById('windyLocationLabel').textContent='Lokasi: '+windyCurrentLocation+' | Layer: '+layer.toUpperCase();
+  updateWindyFrame();
+}
+function updateWindyFrame(){
+  const frame=document.getElementById('windyFrame');
+  if(!frame)return;
+  const layerMap={wind:'wind',rain:'rain',temp:'temp',clouds:'clouds',radar:'radar'};
+  const overlay=layerMap[windyCurrentLayer]||'wind';
+  frame.src='https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&metricTemp=default&metricWind=default&zoom=5&overlay='+overlay+'&product=ecmwf&level=surface&lat=-2.5&lon=118';
+}
+
+/* ============================================
+   EARTH MAP MODAL FUNCTIONS
+   ============================================ */
+let earthMapCurrentLocation='';
+function openEarthMapModal(location){
+  earthMapCurrentLocation=location||'Indonesia';
+  const el=document.getElementById('earthMapModal');
+  if(!el)return;
+  el.classList.remove('hidden');
+  el.style.opacity='0';
+  setTimeout(()=>{el.style.opacity='1'},30);
+  document.getElementById('earthMapLabel').textContent='Lokasi: '+earthMapCurrentLocation;
+  document.getElementById('earthMapFrame').src='https://earth.google.com/web/search/'+encodeURIComponent(earthMapCurrentLocation);
+}
+function closeEarthMapModal(){
+  const el=document.getElementById('earthMapModal');
+  if(!el)return;
+  el.style.opacity='0';
+  setTimeout(()=>{el.classList.add('hidden')},300);
 }
 
 /* English Wikipedia search */
