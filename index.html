@@ -583,6 +583,7 @@ const apps=[
 {u:"https://famelack.com/tv/id",i:"fa-tv",n:"TV Famelack",d:"Live Streaming"},
 {u:"https://adikds.github.io/FREE-CLAUDE-CODE/",i:"fa-code",n:"Free Claude Code",d:"Code Tool"},
 {u:"https://adikds.github.io/konstruksi-ai/",i:"fa-building-columns",n:"KONAI Pro",d:"Konstruksi AI"},
+{u:"https://adikds.github.io/pabrik-ai/",i:"fa-microchip",n:"Pabrik AI Pro",d:"20+ AI Tools"},
 {u:"https://newbieonline7.blogspot.com/",i:"fa-blog",n:"Blog Newbie",d:"Personal Blog"},
 ];
 function openApps(){const ov=document.getElementById('appsOverlay'),grid=document.getElementById('appsGrid');grid.innerHTML='';apps.forEach((a,idx)=>{const c=document.createElement('a');c.href=a.u;c.target='_blank';c.className='app-card';c.style.animationDelay=(idx*0.04)+'s';c.innerHTML=`<div class="ico"><i class="fa-solid ${a.i}"></i></div><div class="nm">${a.n}</div><div class="ds">${a.d}</div>`;grid.appendChild(c)});ov.classList.add('active')}
