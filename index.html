@@ -250,7 +250,7 @@ input:focus{border-color:#0ff;box-shadow:0 0 10px rgba(0,255,255,.3)}
 <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div>
 <div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
 
-<div id="earth-3d-bg" style="position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.15;transition:opacity .5s"></div>
+<div id="earth-3d-bg" style="position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.22;transition:opacity .8s"></div>
 <div class="hud" id="main-hud" style="display:none">
 
 <div class="top-bar">
@@ -766,32 +766,86 @@ function initScreensaverEarth(){
   });
 }
 
-/* Also init 3D Earth as background (always running, low opacity) */
+/* 3D Earth Orbit Background - Enhanced with clouds, stars & atmospheric glow */
+var bgEarthScene=null,bgEarthCam=null,bgEarthRend=null,bgGlobe=null,bgClouds=null,bgStars=null;
 function initBgEarth(){
   if(typeof THREE==='undefined')return;
   const container=document.getElementById('earth-3d-bg');
   if(!container||container.children.length>0)return;
   const scene=new THREE.Scene();
   const camera=new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,0.1,1000);
-  camera.position.z=8;
+  camera.position.set(3,1.5,7);
+  camera.lookAt(0,0,0);
   const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
   renderer.setSize(window.innerWidth,window.innerHeight);
-  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
   container.appendChild(renderer.domElement);
-  const ambient=new THREE.AmbientLight(0xffffff,0.3);
+
+  /* Lighting */
+  const ambient=new THREE.AmbientLight(0x222244,0.4);
   scene.add(ambient);
-  const dir=new THREE.DirectionalLight(0xffffff,0.8);
-  dir.position.set(5,3,5);
-  scene.add(dir);
+  const sun=new THREE.DirectionalLight(0xffffff,1.2);
+  sun.position.set(5,3,5);
+  scene.add(sun);
+  const rim=new THREE.DirectionalLight(0x0066ff,0.5);
+  rim.position.set(-5,0,-3);
+  scene.add(rim);
+
+  /* Earth globe with texture */
   const tl=new THREE.TextureLoader();
   const earthTex=tl.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg');
-  const earthGeo=new THREE.SphereGeometry(2.5,32,32);
-  const earthMat=new THREE.MeshStandardMaterial({map:earthTex,roughness:0.5});
+  const earthGeo=new THREE.SphereGeometry(2.5,64,64);
+  const earthMat=new THREE.MeshStandardMaterial({map:earthTex,roughness:0.6,metalness:0.1});
   const globe=new THREE.Mesh(earthGeo,earthMat);
   scene.add(globe);
+
+  /* Clouds layer */
+  const cloudsTex=tl.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_1024.png');
+  const cloudGeo=new THREE.SphereGeometry(2.54,64,64);
+  const cloudMat=new THREE.MeshStandardMaterial({map:cloudsTex,transparent:true,opacity:0.7,depthWrite:false});
+  const clouds=new THREE.Mesh(cloudGeo,cloudMat);
+  scene.add(clouds);
+
+  /* Atmospheric glow ring */
+  const atmoGeo=new THREE.SphereGeometry(2.7,64,64);
+  const atmoMat=new THREE.MeshBasicMaterial({color:0x00aaff,transparent:true,opacity:0.08,side:THREE.BackSide});
+  const atmo=new THREE.Mesh(atmoGeo,atmoMat);
+  scene.add(atmo);
+
+  /* Star field */
+  const starGeo=new THREE.BufferGeometry();
+  const starCount=1200;
+  const starPos=new Float32Array(starCount*3);
+  for(let i=0;i<starCount*3;i++)starPos[i]=(Math.random()-0.5)*200;
+  starGeo.setAttribute('position',new THREE.BufferAttribute(starPos,3));
+  const starMat=new THREE.PointsMaterial({color:0xffffff,size:0.06,transparent:true,opacity:0.6,sizeAttenuation:true});
+  const stars=new THREE.Points(starGeo,starMat);
+  scene.add(stars);
+
+  /* Orbit rings (decorative) */
+  const ringGeo=new THREE.RingGeometry(3.5,3.52,128);
+  const ringMat=new THREE.MeshBasicMaterial({color:0x00ffff,transparent:true,opacity:0.12,side:THREE.DoubleSide});
+  const ring1=new THREE.Mesh(ringGeo,ringMat);
+  ring1.rotation.x=Math.PI*0.45;
+  scene.add(ring1);
+  const ring2=new THREE.Mesh(ringGeo.clone(),new THREE.MeshBasicMaterial({color:0x0088ff,transparent:true,opacity:0.08,side:THREE.DoubleSide}));
+  ring2.rotation.x=Math.PI*0.6;
+  ring2.rotation.z=Math.PI*0.3;
+  scene.add(ring2);
+
+  bgEarthScene=scene;bgEarthCam=camera;bgEarthRend=renderer;bgGlobe=globe;bgClouds=clouds;bgStars=stars;
+
   function animate(){
     requestAnimationFrame(animate);
     globe.rotation.y+=0.0008;
+    clouds.rotation.y+=0.0011;
+    stars.rotation.y+=0.00015;
+    ring1.rotation.z+=0.001;
+    ring2.rotation.z-=0.0007;
+    /* Gentle camera drift */
+    camera.position.x=3+Math.sin(Date.now()*0.00008)*0.5;
+    camera.position.y=1.5+Math.cos(Date.now()*0.00006)*0.3;
+    camera.lookAt(0,0,0);
     renderer.render(scene,camera);
   }
   animate();
@@ -847,7 +901,7 @@ function activateScreensaver(){
   el.style.opacity='0';
   /* Boost 3D Earth opacity when screensaver is active */
   const bg=document.getElementById('earth-3d-bg');
-  if(bg)bg.style.opacity='0.6';
+  if(bg)bg.style.opacity='0.7';
   /* Init screensaver earth if not already */
   if(!scEarthRenderer)initScreensaverEarth();
   setTimeout(()=>{el.style.opacity='1'},30);
@@ -862,7 +916,7 @@ function deactivateScreensaver(){
   if(!el)return;
   el.style.opacity='0';
   const bg=document.getElementById('earth-3d-bg');
-  if(bg)bg.style.opacity='0.15';
+  if(bg)bg.style.opacity='0.22';
   setTimeout(()=>{el.classList.add('hidden')},500);
 }
 /* Idle detection - activate screensaver after 2 min */
