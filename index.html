@@ -2621,7 +2621,7 @@ body {
 
       <!-- Apps Hub Button -->
       <button class="nav-btn" onclick="openModal('appsModal')">
-        <i class="fa-solid fa-grip"></i> <span>45+ APPS</span>
+        <i class="fa-solid fa-grip"></i> <span>51+ APPS</span>
       </button>
 
       <!-- Engineering Tools Button -->
@@ -3302,53 +3302,60 @@ body {
 </div>
 
 <script>
-/* DATA REPOSITORY: 45+ APPS OF IR. MOHAMAD HARTADI */
+/* DATA REPOSITORY: 51+ APPS OF IR. MOHAMAD HARTADI */
 const appsList = [
-  { u: "https://adikds.github.io/jarvis-ai/", i: "fa-cat", n: "JARVIS AI", d: "Superagent HUD & Voice", cat: "ai" },
-  { u: "https://adikds.github.io/-Doa-Digital-Pro/", i: "fa-hands-praying", n: "Doa Digital Pro", d: "Cyber Islamic Doa & Dzikir", cat: "religi" },
-  { u: "https://adikds.github.io/Al-Quran-Karim/", i: "fa-book-quran", n: "Al-Quran Karim", d: "Digital Quran, Tafsir & Audio", cat: "religi" },
-  { u: "https://adikds.github.io/ai-meeting-assistant/", i: "fa-microphone", n: "AI Meeting Pro", d: "Notulen Rapat & Voice AI", cat: "ai" },
-  { u: "https://adikds.github.io/NEXUS-PAGE-AGENT-VER.1.0/", i: "fa-network-wired", n: "Nexus Page Agent", d: "Agent Simulator & Orchestration", cat: "ai" },
-  { u: "https://adikds.github.io/APEX-Foundations-v3.1-Geotechnical-AI-/", i: "fa-building", n: "Apex Foundations", d: "Geotechnical AI v3.1 Pile & Raft", cat: "geotek" },
-  { u: "https://adikds.github.io/ANALISIS-PONDASI-TELAPAK-/", i: "fa-layer-group", n: "Analisis Pondasi", d: "Pondasi Telapak & Tiang Pancang", cat: "geotek" },
-  { u: "https://adikds.github.io/AASHTO-SOIL-CLASSIFIER/", i: "fa-mountain", n: "AASHTO Soil", d: "Highway Soil Classification", cat: "geotek" },
-  { u: "https://adikds.github.io/ATLAS-GEOTEKNIK/", i: "fa-earth-americas", n: "Atlas Geoteknik", d: "Expert Geotechnical Validation", cat: "geotek" },
-  { u: "https://adikds.github.io/GeoStructPro-15-Essential-Geotechnical-Formulas/", i: "fa-mountain", n: "GeoStructPro 15", d: "15 Essential Geo Formulas", cat: "geotek" },
-  { u: "https://adikds.github.io/GEOSTRUCT-PRO-20-FORMULA-GEOTECHNICAL/", i: "fa-layer-group", n: "GeoStruct Pro 20", d: "20 Geotechnical Formulas", cat: "geotek" },
-  { u: "https://adikds.github.io/UNIFIED-SOIL-CLASSIFICATION-SYSTEM/", i: "fa-cubes", n: "USCS Soil", d: "Unified Soil Classification", cat: "geotek" },
-  { u: "https://adikds.github.io/WAY-APU-DAM/", i: "fa-building-shield", n: "Way Apu Dam", d: "Dam Safety Analytics & Seepage", cat: "geotek" },
-  { u: "https://adikds.github.io/INTEGRATED-DAM-ANALYTICS-ASSESSMENT-SYSTEM/", i: "fa-water", n: "Dam Analytics", d: "Integrated Dam Assessment", cat: "geotek" },
-  { u: "https://adikds.github.io/SISTEM-MONITORING-SEISMIK-PERINGATAN-TSUNAMI/", i: "fa-wave-square", n: "Monitoring Seismik", d: "InaTEWS Tsunami Warning", cat: "monitoring" },
-  { u: "https://adikds.github.io/MONITORING-PREDIKSI-STATUS-EI-NI-O-LA-NI-A/", i: "fa-temperature-half", n: "El Nino La Nina", d: "Climate Predict & ENSO Index", cat: "monitoring" },
-  { u: "https://adikds.github.io/MONITORING-PREDIKSI-ANGIN-MUSON-INDONESIA/", i: "fa-wind", n: "Monitoring Cuaca", d: "Monsoon Wind & Rainfall", cat: "monitoring" },
-  { u: "https://adikds.github.io/AERORADAR-PRO/", i: "fa-plane", n: "AeroRadar Pro", d: "Aviation Radar & ADS-B Tracking", cat: "monitoring" },
-  { u: "https://adikds.github.io/HYDRACANAL-PRO-GEOMETRIC-DESIGN/", i: "fa-water-ladder", n: "HydraCanal Pro", d: "Open Channel Hydraulic Design", cat: "geotek" },
-  { u: "https://adikds.github.io/EVENT-DRIVEN-ARCHITECTURE-FOR-AI-AGENTS/", i: "fa-sitemap", n: "EDA AI Agents", d: "Event Architecture Workflow", cat: "ai" },
-  { u: "https://adikds.github.io/edu-market-pro/", i: "fa-graduation-cap", n: "EduMarket Pro", d: "E-Learning Digital Marketplace", cat: "bisnis" },
-  { u: "https://adikds.github.io/iptv-terminal/", i: "fa-tv", n: "IPTV Terminal", d: "Streaming TV Indonesia & Global", cat: "ai" },
-  { u: "https://adikds.github.io/TV-streaming-live/", i: "fa-signal", n: "TV Streaming Live", d: "Live Broadcast Channels", cat: "ai" },
-  { u: "https://adikds.github.io/pos-system/", i: "fa-cash-register", n: "POS Terminal Pro", d: "Cashier & Inventory System", cat: "bisnis" },
-  { u: "https://adikds.github.io/Aplikasi_Point_of_Sale_-POS-_atau_sistem_kasir/", i: "fa-store", n: "POS Kasir", d: "Point of Sale Retail", cat: "bisnis" },
-  { u: "https://adikds.github.io/business-suite/", i: "fa-chart-bar", n: "Business Suite", d: "AppSuite & Operations Manager", cat: "bisnis" },
-  { u: "https://adikds.github.io/stock-manager/", i: "fa-boxes-stacked", n: "Stock Manager", d: "Warehouse Inventory System", cat: "bisnis" },
-  { u: "https://adikds.github.io/financial-planner/", i: "fa-chart-line", n: "Financial Planner", d: "Perencana Keuangan OTW 1 Milyar", cat: "bisnis" },
-  { u: "https://adikds.github.io/KEUANGANKU/", i: "fa-wallet", n: "Keuanganku", d: "Personal Finance & Cash Flow", cat: "bisnis" },
-  { u: "https://adikds.github.io/DOKTER-AI/", i: "fa-user-doctor", n: "DOKTER AI EXPERT", d: "Clinical Medical AI Diagnostic", cat: "medis" },
-  { u: "https://adikds.github.io/DARUSSYIFA-MEDIKA/", i: "fa-hospital", n: "DARUSSYIFA V.5.0", d: "Sistem Klinik & Apotek Pintar", cat: "medis" },
-  { u: "https://adikds.github.io/DARUSSYIFA_MEDIKA/", i: "fa-file-medical", n: "DARUSSYIFA V.2.0", d: "Electronic Medical Records", cat: "medis" },
-  { u: "https://adikds.github.io/SMILE-SYIFA-AI/", i: "fa-face-smile", n: "SMILE SYIFA AI", d: "Dental Radiography & Analysis", cat: "medis" },
-  { u: "https://adikds.github.io/SKIN_SYIFA_AI/", i: "fa-magnifying-glass-chart", n: "SKIN SYIFA AI", d: "Skin Lesion & Cancer AI", cat: "medis" },
-  { u: "https://adikds.github.io/NEURO-PSYCH_AI/", i: "fa-brain", n: "NEURO-PSYCH AI", d: "Neuropsychological Analysis", cat: "medis" },
-  { u: "https://adikds.github.io/-MEGA-ATLAS-FKG/", i: "fa-tooth", n: "Mega Atlas FKG", d: "Atlas Kedokteran Gigi 12 Modul", cat: "medis" },
-  { u: "https://adikds.github.io/Mega-Atlas-Kedokteran-Neurologi-Bedah-Syaraf/", i: "fa-brain", n: "Neurology Atlas", d: "Atlas Bedah Syaraf & Anatomi", cat: "medis" },
-  { u: "https://adikds.github.io/STATISTICS_for_ENGINEERS-/", i: "fa-chart-pie", n: "Statistics Engineers", d: "Engineering Statistical Analysis", cat: "geotek" },
-  { u: "https://adikds.github.io/AI-VIDEO-EDITOR/", i: "fa-film", n: "AI Video Editor", d: "Automated AI Video Production", cat: "ai" },
-  { u: "https://adikds.github.io/SIMULASI-DAN-JADWAL-SERTA-SCOR-WORLD-CUP-2026/", i: "fa-futbol", n: "World Cup 2026", d: "Schedule, Simulation & Scores", cat: "ai" },
-  { u: "https://adikds.github.io/FREE-CLAUDE-CODE/", i: "fa-code", n: "Free Claude Code", d: "Interactive Code Generation", cat: "ai" },
-  { u: "https://adikds.github.io/konstruksi-ai/", i: "fa-building-columns", n: "KONAI Pro v4.0", d: "Konstruksi AI Management System", cat: "geotek" },
-  { u: "https://adikds.github.io/pabrik-ai/", i: "fa-microchip", n: "Pabrik AI Pro", d: "20+ Multi-Agent AI Suite", cat: "ai" },
-  { u: "https://adikds.github.io/gudang-bulog/", i: "fa-building-shield", n: "Gudang Bulog FEM", d: "Analisis Struktur Baja Portal", cat: "geotek" },
-  { u: "https://adikds.github.io/Adi_Newbie/", i: "fa-user-astronaut", n: "ADI NEWBIE", d: "Portfolio & Engineering Works", cat: "ai" }
+  { u: "https://adi-kudus.github.io/jarvis-ai/", i: "fa-cat", n: "JARVIS AI", d: "Superagent HUD & Voice", cat: "ai" },
+  { u: "https://adi-kudus.github.io/-Doa-Digital-Pro/", i: "fa-hands-praying", n: "Doa Digital Pro", d: "Cyber Islamic Doa & Dzikir", cat: "religi" },
+  { u: "https://adi-kudus.github.io/Al-Quran-Karim/", i: "fa-book-quran", n: "Al-Quran Karim", d: "Digital Quran, Tafsir & Audio", cat: "religi" },
+  { u: "https://adi-kudus.github.io/ai-meeting-assistant/", i: "fa-microphone", n: "AI Meeting Pro", d: "Notulen Rapat & Voice AI", cat: "ai" },
+  { u: "https://adi-kudus.github.io/NEXUS-PAGE-AGENT-VER.1.0/", i: "fa-water", n: "DAM-GEOTECH PRO v4.6", d: "Analisis Rembesan, Grouting, Lereng & Filter Bendungan", cat: "geotek" },
+  { u: "https://adi-kudus.github.io/APEX-Foundations-v3.1-Geotechnical-AI-/", i: "fa-building", n: "Apex Foundations", d: "Geotechnical AI v3.1 Pile & Raft", cat: "geotek" },
+  { u: "https://adi-kudus.github.io/ANALISIS-PONDASI-TELAPAK-/", i: "fa-layer-group", n: "Analisis Pondasi", d: "Pondasi Telapak & Tiang Pancang", cat: "geotek" },
+  { u: "https://adi-kudus.github.io/AASHTO-SOIL-CLASSIFIER/", i: "fa-mountain", n: "AASHTO Soil", d: "Highway Soil Classification", cat: "geotek" },
+  { u: "https://adi-kudus.github.io/ATLAS-GEOTEKNIK/", i: "fa-earth-americas", n: "Atlas Geoteknik", d: "Expert Geotechnical Validation", cat: "geotek" },
+  { u: "https://adi-kudus.github.io/GeoStructPro-15-Essential-Geotechnical-Formulas/", i: "fa-mountain", n: "GeoStructPro 15", d: "15 Essential Geo Formulas", cat: "geotek" },
+  { u: "https://adi-kudus.github.io/GEOSTRUCT-PRO-20-FORMULA-GEOTECHNICAL/", i: "fa-layer-group", n: "GeoStruct Pro 20", d: "20 Geotechnical Formulas", cat: "geotek" },
+  { u: "https://adi-kudus.github.io/UNIFIED-SOIL-CLASSIFICATION-SYSTEM/", i: "fa-cubes", n: "USCS Soil", d: "Unified Soil Classification", cat: "geotek" },
+  { u: "https://adi-kudus.github.io/WAY-APU-DAM/", i: "fa-building-shield", n: "Way Apu Dam", d: "Dam Safety Analytics & Seepage", cat: "geotek" },
+  { u: "https://adi-kudus.github.io/INTEGRATED-DAM-ANALYTICS-ASSESSMENT-SYSTEM/", i: "fa-water", n: "Dam Analytics", d: "Integrated Dam Assessment", cat: "geotek" },
+  { u: "https://adi-kudus.github.io/SISTEM-MONITORING-SEISMIK-PERINGATAN-TSUNAMI/", i: "fa-wave-square", n: "Monitoring Seismik", d: "InaTEWS Tsunami Warning", cat: "monitoring" },
+  { u: "https://adi-kudus.github.io/MONITORING-PREDIKSI-STATUS-EI-NI-O-LA-NI-A/", i: "fa-temperature-half", n: "El Nino La Nina", d: "Climate Predict & ENSO Index", cat: "monitoring" },
+  { u: "https://adi-kudus.github.io/MONITORING-PREDIKSI-ANGIN-MUSON-INDONESIA/", i: "fa-wind", n: "Monitoring Cuaca", d: "Monsoon Wind & Rainfall", cat: "monitoring" },
+  { u: "https://adi-kudus.github.io/AERORADAR-PRO/", i: "fa-plane", n: "AeroRadar Pro", d: "Aviation Radar & ADS-B Tracking", cat: "monitoring" },
+  { u: "https://adi-kudus.github.io/HYDRACANAL-PRO-GEOMETRIC-DESIGN/", i: "fa-water-ladder", n: "HydraCanal Pro", d: "Open Channel Hydraulic Design", cat: "geotek" },
+  { u: "https://adi-kudus.github.io/EVENT-DRIVEN-ARCHITECTURE-FOR-AI-AGENTS/", i: "fa-sitemap", n: "EDA AI Agents", d: "Event Architecture Workflow", cat: "ai" },
+  { u: "https://adi-kudus.github.io/edu-market-pro/", i: "fa-graduation-cap", n: "EduMarket Pro", d: "E-Learning Digital Marketplace", cat: "bisnis" },
+  { u: "https://adi-kudus.github.io/iptv-terminal/", i: "fa-tv", n: "IPTV Terminal", d: "Streaming TV Indonesia & Global", cat: "ai" },
+  { u: "https://adi-kudus.github.io/TV-streaming-live/", i: "fa-signal", n: "TV Streaming Live", d: "Live Broadcast Channels", cat: "ai" },
+  { u: "https://adi-kudus.github.io/pos-system/", i: "fa-cash-register", n: "POS Terminal Pro", d: "Cashier & Inventory System", cat: "bisnis" },
+  { u: "https://adi-kudus.github.io/Aplikasi_Point_of_Sale_-POS-_atau_sistem_kasir/", i: "fa-store", n: "POS Kasir", d: "Point of Sale Retail", cat: "bisnis" },
+  { u: "https://adi-kudus.github.io/business-suite/", i: "fa-chart-bar", n: "Business Suite", d: "AppSuite & Operations Manager", cat: "bisnis" },
+  { u: "https://adi-kudus.github.io/stock-manager/", i: "fa-boxes-stacked", n: "Stock Manager", d: "Warehouse Inventory System", cat: "bisnis" },
+  { u: "https://adi-kudus.github.io/financial-planner/", i: "fa-chart-line", n: "Financial Planner", d: "Perencana Keuangan OTW 1 Milyar", cat: "bisnis" },
+  { u: "https://adi-kudus.github.io/KEUANGANKU/", i: "fa-wallet", n: "Keuanganku", d: "Personal Finance & Cash Flow", cat: "bisnis" },
+  { u: "https://adi-kudus.github.io/DOKTER-AI/", i: "fa-user-doctor", n: "DOKTER AI EXPERT", d: "Clinical Medical AI Diagnostic", cat: "medis" },
+  { u: "https://adi-kudus.github.io/DARUSSYIFA-MEDIKA/", i: "fa-hospital", n: "DARUSSYIFA V.5.0", d: "Sistem Klinik & Apotek Pintar", cat: "medis" },
+  { u: "https://adi-kudus.github.io/DARUSSYIFA_MEDIKA/", i: "fa-file-medical", n: "DARUSSYIFA V.2.0", d: "Electronic Medical Records", cat: "medis" },
+  { u: "https://adi-kudus.github.io/SMILE-SYIFA-AI/", i: "fa-face-smile", n: "SMILE SYIFA AI", d: "Dental Radiography & Analysis", cat: "medis" },
+  { u: "https://adi-kudus.github.io/SKIN_SYIFA_AI/", i: "fa-magnifying-glass-chart", n: "SKIN SYIFA AI", d: "Skin Lesion & Cancer AI", cat: "medis" },
+  { u: "https://adi-kudus.github.io/NEURO-PSYCH_AI/", i: "fa-brain", n: "NEURO-PSYCH AI", d: "Neuropsychological Analysis", cat: "medis" },
+  { u: "https://adi-kudus.github.io/-MEGA-ATLAS-FKG/", i: "fa-tooth", n: "Mega Atlas FKG", d: "Atlas Kedokteran Gigi 12 Modul", cat: "medis" },
+  { u: "https://adi-kudus.github.io/Mega-Atlas-Kedokteran-Neurologi-Bedah-Syaraf/", i: "fa-brain", n: "Neurology Atlas", d: "Atlas Bedah Syaraf & Anatomi", cat: "medis" },
+  { u: "https://adi-kudus.github.io/STATISTICS_for_ENGINEERS-/", i: "fa-chart-pie", n: "Statistics Engineers", d: "Engineering Statistical Analysis", cat: "geotek" },
+  { u: "https://adi-kudus.github.io/AI-VIDEO-EDITOR/", i: "fa-film", n: "AI Video Editor", d: "Automated AI Video Production", cat: "ai" },
+  { u: "https://adi-kudus.github.io/SIMULASI-DAN-JADWAL-SERTA-SCOR-WORLD-CUP-2026/", i: "fa-futbol", n: "World Cup 2026", d: "Schedule, Simulation & Scores", cat: "ai" },
+  { u: "https://adi-kudus.github.io/FREE-CLAUDE-CODE/", i: "fa-code", n: "Free Claude Code", d: "Interactive Code Generation", cat: "ai" },
+  { u: "https://adi-kudus.github.io/konstruksi-ai/", i: "fa-building-columns", n: "KONAI Pro v4.0", d: "Konstruksi AI Management System", cat: "geotek" },
+  { u: "https://adi-kudus.github.io/pabrik-ai/", i: "fa-microchip", n: "Pabrik AI Pro", d: "20+ Multi-Agent AI Suite", cat: "ai" },
+  { u: "https://adi-kudus.github.io/gudang-bulog/", i: "fa-building-shield", n: "Gudang Bulog FEM", d: "Analisis Struktur Baja Portal", cat: "geotek" },
+  { u: "https://adi-kudus.github.io/Adi_Newbie/", i: "fa-user-astronaut", n: "ADI NEWBIE", d: "Portfolio & Engineering Works", cat: "ai" },
+  { u: "https://adi-kudus.github.io/master-siswa-pro/", i: "fa-user-graduate", n: "Master Siswa Pro", d: "Presensi Biometrik Wajah AI & Geofencing GPS", cat: "bisnis" },
+  { u: "https://adi-kudus.github.io/absensi-karyawan-pro/", i: "fa-clock", n: "Absensi Karyawan Pro", d: "Employee Attendance & KPI System", cat: "bisnis" },
+  { u: "https://adi-kudus.github.io/inatews-pro/", i: "fa-tower-broadcast", n: "InaTEWS Pro v4.0", d: "Multi-Method GMPE Seismic Analysis", cat: "monitoring" },
+  { u: "https://adi-kudus.github.io/dss-sedimen-pro/", i: "fa-water", n: "DSS Sedimen Pro", d: "Sediment Decision Support System", cat: "geotek" },
+  { u: "https://adi-kudus.github.io/him-glof-ews/", i: "fa-mountain-sun", n: "GLOF EWS", d: "Glacial Lake Outburst Flood Warning", cat: "monitoring" },
+  { u: "https://adi-kudus.github.io/GEDUNGRC-PRO-v5.0-PRO/", i: "fa-building-circle-exclamation", n: "Gedung RC Pro", d: "RC Building Structural Analysis", cat: "geotek" },
+  { u: "https://adi-kudus.github.io/emergent-ai-builder/", i: "fa-wand-magic-sparkles", n: "Emergent AI Builder", d: "AI App Builder Chat Generator", cat: "ai" }
 ];
 
 /* Islamic Doa & Wisdom Database */
@@ -4260,8 +4267,8 @@ function processOfflineAI(query) {
       title: "Formula Daya Dukung Terzaghi",
       body: "Rumus umum Daya Dukung Ultimit Terzaghi (Pondasi Menerus):\n\nq_ult = c * Nc + q * Nq + 0.5 * gamma * B * Ngamma\n\nUntuk pondasi telapak persegi:\nq_ult = 1.3 * c * Nc + q * Nq + 0.4 * gamma * B * Ngamma\n\nGunakan modul Solver Geoteknik di panel atas untuk kalkulasi numerik instan.",
       links: [
-        { label: "Apex Foundations AI", url: "https://adikds.github.io/APEX-Foundations-v3.1-Geotechnical-AI-/", icon: "fa-building" },
-        { label: "Atlas Geoteknik", url: "https://adikds.github.io/ATLAS-GEOTEKNIK/", icon: "fa-mountain" }
+        { label: "Apex Foundations AI", url: "https://adi-kudus.github.io/APEX-Foundations-v3.1-Geotechnical-AI-/", icon: "fa-building" },
+        { label: "Atlas Geoteknik", url: "https://adi-kudus.github.io/ATLAS-GEOTEKNIK/", icon: "fa-mountain" }
       ]
     };
   }
@@ -4272,8 +4279,8 @@ function processOfflineAI(query) {
       title: `${w.cat} ◈ ${w.src}`,
       body: (w.ar ? `${w.ar}\n\n` : '') + `"${w.text}"`,
       links: [
-        { label: "Doa Digital Pro", url: "https://adikds.github.io/-Doa-Digital-Pro/", icon: "fa-hands-praying" },
-        { label: "Al-Quran Karim Digital", url: "https://adikds.github.io/Al-Quran-Karim/", icon: "fa-book-quran" }
+        { label: "Doa Digital Pro", url: "https://adi-kudus.github.io/-Doa-Digital-Pro/", icon: "fa-hands-praying" },
+        { label: "Al-Quran Karim Digital", url: "https://adi-kudus.github.io/Al-Quran-Karim/", icon: "fa-book-quran" }
       ]
     };
   }
@@ -5917,7 +5924,7 @@ function evalQuickExpr() {
   }
 }
 
-/* MODAL CONTROLLERS & 45+ APPS FILTERING */
+/* MODAL CONTROLLERS & 51+ APPS FILTERING */
 function openModal(id) {
   playSfx('click');
   const modal = document.getElementById(id);
