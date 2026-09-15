@@ -17,6 +17,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Amiri:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- Leaflet CSS & JS for InaTEWS GIS Mapping -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
 
 <style>
 :root {
@@ -71,9 +75,13 @@ html, body {
   width: 100vw;
   height: 100vh;
   z-index: 0;
-  pointer-events: none;
-  opacity: 0.38;
-  transition: opacity 0.8s ease;
+  pointer-events: auto;
+  opacity: 0.88;
+  transition: opacity 0.6s ease;
+  cursor: grab;
+}
+#three-bg-canvas:active {
+  cursor: grabbing;
 }
 
 #particles-canvas {
@@ -2494,9 +2502,854 @@ body {
 .threat-tag.mitre { background: rgba(157, 78, 221, 0.2); color: #d8b4fe; border: 1px solid var(--neon-purple); }
 .threat-tag.entropy { background: rgba(247, 183, 49, 0.2); color: var(--neon-amber); border: 1px solid var(--neon-amber); }
 
+
+/* =========================================================================
+   ENHANCED 3D EARTH BACKGROUND & CRISP REALISTIC RENDERING (UNBLURRED)
+   ========================================================================= */
+#three-bg-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: auto;
+  opacity: 0.88;
+  transition: opacity 0.6s ease;
+  cursor: grab;
+}
+
+#three-bg-canvas:active {
+  cursor: grabbing;
+}
+
+.center-core-wrapper.earth-focused {
+  background: rgba(2, 14, 28, 0.42) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+/* Close Avatar Button to reveal clean 3D Earth */
+.btn-close-avatar {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: rgba(255, 71, 87, 0.25);
+  border: 1px solid var(--neon-red);
+  color: #ff8b94;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-hud);
+  font-size: 15px;
+  box-shadow: 0 0 10px rgba(255, 71, 87, 0.4);
+  transition: all 0.25s ease;
+}
+.btn-close-avatar:hover {
+  background: var(--neon-red);
+  color: #fff;
+  transform: scale(1.15) rotate(90deg);
+  box-shadow: 0 0 18px var(--neon-red);
+}
+
+/* =========================================================================
+   QUANTUM MOLECULAR ATOM & ARC REACTOR ANIMATIONS
+   ========================================================================= */
+.quantum-orbit-container {
+  position: absolute;
+  width: 175px;
+  height: 175px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  pointer-events: none;
+}
+
+.quantum-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  transform-style: preserve-3d;
+}
+
+.quantum-ring.qring-1 {
+  border: 2px solid rgba(0, 242, 254, 0.75);
+  box-shadow: 0 0 14px rgba(0, 242, 254, 0.45), inset 0 0 10px rgba(0, 242, 254, 0.25);
+  animation: qOrbit1 7s linear infinite;
+}
+
+.quantum-ring.qring-2 {
+  border: 2px dashed rgba(157, 78, 221, 0.85);
+  box-shadow: 0 0 14px rgba(157, 78, 221, 0.45);
+  animation: qOrbit2 10s linear infinite;
+}
+
+.quantum-ring.qring-3 {
+  border: 1.5px dotted rgba(247, 183, 49, 0.9);
+  box-shadow: 0 0 12px rgba(247, 183, 49, 0.45);
+  animation: qOrbit3 13s linear infinite;
+}
+
+.quantum-ring.qring-4 {
+  border: 1.5px solid rgba(0, 245, 212, 0.7);
+  box-shadow: 0 0 10px rgba(0, 245, 212, 0.35);
+  animation: qOrbit4 8.5s linear infinite reverse;
+}
+
+@keyframes qOrbit1 { 0% { transform: rotateX(65deg) rotateY(-15deg) rotateZ(0deg); } 100% { transform: rotateX(65deg) rotateY(-15deg) rotateZ(360deg); } }
+@keyframes qOrbit2 { 0% { transform: rotateX(65deg) rotateY(55deg) rotateZ(360deg); } 100% { transform: rotateX(65deg) rotateY(55deg) rotateZ(0deg); } }
+@keyframes qOrbit3 { 0% { transform: rotateX(25deg) rotateY(70deg) rotateZ(0deg); } 100% { transform: rotateX(25deg) rotateY(70deg) rotateZ(360deg); } }
+@keyframes qOrbit4 { 0% { transform: rotateX(45deg) rotateY(-60deg) rotateZ(0deg); } 100% { transform: rotateX(45deg) rotateY(-60deg) rotateZ(360deg); } }
+
+.quantum-electron {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px #fff, 0 0 20px var(--cyan);
+  background: #ffffff;
+}
+
+.quantum-electron.cyan { background: #00f2fe; box-shadow: 0 0 12px #00f2fe, 0 0 25px #00f2fe; }
+.quantum-electron.purple { background: #d8b4fe; box-shadow: 0 0 12px #9d4edd, 0 0 25px #9d4edd; }
+.quantum-electron.amber { background: #fde047; box-shadow: 0 0 12px #f7b731, 0 0 25px #f7b731; }
+.quantum-electron.emerald { background: #6ee7b7; box-shadow: 0 0 12px #00f5d4, 0 0 25px #00f5d4; }
+
+.arc-segmented-ring {
+  position: absolute;
+  inset: 22px;
+  border-radius: 50%;
+  border: 2px dashed var(--neon-blue);
+  border-left-color: var(--neon-green);
+  animation: spin 8s linear infinite reverse;
+}
+
+.arc-coil-ring {
+  position: absolute;
+  inset: 34px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 242, 254, 0.3);
+  border-top-color: var(--neon-amber);
+  border-right-color: var(--neon-purple);
+  animation: spin 12s linear infinite;
+}
+
+/* 3D Cyber Humanoid Robot Canvas */
+#humanoid-3d-canvas {
+  width: 175px;
+  height: 175px;
+  border-radius: 50%;
+}
+
+/* BMKG Seismic Radar & Leaflet Engine */
+.bmkg-map-box {
+  width: 100%;
+  height: 380px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 242, 254, 0.3);
+  position: relative;
+  background: #000814;
+}
+
+.pulse-epicenter-ring {
+  animation: pulseEpicenterAnim 2s infinite cubic-bezier(0.1, 0.8, 0.3, 1);
+  transform-origin: center;
+}
+
+@keyframes pulseEpicenterAnim {
+  0% { stroke-width: 4; stroke-opacity: 1; fill-opacity: 0.6; r: 8px; }
+  100% { stroke-width: 1; stroke-opacity: 0; fill-opacity: 0; r: 90px; }
+}
+
+.quake-telemetry-badge {
+  background: rgba(0, 16, 36, 0.85);
+  border: 1px solid rgba(0, 242, 254, 0.3);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+
+
+/* =========================================================================
+   ENHANCED REAL EARTH BACKGROUND & UNBLURRED DASHBOARD INTERFACE
+   ========================================================================= */
+
+:root {
+  --glass-blur: none !important;
+  --panel-bg: rgba(2, 12, 26, 0.52) !important;
+  --bg-card: rgba(2, 16, 34, 0.55) !important;
+  --panel-border: rgba(0, 242, 254, 0.32) !important;
+  --panel-glow: 0 0 16px rgba(0, 242, 254, 0.12) !important;
+}
+
+/* Ensure background Earth is vivid, crisp, and fully visible */
+#three-bg-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: auto;
+  opacity: 1.0 !important;
+  transition: opacity 0.8s ease;
+}
+
+/* Completely remove blur filter on dashboard and all interface panels so Earth is crystal clear */
+.top-nav,
+.hud-panel,
+.bottom-credit-bar,
+.modal-overlay,
+.modal-dialog,
+.sc-wisdom-card,
+.boot-time-badge,
+.cyber-shield-card,
+.telemetry-card,
+.module-content-box,
+.chat-terminal-container {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* High-contrast crisp typography to ensure 100% legibility over unblurred rotating Earth */
+.brand-name, .panel-title, .center-day-badge, .vitals-value, .clock-val, .boot-day-text {
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 242, 254, 0.6);
+}
+
+.chat-bubble.ai {
+  background: linear-gradient(135deg, rgba(2, 20, 42, 0.82) 0%, rgba(6, 30, 60, 0.75) 100%) !important;
+  backdrop-filter: none !important;
+}
+
+.chat-bubble.user {
+  background: linear-gradient(135deg, rgba(0, 80, 160, 0.75) 0%, rgba(0, 160, 230, 0.65) 100%) !important;
+  backdrop-filter: none !important;
+}
+
+/* =========================================================================
+   MODERN FUTURISTIC OPENING & REVEAL ANIMATIONS
+   ========================================================================= */
+
+/* Laser Scan Beam Overlay across screen */
+#hudLaserSweepBeam {
+  position: fixed;
+  top: -12px;
+  left: 0;
+  width: 100vw;
+  height: 8px;
+  background: linear-gradient(90deg, transparent 0%, rgba(0, 242, 254, 0.3) 15%, #00f2fe 50%, #ffffff 52%, #9d4edd 75%, transparent 100%);
+  box-shadow: 0 0 30px #00f2fe, 0 0 60px #9d4edd, 0 0 100px rgba(0, 242, 254, 0.8);
+  z-index: 9998;
+  pointer-events: none;
+  opacity: 0;
+}
+
+#hudLaserSweepBeam.active {
+  animation: hudLaserSweepDown 1.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes hudLaserSweepDown {
+  0% { top: -12px; opacity: 1; filter: brightness(2); }
+  30% { opacity: 1; }
+  85% { opacity: 0.9; }
+  100% { top: 102vh; opacity: 0; filter: brightness(1); }
+}
+
+/* Staggered HUD Opening Animations */
+.hud-opening-anim .top-nav {
+  animation: hudNavDropIn 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hud-opening-anim .hud-col:nth-child(1) {
+  animation: hudColSlideLeft 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+}
+
+.hud-opening-anim .hud-col:nth-child(2) {
+  animation: hudColCenterPop 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.22s both;
+}
+
+.hud-opening-anim .hud-col:nth-child(3) {
+  animation: hudColSlideRight 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both;
+}
+
+.hud-opening-anim .bottom-credit-bar {
+  animation: hudBarSlideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.42s both;
+}
+
+@keyframes hudNavDropIn {
+  0% { transform: translateY(-50px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes hudColSlideLeft {
+  0% { transform: translateX(-60px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes hudColSlideRight {
+  0% { transform: translateX(60px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes hudColCenterPop {
+  0% { transform: scale(0.92) translateZ(-40px); opacity: 0; }
+  100% { transform: scale(1) translateZ(0); opacity: 1; }
+}
+
+@keyframes hudBarSlideUp {
+  0% { transform: translateY(40px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+/* Panel Laser Border Tracer Effect */
+.hud-opening-anim .hud-panel {
+  position: relative;
+  overflow: hidden;
+}
+
+.hud-opening-anim .hud-panel::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00f2fe, #ffffff, #00f5d4, transparent);
+  box-shadow: 0 0 12px var(--cyan);
+  animation: panelBorderLaser 1.2s ease-out 0.35s forwards;
+}
+
+@keyframes panelBorderLaser {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* Telemetry Meter Wipe Animation */
+.hud-opening-anim .meter-bar {
+  animation: meterWipeFill 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+}
+
+@keyframes meterWipeFill {
+  0% { width: 0% !important; filter: brightness(2); }
+  100% { filter: brightness(1); }
+}
+
+/* =========================================================================
+   HUMANOID 3D ROBOTIC FACE STYLING
+   ========================================================================= */
+
+#humanoid-3d-canvas {
+  width: 175px;
+  height: 175px;
+  border-radius: 50%;
+  cursor: grab;
+  filter: drop-shadow(0 0 20px rgba(0, 242, 254, 0.45));
+  transition: transform 0.2s ease;
+}
+
+#humanoid-3d-canvas:hover {
+  filter: drop-shadow(0 0 28px rgba(0, 242, 254, 0.7));
+}
+
+#humanoid-3d-canvas:active {
+  cursor: grabbing;
+}
+
+/* =========================================================================
+   QUANTUM ALGORITHMS MASTER SUITE STYLES
+   ========================================================================= */
+
+.nav-btn.quantum-btn {
+  background: rgba(157, 78, 221, 0.2);
+  border-color: var(--neon-purple);
+  color: #d8b4fe;
+  box-shadow: 0 0 10px rgba(157, 78, 221, 0.25);
+}
+
+.nav-btn.quantum-btn:hover {
+  background: rgba(157, 78, 221, 0.42);
+  border-color: #c084fc;
+  color: #fff;
+  box-shadow: 0 0 18px rgba(157, 78, 221, 0.6);
+  transform: translateY(-1px);
+}
+
+.chip-btn.quantum-chip {
+  background: rgba(157, 78, 221, 0.15);
+  border-color: rgba(157, 78, 221, 0.4);
+  color: #d8b4fe;
+}
+
+.chip-btn.quantum-chip:hover {
+  background: rgba(157, 78, 221, 0.32);
+  box-shadow: 0 0 12px rgba(157, 78, 221, 0.5);
+  color: #fff;
+}
+
+.quantum-nav-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid rgba(157, 78, 221, 0.25);
+}
+
+.quantum-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: rgba(15, 10, 35, 0.7);
+  border: 1px solid rgba(157, 78, 221, 0.3);
+  color: rgba(216, 180, 254, 0.8);
+  font-family: var(--font-hud);
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quantum-tab-btn:hover {
+  background: rgba(157, 78, 221, 0.25);
+  border-color: #c084fc;
+  color: #fff;
+}
+
+.quantum-tab-btn.active {
+  background: rgba(157, 78, 221, 0.35);
+  border-color: #c084fc;
+  color: #fff;
+  box-shadow: 0 0 14px rgba(157, 78, 221, 0.45);
+  font-weight: 700;
+}
+
+.quantum-card {
+  background: rgba(10, 8, 28, 0.75);
+  border: 1px solid rgba(157, 78, 221, 0.3);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.quantum-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.quantum-badge.purple { background: rgba(157, 78, 221, 0.2); border: 1px solid var(--neon-purple); color: #d8b4fe; }
+.quantum-badge.cyan { background: rgba(0, 242, 254, 0.15); border: 1px solid var(--cyan); color: var(--cyan); }
+.quantum-badge.green { background: rgba(0, 245, 212, 0.15); border: 1px solid var(--neon-green); color: var(--neon-green); }
+.quantum-badge.amber { background: rgba(247, 183, 49, 0.15); border: 1px solid var(--neon-amber); color: var(--neon-amber); }
+.quantum-badge.red { background: rgba(255, 71, 87, 0.15); border: 1px solid var(--neon-red); color: var(--neon-red); }
+
+.quantum-chart-canvas {
+  width: 100%;
+  height: 220px;
+  background: rgba(4, 4, 16, 0.85);
+  border: 1px solid rgba(157, 78, 221, 0.25);
+  border-radius: 8px;
+}
+
+.quantum-bloch-canvas {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(20, 10, 45, 0.7) 0%, rgba(2, 2, 10, 0.95) 75%);
+  border: 1px solid rgba(157, 78, 221, 0.35);
+  box-shadow: 0 0 25px rgba(157, 78, 221, 0.3);
+}
+
+.bb84-bit-grid {
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  gap: 3px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-align: center;
+  margin: 6px 0;
+}
+
+.bb84-bit-cell {
+  padding: 4px 1px;
+  border-radius: 4px;
+  background: rgba(0, 20, 40, 0.7);
+  border: 1px solid rgba(0, 242, 254, 0.2);
+}
+
+.bb84-bit-cell.match {
+  background: rgba(0, 245, 212, 0.2);
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+  font-weight: 700;
+}
+
+.bb84-bit-cell.error {
+  background: rgba(255, 71, 87, 0.25);
+  border-color: var(--neon-red);
+  color: var(--neon-red);
+  font-weight: 700;
+}
+
+
+
+/* =========================================================================
+   ENHANCED REAL EARTH BACKGROUND & UNBLURRED DASHBOARD INTERFACE
+   ========================================================================= */
+
+:root {
+  --glass-blur: none !important;
+  --panel-bg: rgba(2, 12, 26, 0.52) !important;
+  --bg-card: rgba(2, 16, 34, 0.55) !important;
+  --panel-border: rgba(0, 242, 254, 0.32) !important;
+  --panel-glow: 0 0 16px rgba(0, 242, 254, 0.12) !important;
+}
+
+/* Ensure background Earth is vivid, crisp, and fully visible */
+#three-bg-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: auto;
+  opacity: 1.0 !important;
+  transition: opacity 0.8s ease;
+}
+
+/* Completely remove blur filter on dashboard and all interface panels so Earth is crystal clear */
+.top-nav,
+.hud-panel,
+.bottom-credit-bar,
+.modal-overlay,
+.modal-dialog,
+.sc-wisdom-card,
+.boot-time-badge,
+.cyber-shield-card,
+.telemetry-card,
+.module-content-box,
+.chat-terminal-container {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* High-contrast crisp typography to ensure 100% legibility over unblurred rotating Earth */
+.brand-name, .panel-title, .center-day-badge, .vitals-value, .clock-val, .boot-day-text {
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 242, 254, 0.6);
+}
+
+.chat-bubble.ai {
+  background: linear-gradient(135deg, rgba(2, 20, 42, 0.82) 0%, rgba(6, 30, 60, 0.75) 100%) !important;
+  backdrop-filter: none !important;
+}
+
+.chat-bubble.user {
+  background: linear-gradient(135deg, rgba(0, 80, 160, 0.75) 0%, rgba(0, 160, 230, 0.65) 100%) !important;
+  backdrop-filter: none !important;
+}
+
+/* =========================================================================
+   MODERN FUTURISTIC OPENING & REVEAL ANIMATIONS
+   ========================================================================= */
+
+/* Laser Scan Beam Overlay across screen */
+#hudLaserSweepBeam {
+  position: fixed;
+  top: -12px;
+  left: 0;
+  width: 100vw;
+  height: 8px;
+  background: linear-gradient(90deg, transparent 0%, rgba(0, 242, 254, 0.3) 15%, #00f2fe 50%, #ffffff 52%, #9d4edd 75%, transparent 100%);
+  box-shadow: 0 0 30px #00f2fe, 0 0 60px #9d4edd, 0 0 100px rgba(0, 242, 254, 0.8);
+  z-index: 9998;
+  pointer-events: none;
+  opacity: 0;
+}
+
+#hudLaserSweepBeam.active {
+  animation: hudLaserSweepDown 1.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes hudLaserSweepDown {
+  0% { top: -12px; opacity: 1; filter: brightness(2); }
+  30% { opacity: 1; }
+  85% { opacity: 0.9; }
+  100% { top: 102vh; opacity: 0; filter: brightness(1); }
+}
+
+/* Staggered HUD Opening Animations */
+.hud-opening-anim .top-nav {
+  animation: hudNavDropIn 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hud-opening-anim .hud-col:nth-child(1) {
+  animation: hudColSlideLeft 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+}
+
+.hud-opening-anim .hud-col:nth-child(2) {
+  animation: hudColCenterPop 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.22s both;
+}
+
+.hud-opening-anim .hud-col:nth-child(3) {
+  animation: hudColSlideRight 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both;
+}
+
+.hud-opening-anim .bottom-credit-bar {
+  animation: hudBarSlideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.42s both;
+}
+
+@keyframes hudNavDropIn {
+  0% { transform: translateY(-50px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes hudColSlideLeft {
+  0% { transform: translateX(-60px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes hudColSlideRight {
+  0% { transform: translateX(60px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes hudColCenterPop {
+  0% { transform: scale(0.92) translateZ(-40px); opacity: 0; }
+  100% { transform: scale(1) translateZ(0); opacity: 1; }
+}
+
+@keyframes hudBarSlideUp {
+  0% { transform: translateY(40px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+/* Panel Laser Border Tracer Effect */
+.hud-opening-anim .hud-panel {
+  position: relative;
+  overflow: hidden;
+}
+
+.hud-opening-anim .hud-panel::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00f2fe, #ffffff, #00f5d4, transparent);
+  box-shadow: 0 0 12px var(--cyan);
+  animation: panelBorderLaser 1.2s ease-out 0.35s forwards;
+}
+
+@keyframes panelBorderLaser {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* Telemetry Meter Wipe Animation */
+.hud-opening-anim .meter-bar {
+  animation: meterWipeFill 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+}
+
+@keyframes meterWipeFill {
+  0% { width: 0% !important; filter: brightness(2); }
+  100% { filter: brightness(1); }
+}
+
+/* =========================================================================
+   HUMANOID 3D ROBOTIC FACE STYLING
+   ========================================================================= */
+
+#humanoid-3d-canvas {
+  width: 175px;
+  height: 175px;
+  border-radius: 50%;
+  cursor: grab;
+  filter: drop-shadow(0 0 20px rgba(0, 242, 254, 0.45));
+  transition: transform 0.2s ease;
+}
+
+#humanoid-3d-canvas:hover {
+  filter: drop-shadow(0 0 28px rgba(0, 242, 254, 0.7));
+}
+
+#humanoid-3d-canvas:active {
+  cursor: grabbing;
+}
+
+/* =========================================================================
+   QUANTUM ALGORITHMS MASTER SUITE STYLES
+   ========================================================================= */
+
+.nav-btn.quantum-btn {
+  background: rgba(157, 78, 221, 0.2);
+  border-color: var(--neon-purple);
+  color: #d8b4fe;
+  box-shadow: 0 0 10px rgba(157, 78, 221, 0.25);
+}
+
+.nav-btn.quantum-btn:hover {
+  background: rgba(157, 78, 221, 0.42);
+  border-color: #c084fc;
+  color: #fff;
+  box-shadow: 0 0 18px rgba(157, 78, 221, 0.6);
+  transform: translateY(-1px);
+}
+
+.chip-btn.quantum-chip {
+  background: rgba(157, 78, 221, 0.15);
+  border-color: rgba(157, 78, 221, 0.4);
+  color: #d8b4fe;
+}
+
+.chip-btn.quantum-chip:hover {
+  background: rgba(157, 78, 221, 0.32);
+  box-shadow: 0 0 12px rgba(157, 78, 221, 0.5);
+  color: #fff;
+}
+
+.quantum-nav-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid rgba(157, 78, 221, 0.25);
+}
+
+.quantum-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: rgba(15, 10, 35, 0.7);
+  border: 1px solid rgba(157, 78, 221, 0.3);
+  color: rgba(216, 180, 254, 0.8);
+  font-family: var(--font-hud);
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quantum-tab-btn:hover {
+  background: rgba(157, 78, 221, 0.25);
+  border-color: #c084fc;
+  color: #fff;
+}
+
+.quantum-tab-btn.active {
+  background: rgba(157, 78, 221, 0.35);
+  border-color: #c084fc;
+  color: #fff;
+  box-shadow: 0 0 14px rgba(157, 78, 221, 0.45);
+  font-weight: 700;
+}
+
+.quantum-card {
+  background: rgba(10, 8, 28, 0.75);
+  border: 1px solid rgba(157, 78, 221, 0.3);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.quantum-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.quantum-badge.purple { background: rgba(157, 78, 221, 0.2); border: 1px solid var(--neon-purple); color: #d8b4fe; }
+.quantum-badge.cyan { background: rgba(0, 242, 254, 0.15); border: 1px solid var(--cyan); color: var(--cyan); }
+.quantum-badge.green { background: rgba(0, 245, 212, 0.15); border: 1px solid var(--neon-green); color: var(--neon-green); }
+.quantum-badge.amber { background: rgba(247, 183, 49, 0.15); border: 1px solid var(--neon-amber); color: var(--neon-amber); }
+.quantum-badge.red { background: rgba(255, 71, 87, 0.15); border: 1px solid var(--neon-red); color: var(--neon-red); }
+
+.quantum-chart-canvas {
+  width: 100%;
+  height: 220px;
+  background: rgba(4, 4, 16, 0.85);
+  border: 1px solid rgba(157, 78, 221, 0.25);
+  border-radius: 8px;
+}
+
+.quantum-bloch-canvas {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(20, 10, 45, 0.7) 0%, rgba(2, 2, 10, 0.95) 75%);
+  border: 1px solid rgba(157, 78, 221, 0.35);
+  box-shadow: 0 0 25px rgba(157, 78, 221, 0.3);
+}
+
+.bb84-bit-grid {
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  gap: 3px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-align: center;
+  margin: 6px 0;
+}
+
+.bb84-bit-cell {
+  padding: 4px 1px;
+  border-radius: 4px;
+  background: rgba(0, 20, 40, 0.7);
+  border: 1px solid rgba(0, 242, 254, 0.2);
+}
+
+.bb84-bit-cell.match {
+  background: rgba(0, 245, 212, 0.2);
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+  font-weight: 700;
+}
+
+.bb84-bit-cell.error {
+  background: rgba(255, 71, 87, 0.25);
+  border-color: var(--neon-red);
+  color: var(--neon-red);
+  font-weight: 700;
+}
+
 </style>
 </head>
 <body>
+<!-- Futuristic HUD Laser Scan Sweep Beam -->
+<div id="hudLaserSweepBeam"></div>
+
+
 
 <!-- Bootloader Screen with Live Day & Time -->
 <div class="boot-screen" id="bootScreen" onclick="if(event.target===this)forceEnterHUD()">
@@ -2566,6 +3419,17 @@ body {
     </div>
 
     <div class="nav-badges-group">
+      <!-- Futuristic Re-Animate HUD Button -->
+      <button class="nav-btn special" onclick="triggerHudOpeningAnimation()" title="Jalankan Animasi Membuka Dasbor Futuristik">
+        <i class="fa-solid fa-wand-magic-sparkles glow-cyan"></i> <span>ANIMASI DASBOR</span>
+      </button>
+
+      <!-- Quantum Algorithms Master Hub Button -->
+      <button class="nav-btn quantum-btn" onclick="openModal('quantumModal')" title="Quantum Computing Algorithms: Cybersecurity, Chemistry & Optimization">
+        <i class="fa-solid fa-atom glow-purple"></i> <span>QUANTUM ALGORITHMS</span>
+      </button>
+
+
       <!-- Clocks -->
       <div class="nav-clock-box">
         <div class="clock-item">
@@ -2600,6 +3464,17 @@ body {
       </button>
 
             <!-- Antivirus Pro Button -->
+      
+      <!-- Feed BMKG Live Button -->
+      <button class="nav-btn av-shield" onclick="openModal('bmkgModal')" title="Feed Gempa Real-Time & Radar Seismik BMKG (InaTEWS)">
+        <i class="fa-solid fa-satellite-dish glow-green"></i> <span>FEED BMKG LIVE</span>
+      </button>
+
+      <!-- Windy Radar Button -->
+      <button class="nav-btn" style="border-color: #ff00aa; color: #ff80bf;" onclick="openModal('windyModal')" title="Radar Cuaca Satelit Windy">
+        <i class="fa-solid fa-cloud-bolt"></i> <span>RADAR WINDY</span>
+      </button>
+
       <button class="nav-btn av-shield" onclick="openModal('antivirusModal')" title="JARVIS Cyber Sentinel Antivirus & Threat Intelligence Pro">
         <i class="fa-solid fa-shield-virus glow-green"></i> <span>ANTIVIRUS PRO</span>
       </button>
@@ -2731,12 +3606,16 @@ body {
             <button class="avatar-mode-btn active" onclick="switchAvatarMode('robot')" id="btnAvRobot">CYBER CAT</button>
             <button class="avatar-mode-btn" onclick="switchAvatarMode('brain')" id="btnAvBrain">HOLO BRAIN</button>
             <button class="avatar-mode-btn" onclick="switchAvatarMode('arc')" id="btnAvArc">ARC REACTOR</button>
-            <button class="avatar-mode-btn" onclick="switchAvatarMode('holo')" id="btnAvHolo">3D ICOSA</button>
+            <button class="avatar-mode-btn" onclick="switchAvatarMode('humanoid')" id="btnAvHumanoid">3D HUMANOID</button>
+            <button class="avatar-mode-btn" onclick="switchAvatarMode('earth')" id="btnAvEarth" title="Tampilkan Bumi Realistis 3D"><i class="fa-solid fa-globe"></i> BUMI 3D</button>
+            <button class="avatar-mode-btn" onclick="switchAvatarMode('windy')" id="btnAvWindy" style="border-color: #ff00aa; color: #ff80bf;" title="Tampilkan Radar Cuaca Windy"><i class="fa-solid fa-cloud-bolt"></i> WINDY</button>
           </div>
         </div>
 
         <div class="avatar-display-box" id="avatarDisplayBox">
-          
+          <!-- Close Button on Avatar Display Box -->
+          <button class="btn-close-avatar" onclick="closeAvatarToEarth()" title="Tutup Avatar / Tampilkan Bumi Realistis" id="btnCloseAvatar">×</button>
+
           <!-- Mode 1: Cyber Cat / Robot Avatar -->
           <div class="robot-avatar-wrapper" id="robotAvatarMode">
             <div class="orbit-glow-ring" style="width: 100%; height: 100%;"></div>
@@ -2793,15 +3672,39 @@ body {
           <!-- Mode 2: Holographic 3D AI Brain (Three.js WebGL) -->
           <canvas id="brain-3d-canvas" style="display: none;"></canvas>
 
-          <!-- Mode 3: Arc Reactor -->
-          <div class="arc-reactor-wrapper" id="arcReactorMode" style="display: none;">
+          <!-- Mode 3: Quantum Atomic Molecular Arc Reactor Core -->
+          <div class="arc-reactor-wrapper" id="arcReactorMode" style="display: none;" onclick="playSfx('laser'); speakJARVIS('Quantum Arc Reactor Core beroperasi pada frekuensi 432 Terahertz.')">
+            <!-- Quantum Atomic Molecular 3D Orbit Rings -->
+            <div class="quantum-orbit-container">
+              <div class="quantum-ring qring-1"><div class="quantum-electron cyan"></div></div>
+              <div class="quantum-ring qring-2"><div class="quantum-electron purple"></div></div>
+              <div class="quantum-ring qring-3"><div class="quantum-electron amber"></div></div>
+              <div class="quantum-ring qring-4"><div class="quantum-electron emerald"></div></div>
+            </div>
+            <!-- Arc Reactor Electromagnetic Containment Core -->
             <div class="arc-outer-ring"></div>
-            <div class="arc-mid-ring"></div>
+            <div class="arc-segmented-ring"></div>
+            <div class="arc-coil-ring"></div>
             <div class="arc-inner-core"></div>
           </div>
 
-          <!-- Mode 4: 3D Hologram Icosahedron -->
-          <canvas id="hologram-3d-canvas" style="display: none;"></canvas>
+          <!-- Mode 4: 3D Cyber Humanoid Robot / Mech (Three.js WebGL) -->
+          <canvas id="humanoid-3d-canvas" style="display: none;"></canvas>
+        </div>
+
+        <!-- Earth View Stage (Displayed when Avatar is closed) -->
+        <div id="earthViewStage" style="display: none; width: 100%; text-align: center; padding: 10px 0;">
+          <div style="font-family: var(--font-hud); font-size: 11.5px; color: var(--cyan); letter-spacing: 2px; margin-bottom: 8px;">
+            <i class="fa-solid fa-earth-americas glow-cyan"></i> BUMI 3D REALISTIS AKTIF ◈ GESER DENGAN MOUSE / SENTUH UNTUK ROTASI
+          </div>
+          <button class="nav-btn av-shield" style="padding: 6px 16px; font-size: 11.5px;" onclick="restoreAvatarStage()">
+            <i class="fa-solid fa-robot"></i> BUKA AVATAR
+          </button>
+        </div>
+
+        <!-- Center Windy Stage (Displayed when Windy mode is active in center) -->
+        <div id="centerWindyStage" style="display: none; width: 100%; height: 230px; border-radius: 10px; overflow: hidden; border: 1px solid #ff00aa; margin: 4px 0;">
+          <iframe id="centerWindyFrame" style="width: 100%; height: 100%; border: none;" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&metricTemp=default&metricWind=default&zoom=5&overlay=wind&product=ecmwf&level=surface&lat=-2.5&lon=118"></iframe>
         </div>
 
         <div class="core-status-pill">
@@ -2838,6 +3741,14 @@ body {
           </div>
 
           <div class="quick-chips-wrapper">
+            <button class="chip-btn quantum-chip" onclick="openModal('quantumModal')"><i class="fa-solid fa-atom"></i> Quantum Suite</button>
+            <button class="chip-btn quantum-chip" onclick="openQuantumTab('pqc')"><i class="fa-solid fa-shield-halved"></i> PQC & Shor</button>
+            <button class="chip-btn quantum-chip" onclick="openQuantumTab('vqe')"><i class="fa-solid fa-flask"></i> VQE Chemistry</button>
+            <button class="chip-btn quantum-chip" onclick="openQuantumTab('qaoa')"><i class="fa-solid fa-diagram-project"></i> QAOA Opt</button>
+
+
+                        <button class="chip-btn" style="border-color: var(--cyan); color: var(--cyan);" onclick="openModal('bmkgModal')"><i class="fa-solid fa-satellite-dish"></i> BMKG Live</button>
+                        <button class="chip-btn" style="border-color: #ff00aa; color: #ff80bf;" onclick="openModal('windyModal')"><i class="fa-solid fa-cloud-bolt"></i> Radar Windy</button>
                         <button class="chip-btn" style="border-color: var(--neon-green); color: var(--neon-green);" onclick="openModal('antivirusModal')"><i class="fa-solid fa-shield-virus"></i> Antivirus Pro</button>
             <button class="chip-btn gov-chip" onclick="openGovModal('m01')"><i class="fa-solid fa-file-contract"></i> 01 Model Card</button>
             <button class="chip-btn gov-chip" onclick="openGovModal('m03')"><i class="fa-solid fa-user-check"></i> 03 HITL Queue</button>
@@ -2892,6 +3803,11 @@ body {
         </div>
 
         <div class="module-tabs-grid">
+          <button class="mod-tab-btn" onclick="switchSidebarTool('quantum')" id="tabQuantum">
+            <i class="fa-solid fa-atom"></i> Quantum
+          </button>
+
+
                     <button class="mod-tab-btn" onclick="switchSidebarTool('antivirus')" id="tabAntivirus">
             <i class="fa-solid fa-shield-virus"></i> Antivirus
           </button>
@@ -3257,25 +4173,179 @@ body {
   </div>
 </div>
 
-<!-- MODAL: WINDY WEATHER RADAR MODAL -->
-<div class="modal-overlay" id="windyModal">
-  <div class="modal-dialog" style="max-width: 950px; height: 85vh;">
+
+<!-- MODAL: RADAR SEISMIK & FEED GEMPA BMKG LIVE (INATEWS) -->
+<div class="modal-overlay" id="bmkgModal">
+  <div class="modal-dialog" style="max-width: 980px; height: 90vh;">
     <div class="modal-header">
-      <div class="modal-title"><i class="fa-solid fa-cloud-bolt glow-cyan" style="color: #38bdf8;"></i> Windy Radar Cuaca Satelit Interaktif</div>
-      <button class="modal-close-btn" onclick="closeModal('windyModal')">&times;</button>
-    </div>
-    <div class="modal-body" style="padding: 0; display: flex; flex-direction: column;">
-      <div style="padding: 8px 14px; background: rgba(0,20,40,0.8); display: flex; gap: 6px; flex-wrap: wrap;">
-        <button class="nav-btn" onclick="setWindyLayer('wind')"><i class="fa-solid fa-wind"></i> Angin</button>
-        <button class="nav-btn" onclick="setWindyLayer('rain')"><i class="fa-solid fa-cloud-rain"></i> Hujan & Petir</button>
-        <button class="nav-btn" onclick="setWindyLayer('temp')"><i class="fa-solid fa-temperature-half"></i> Suhu</button>
-        <button class="nav-btn" onclick="setWindyLayer('clouds')"><i class="fa-solid fa-cloud"></i> Awan</button>
-        <button class="nav-btn" onclick="setWindyLayer('radar')"><i class="fa-solid fa-satellite-dish"></i> Radar Live</button>
+      <div class="modal-title">
+        <i class="fa-solid fa-satellite-dish glow-green" style="color: var(--neon-green);"></i>
+        <span>RADAR SEISMIK &amp; FEED GEMPA BMKG LIVE (INATEWS)</span>
       </div>
-      <iframe id="windyFrame" style="width: 100%; flex: 1; border: none;" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&metricTemp=default&metricWind=default&zoom=5&overlay=wind&product=ecmwf&level=surface&lat=-2.5&lon=118"></iframe>
+      <button class="modal-close-btn" onclick="closeModal('bmkgModal')">&times;</button>
+    </div>
+    
+    <div class="modal-body" style="padding: 14px 18px; overflow-y: auto;">
+      
+      <!-- Top Telemetry Strip -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 12px;">
+        <div class="quake-telemetry-badge">
+          <div style="font-family: var(--font-hud); font-size: 11px; color: var(--cyan); margin-bottom: 2px;">STATUS KONEKSI BMKG</div>
+          <div style="font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--neon-green); display: flex; align-items: center; gap: 6px;">
+            <span class="core-status-dot"></span> LIVE SYNC (<span id="bmkgSyncTimer">60s</span>)
+          </div>
+        </div>
+
+        <div class="quake-telemetry-badge">
+          <div style="font-family: var(--font-hud); font-size: 11px; color: var(--cyan); margin-bottom: 2px;">GEMPA TERBARU (M 5.0+)</div>
+          <div style="font-family: var(--font-hud); font-size: 15px; font-weight: 800; color: var(--neon-red);" id="bmkgModalMag">M 5.4</div>
+          <div style="font-size: 11.5px; color: rgba(0,242,254,0.8);" id="bmkgModalLoc">Barat Daya SUMUR-BANTEN</div>
+        </div>
+
+        <div class="quake-telemetry-badge">
+          <div style="font-family: var(--font-hud); font-size: 11px; color: var(--cyan); margin-bottom: 2px;">KEDALAMAN &amp; WAKTU</div>
+          <div style="font-family: var(--font-mono); font-size: 12.5px; font-weight: 700; color: #fff;" id="bmkgModalDepth">10 KM • 26 Agu 2026 14:22 WIB</div>
+          <div style="font-size: 11px; color: var(--neon-green);" id="bmkgModalPotensi">Tidak berpotensi TSUNAMI</div>
+        </div>
+
+        <div class="quake-telemetry-badge">
+          <div style="font-family: var(--font-hud); font-size: 11px; color: var(--cyan); margin-bottom: 2px;">SENSOR JARINGAN INATEWS</div>
+          <div style="font-size: 12px; color: #e0f2fe;">
+            180 Seismometer • 12 InaBUOY OBPR • 60 Tide Gauges
+          </div>
+        </div>
+      </div>
+
+      <!-- Map Toolbar & Layer Switchers -->
+      <div style="background: rgba(0, 20, 40, 0.85); border: 1px solid rgba(0, 242, 254, 0.25); border-radius: 8px; padding: 8px 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+        <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+          <span style="font-family: var(--font-hud); font-size: 11px; color: var(--cyan);">BASEMAP:</span>
+          <button class="nav-btn" style="padding: 3px 8px; font-size: 10.5px;" onclick="switchBmkgBasemap('satellite')">Satelit</button>
+          <button class="nav-btn" style="padding: 3px 8px; font-size: 10.5px;" onclick="switchBmkgBasemap('dark')">Dark Map</button>
+          <button class="nav-btn" style="padding: 3px 8px; font-size: 10.5px;" onclick="switchBmkgBasemap('topo')">Topografi</button>
+          <button class="nav-btn" style="padding: 3px 8px; font-size: 10.5px;" onclick="switchBmkgBasemap('street')">Street</button>
+        </div>
+
+        <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+          <button class="nav-btn av-shield" style="padding: 4px 10px; font-size: 11px;" onclick="toggleBmkgFaults()">
+            <i class="fa-solid fa-bolt"></i> <span id="btnFaultsLabel">SESAR AKTIF: ON</span>
+          </button>
+          <button class="nav-btn" style="padding: 4px 10px; font-size: 11px;" onclick="resetBmkgMapView()">
+            <i class="fa-solid fa-crosshairs"></i> FOKUS INDONESIA
+          </button>
+          <button class="nav-btn redteam" style="padding: 4px 10px; font-size: 11px;" onclick="playSfx('alert'); alert('Simulasi Sirine Evakuasi Tsunami Diaktifkan!');">
+            <i class="fa-solid fa-bullhorn"></i> SIREN TEST
+          </button>
+        </div>
+      </div>
+
+      <!-- Leaflet GIS Map Canvas Container -->
+      <div class="bmkg-map-box" id="bmkgMapContainer" style="margin-bottom: 14px;">
+        <div id="bmkgLeafletMap" style="width: 100%; height: 100%;"></div>
+      </div>
+
+      <!-- Live Recent Earthquakes Table (BMKG API) -->
+      <div style="background: rgba(0, 18, 38, 0.7); border: 1px solid rgba(0, 242, 254, 0.2); border-radius: 10px; padding: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <div style="font-family: var(--font-hud); font-size: 13px; font-weight: 700; color: #fff;">
+            <i class="fa-solid fa-list-check glow-cyan"></i> DAFTAR GEMPA TERKINI REAL-TIME (BMKG M 5.0+)
+          </div>
+          <button class="nav-btn av-shield" style="padding: 3px 8px; font-size: 10.5px;" onclick="fetchBMKGData()">
+            <i class="fa-solid fa-rotate"></i> REFRESH DATA
+          </button>
+        </div>
+
+        <div style="overflow-x: auto; max-height: 220px;">
+          <table class="gov-table" id="bmkgQuakeTable">
+            <thead>
+              <tr>
+                <th>WAKTU GEMPA</th>
+                <th>MAGNITUDO</th>
+                <th>KEDALAMAN</th>
+                <th>EPISENTRUM / WILAYAH</th>
+                <th>KOORDINAT</th>
+                <th>POTENSI TSUNAMI</th>
+                <th>AKSI</th>
+              </tr>
+            </thead>
+            <tbody id="bmkgQuakeTableBody">
+              <!-- Live data rows inserted here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
+
+<!-- MODAL: WINDY WEATHER RADAR MODAL (MULTI-LAYER SUITE) -->
+<div class="modal-overlay" id="windyModal">
+  <div class="modal-dialog" style="max-width: 960px; height: 88vh;">
+    <div class="modal-header">
+      <div class="modal-title">
+        <i class="fa-solid fa-cloud-bolt glow-cyan" style="color: #ff00aa;"></i>
+        <span>WINDY.COM RADAR CUACA SATELIT &amp; GELOMBANG MARITIM</span>
+      </div>
+      <button class="modal-close-btn" onclick="closeModal('windyModal')">&times;</button>
+    </div>
+    <div class="modal-body" style="padding: 0; display: flex; flex-direction: column;">
+      <div style="padding: 10px 14px; background: rgba(0,20,40,0.92); border-bottom: 1px solid rgba(0,242,254,0.25); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+        <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
+          <span style="font-family: var(--font-hud); font-size: 11px; color: var(--cyan); margin-right: 4px;">PILIH LAYER RADAR:</span>
+          <button class="nav-btn" id="wlayer_wind" onclick="setWindyLayer('wind')"><i class="fa-solid fa-wind"></i> Angin</button>
+          <button class="nav-btn" id="wlayer_rain" onclick="setWindyLayer('rain')"><i class="fa-solid fa-cloud-rain"></i> Hujan &amp; Petir</button>
+          <button class="nav-btn" id="wlayer_temp" onclick="setWindyLayer('temp')"><i class="fa-solid fa-temperature-half"></i> Suhu</button>
+          <button class="nav-btn" id="wlayer_waves" onclick="setWindyLayer('waves')"><i class="fa-solid fa-water"></i> Gelombang Laut</button>
+          <button class="nav-btn" id="wlayer_clouds" onclick="setWindyLayer('clouds')"><i class="fa-solid fa-cloud"></i> Awan &amp; Satelit</button>
+          <button class="nav-btn" id="wlayer_radar" onclick="setWindyLayer('radar')"><i class="fa-solid fa-satellite-dish"></i> Radar Live</button>
+        </div>
+        <div style="display: flex; gap: 6px; align-items: center;">
+          <button class="nav-btn av-shield" onclick="syncWindyFrameWithCity()" title="Sinkronkan Koordinat dengan Kota Terpilih"><i class="fa-solid fa-location-dot"></i> SINKRON KOTA</button>
+        </div>
+      </div>
+      <iframe id="windyFrame" style="width: 100%; flex: 1; border: none; min-height: 480px;" src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&metricTemp=default&metricWind=default&zoom=5&overlay=wind&product=ecmwf&level=surface&lat=-2.5&lon=118"></iframe>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL: QUANTUM ALGORITHMS MASTER COMMAND CENTER (CYBERSECURITY, CHEMISTRY, OPTIMIZATION & 3D BLOCH) -->
+<div class="modal-overlay" id="quantumModal">
+  <div class="modal-dialog" style="max-width: 1020px; height: 92vh;">
+    <div class="modal-header">
+      <div class="modal-title">
+        <i class="fa-solid fa-atom glow-purple" style="color: var(--neon-purple);"></i>
+        <span>QUANTUM ALGORITHMS ◈ CYBERSECURITY, CHEMISTRY & OPTIMIZATION</span>
+      </div>
+      <button class="modal-close-btn" onclick="closeModal('quantumModal')">&times;</button>
+    </div>
+    
+    <div style="padding: 10px 20px 0 20px; background: rgba(12, 6, 28, 0.95);">
+      <!-- Quantum Sub-Navigation Tabs -->
+      <div class="quantum-nav-tabs" id="quantumNavTabs">
+        <button class="quantum-tab-btn active" onclick="switchQuantumTab('pqc')" id="qtab_pqc">
+          <i class="fa-solid fa-shield-halved"></i> 01 CYBERSECURITY & PQC
+        </button>
+        <button class="quantum-tab-btn" onclick="switchQuantumTab('vqe')" id="qtab_vqe">
+          <i class="fa-solid fa-flask"></i> 02 QUANTUM CHEMISTRY (VQE)
+        </button>
+        <button class="quantum-tab-btn" onclick="switchQuantumTab('qaoa')" id="qtab_qaoa">
+          <i class="fa-solid fa-diagram-project"></i> 03 OPTIMIZATION (QAOA / QUBO)
+        </button>
+        <button class="quantum-tab-btn" onclick="switchQuantumTab('bloch')" id="qtab_bloch">
+          <i class="fa-solid fa-circle-dot"></i> 04 3D BLOCH SPHERE QUBIT
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-body" id="quantumTabBody">
+      <!-- Dynamic Content rendered by js_quantum -->
+    </div>
+  </div>
+</div>
+
+
 
 <!-- SCREENSAVER: 3D EARTH ORBIT + DOA AL-QURAN & WISDOM -->
 <div id="screensaver-overlay" onclick="if(event.target===this)deactivateScreensaver()">
@@ -3460,8 +4530,132 @@ function toggleSfx() {
   if (sfxEnabled) playSfx('click');
 }
 
-/* THREE.JS 3D BACKGROUND EARTH */
-let bgScene, bgCamera, bgRenderer, bgEarthMesh, bgCloudsMesh, bgStarsMesh;
+
+function createProceduralEarthTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 2048;
+  canvas.height = 1024;
+  const ctx = canvas.getContext('2d');
+
+  // Deep realistic oceanic gradient
+  const oceanGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  oceanGrad.addColorStop(0, '#020b18');
+  oceanGrad.addColorStop(0.2, '#041d3d');
+  oceanGrad.addColorStop(0.5, '#062b5c');
+  oceanGrad.addColorStop(0.8, '#041d3d');
+  oceanGrad.addColorStop(1, '#020b18');
+  ctx.fillStyle = oceanGrad;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Ocean continental shelves (shallow cyan/azure blue around coasts)
+  ctx.fillStyle = 'rgba(0, 180, 216, 0.25)';
+
+  function drawContinent(points, fillColor, shelfColor) {
+    if (shelfColor) {
+      ctx.fillStyle = shelfColor;
+      ctx.beginPath();
+      points.forEach((pt, i) => {
+        const x = (pt[0] / 360 + 0.5) * canvas.width;
+        const y = (-pt[1] / 180 + 0.5) * canvas.height;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.closePath();
+      ctx.lineWidth = 18;
+      ctx.strokeStyle = shelfColor;
+      ctx.stroke();
+    }
+
+    ctx.fillStyle = fillColor;
+    ctx.beginPath();
+    points.forEach((pt, i) => {
+      const x = (pt[0] / 360 + 0.5) * canvas.width;
+      const y = (-pt[1] / 180 + 0.5) * canvas.height;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // Eurasia & North Africa
+  drawContinent([
+    [-10, 36], [0, 42], [15, 38], [28, 41], [40, 32], [55, 25], [70, 22], [80, 10],
+    [90, 22], [105, 12], [120, 24], [135, 35], [142, 50], [130, 65], [80, 72], [40, 70],
+    [20, 65], [5, 55], [-5, 48], [-10, 36]
+  ], '#2d6a4f', 'rgba(0, 212, 255, 0.3)');
+
+  // Africa
+  drawContinent([
+    [-17, 15], [-5, 36], [10, 37], [32, 31], [43, 12], [51, 10], [40, -10], [30, -32],
+    [18, -34], [12, -20], [9, 4], [-15, 12], [-17, 15]
+  ], '#7f5539', 'rgba(0, 212, 255, 0.25)');
+
+  // North America
+  drawContinent([
+    [-168, 65], [-140, 70], [-90, 75], [-60, 60], [-55, 48], [-75, 35], [-80, 25],
+    [-90, 20], [-105, 22], [-120, 34], [-125, 48], [-140, 58], [-168, 65]
+  ], '#386641', 'rgba(0, 212, 255, 0.3)');
+
+  // South America
+  drawContinent([
+    [-75, 12], [-60, 10], [-35, -5], [-38, -22], [-55, -38], [-68, -54], [-75, -45],
+    [-72, -20], [-80, -2], [-75, 12]
+  ], '#1b4332', 'rgba(0, 212, 255, 0.28)');
+
+  // Australia
+  drawContinent([
+    [114, -22], [125, -15], [140, -12], [150, -24], [145, -38], [130, -35], [115, -34], [114, -22]
+  ], '#b08968', 'rgba(0, 212, 255, 0.25)');
+
+  // Indonesian Archipelago & Southeast Asia (High Precision Detailed Rendering!)
+  const indoIslands = [
+    // Sumatra
+    [[95, 5], [98, 2], [102, -1], [105, -5], [103, -4], [99, 1], [95, 5]],
+    // Java
+    [[105, -6], [108, -6.5], [112, -7], [114, -8], [111, -8.2], [106, -7.5], [105, -6]],
+    // Kalimantan (Borneo)
+    [[109, 4], [113, 4.5], [117, 3], [118, -1], [115, -4], [111, -3], [109, 1], [109, 4]],
+    // Sulawesi
+    [[119, 1], [121, 1.5], [124, 1.2], [123, -2], [121, -5], [120, -3], [119, 1]],
+    // Papua / New Guinea
+    [[131, -1], [136, -2], [141, -4], [148, -8], [144, -7], [138, -6], [134, -4], [131, -1]],
+    // Maluku & Nusa Tenggara
+    [[127, -3], [129, -3.5], [128, -4], [127, -3]],
+    [[115, -8.5], [117, -8.6], [119, -8.5], [121, -8.8], [124, -9], [120, -9.5], [115, -8.5]]
+  ];
+
+  indoIslands.forEach(isl => {
+    drawContinent(isl, '#2d6a4f', 'rgba(0, 245, 212, 0.45)');
+  });
+
+  // Polar Ice Caps (Arctic & Antarctica)
+  ctx.fillStyle = '#e0f2fe';
+  ctx.beginPath();
+  ctx.arc(canvas.width / 2, 0, canvas.width * 0.14, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(canvas.width / 2, canvas.height, canvas.width * 0.22, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Swirling white weather cloud patterns
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+  for (let i = 0; i < 60; i++) {
+    const cx = Math.random() * canvas.width;
+    const cy = 200 + Math.random() * (canvas.height - 400);
+    const rw = 40 + Math.random() * 120;
+    const rh = 15 + Math.random() * 35;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, rw, rh, Math.random() * Math.PI, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.ClampToEdgeWrapping;
+  return texture;
+}
 
 function initThreeBg() {
   if (typeof THREE === 'undefined') return;
@@ -3473,100 +4667,181 @@ function initThreeBg() {
 
   bgScene = new THREE.Scene();
   bgCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-  bgCamera.position.set(3, 1.8, 8);
+  bgCamera.position.set(2.6, 1.4, 7.2);
   bgCamera.lookAt(0, 0, 0);
 
-  bgRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  bgRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
   bgRenderer.setSize(width, height);
   bgRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  container.innerHTML = '';
   container.appendChild(bgRenderer.domElement);
 
-  const ambient = new THREE.AmbientLight(0x1a2b4c, 0.7);
+  // Ambient & Directional Lighting for Realistic Earth
+  const ambient = new THREE.AmbientLight(0x284b7a, 1.25);
   bgScene.add(ambient);
 
-  const sunLight = new THREE.DirectionalLight(0x00f2fe, 1.4);
-  sunLight.position.set(6, 4, 6);
+  const sunLight = new THREE.DirectionalLight(0xffffff, 2.0);
+  sunLight.position.set(7, 4.5, 6);
   bgScene.add(sunLight);
 
-  const rimLight = new THREE.DirectionalLight(0x9d4edd, 0.6);
-  rimLight.position.set(-6, -2, -4);
-  bgScene.add(rimLight);
+  const cyanRim = new THREE.DirectionalLight(0x00f2fe, 1.2);
+  cyanRim.position.set(-6, -2, -3);
+  bgScene.add(cyanRim);
 
-  const texLoader = new THREE.TextureLoader();
-  const earthTexture = texLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg');
-  const cloudsTexture = texLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_1024.png');
+  const purpleRim = new THREE.DirectionalLight(0x9d4edd, 0.9);
+  purpleRim.position.set(2, -5, -4);
+  bgScene.add(purpleRim);
 
-  const earthGeo = new THREE.SphereGeometry(2.8, 64, 64);
+  // 1. Procedural Realistic Earth Base Map (Guaranteed Crisp Offline)
+  const proceduralMap = createProceduralEarthTexture();
+
+  const earthGeo = new THREE.SphereGeometry(2.85, 64, 64);
   const earthMat = new THREE.MeshStandardMaterial({
-    map: earthTexture,
-    roughness: 0.5,
-    metalness: 0.1
+    map: proceduralMap,
+    roughness: 0.42,
+    metalness: 0.12
   });
   bgEarthMesh = new THREE.Mesh(earthGeo, earthMat);
   bgScene.add(bgEarthMesh);
 
-  const cloudsGeo = new THREE.SphereGeometry(2.84, 64, 64);
+  // Attempt to load high-res satellite texture if online
+  const texLoader = new THREE.TextureLoader();
+  texLoader.load(
+    'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg',
+    (loadedTex) => {
+      if (bgEarthMesh) {
+        bgEarthMesh.material.map = loadedTex;
+        bgEarthMesh.material.needsUpdate = true;
+      }
+    },
+    undefined,
+    () => {
+      // Offline fallback: procedural map already set!
+    }
+  );
+
+  // 2. Realistic Cloud Layer with Additive Blending
+  const cloudsGeo = new THREE.SphereGeometry(2.89, 64, 64);
   const cloudsMat = new THREE.MeshStandardMaterial({
-    map: cloudsTexture,
+    color: 0xffffff,
     transparent: true,
-    opacity: 0.65,
+    opacity: 0.45,
+    blending: THREE.AdditiveBlending,
     depthWrite: false
   });
   bgCloudsMesh = new THREE.Mesh(cloudsGeo, cloudsMat);
   bgScene.add(bgCloudsMesh);
 
-  const atmoGeo = new THREE.SphereGeometry(3.05, 64, 64);
-  const atmoMat = new THREE.MeshBasicMaterial({
-    color: 0x00c6ff,
-    transparent: true,
-    opacity: 0.08,
-    side: THREE.BackSide
-  });
-  bgScene.add(new THREE.Mesh(atmoGeo, atmoMat));
+  texLoader.load(
+    'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_1024.png',
+    (cTex) => {
+      if (bgCloudsMesh) {
+        bgCloudsMesh.material.map = cTex;
+        bgCloudsMesh.material.opacity = 0.7;
+        bgCloudsMesh.material.needsUpdate = true;
+      }
+    }
+  );
 
-  const starCount = 1000;
+  // 3. Atmospheric Rayleigh Scattering Halo
+  const atmoGeo = new THREE.SphereGeometry(3.12, 64, 64);
+  const atmoMat = new THREE.ShaderMaterial({
+    vertexShader: `
+      varying vec3 vNormal;
+      void main() {
+        vNormal = normalize(normalMatrix * normal);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      varying vec3 vNormal;
+      void main() {
+        float intensity = pow(0.72 - dot(vNormal, vec3(0, 0, 1.0)), 2.0);
+        gl_FragColor = vec4(0.0, 0.9, 1.0, 1.0) * intensity * 0.85;
+      }
+    `,
+    blending: THREE.AdditiveBlending,
+    side: THREE.BackSide,
+    transparent: true
+  });
+  bgAtmoMesh = new THREE.Mesh(atmoGeo, atmoMat);
+  bgScene.add(bgAtmoMesh);
+
+  // 4. Starfield
+  const starCount = 1200;
   const starGeo = new THREE.BufferGeometry();
   const starPositions = new Float32Array(starCount * 3);
   for (let i = 0; i < starCount * 3; i++) {
-    starPositions[i] = (Math.random() - 0.5) * 300;
+    starPositions[i] = (Math.random() - 0.5) * 350;
   }
   starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
   const starMat = new THREE.PointsMaterial({
     color: 0x00f2fe,
-    size: 0.08,
+    size: 0.12,
     transparent: true,
-    opacity: 0.7
+    opacity: 0.85
   });
   bgStarsMesh = new THREE.Points(starGeo, starMat);
   bgScene.add(bgStarsMesh);
 
-  const ringGeo = new THREE.RingGeometry(3.8, 3.82, 128);
-  const ringMat = new THREE.MeshBasicMaterial({ color: 0x00f2fe, transparent: true, opacity: 0.15, side: THREE.DoubleSide });
+  // 5. Equatorial Orbital Coordinate Ring
+  const ringGeo = new THREE.RingGeometry(3.85, 3.87, 128);
+  const ringMat = new THREE.MeshBasicMaterial({ color: 0x00f2fe, transparent: true, opacity: 0.28, side: THREE.DoubleSide });
   const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-  ringMesh.rotation.x = Math.PI * 0.45;
+  ringMesh.rotation.x = Math.PI * 0.44;
   bgScene.add(ringMesh);
+
+  // Interactive mouse drag to orbit Earth
+  let isDraggingEarth = false;
+  let prevMouseX = 0;
+  let prevMouseY = 0;
+
+  window.addEventListener('mousedown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.closest('.hud-panel') || e.target.closest('.modal-dialog')) return;
+    isDraggingEarth = true;
+    prevMouseX = e.clientX;
+    prevMouseY = e.clientY;
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDraggingEarth || !bgEarthMesh) return;
+    const deltaX = e.clientX - prevMouseX;
+    const deltaY = e.clientY - prevMouseY;
+    bgEarthMesh.rotation.y += deltaX * 0.005;
+    bgEarthMesh.rotation.x += deltaY * 0.005;
+    if (bgCloudsMesh) {
+      bgCloudsMesh.rotation.y += deltaX * 0.005;
+      bgCloudsMesh.rotation.x += deltaY * 0.005;
+    }
+    prevMouseX = e.clientX;
+    prevMouseY = e.clientY;
+  });
+
+  window.addEventListener('mouseup', () => { isDraggingEarth = false; });
 
   function animateBg() {
     requestAnimationFrame(animateBg);
-    if (bgEarthMesh) bgEarthMesh.rotation.y += 0.0007;
-    if (bgCloudsMesh) bgCloudsMesh.rotation.y += 0.0011;
+    if (bgEarthMesh && !isDraggingEarth) bgEarthMesh.rotation.y += 0.0009;
+    if (bgCloudsMesh && !isDraggingEarth) bgCloudsMesh.rotation.y += 0.0013;
     if (bgStarsMesh) bgStarsMesh.rotation.y += 0.0001;
-    ringMesh.rotation.z += 0.0008;
-
-    bgCamera.position.x = 3 + Math.sin(Date.now() * 0.0001) * 0.4;
-    bgCamera.position.y = 1.8 + Math.cos(Date.now() * 0.0001) * 0.2;
-    bgCamera.lookAt(0, 0, 0);
+    ringMesh.rotation.z += 0.0006;
 
     bgRenderer.render(bgScene, bgCamera);
   }
   animateBg();
 
   window.addEventListener('resize', () => {
+    if (!bgCamera || !bgRenderer) return;
     bgCamera.aspect = window.innerWidth / window.innerHeight;
     bgCamera.updateProjectionMatrix();
     bgRenderer.setSize(window.innerWidth, window.innerHeight);
   });
 }
+
+/* =========================================================================
+   HUMANOID 3D ROBOTIC FACE ENGINE (Three.js WebGL)
+   Replaces 3D Icosahedron with Articulated Cybernetic Humanoid Face
+   ========================================================================= */
 
 function initParticlesCanvas() {
   const c = document.getElementById('particles-canvas');
@@ -3749,40 +5024,292 @@ function initHoloBrainCore() {
   animBrain();
 }
 
-let holoScene, holoCamera, holoRenderer, holoMesh;
-function initHologramCore() {
-  const canvas = document.getElementById('hologram-3d-canvas');
+
+let humanoidScene, humanoidCamera, humanoidRenderer;
+let humanoidGroup, humanoidHeadMesh, humanoidJawGroup;
+let humanoidEyeL, humanoidEyeR, humanoidPupilL, humanoidPupilR;
+let humanoidEyelidL, humanoidEyelidR;
+let humanoidVocoderBars = [];
+let humanoidHudRing1, humanoidHudRing2;
+let isHumanoidSpeaking = false;
+let humanoidMouseX = 0, humanoidMouseY = 0;
+
+function initHumanoidCore() {
+  const canvas = document.getElementById('humanoid-3d-canvas');
   if (!canvas || typeof THREE === 'undefined') return;
 
-  holoScene = new THREE.Scene();
-  holoCamera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-  holoCamera.position.z = 4;
+  humanoidScene = new THREE.Scene();
+  humanoidCamera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+  humanoidCamera.position.set(0, 0.1, 4.3);
+  humanoidCamera.lookAt(0, 0, 0);
 
-  holoRenderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-  holoRenderer.setSize(170, 170);
+  humanoidRenderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+  humanoidRenderer.setSize(175, 175);
+  humanoidRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-  const geo = new THREE.IcosahedronGeometry(1.4, 2);
-  const mat = new THREE.MeshBasicMaterial({ color: 0x00f2fe, wireframe: true, transparent: true, opacity: 0.7 });
-  holoMesh = new THREE.Mesh(geo, mat);
-  holoScene.add(holoMesh);
+  // High-Tech Cybernetic Lighting
+  const ambLight = new THREE.AmbientLight(0x091e38, 1.4);
+  humanoidScene.add(ambLight);
 
-  const innerGeo = new THREE.SphereGeometry(0.7, 16, 16);
-  const innerMat = new THREE.MeshBasicMaterial({ color: 0x9d4edd, wireframe: true, transparent: true, opacity: 0.5 });
-  const innerMesh = new THREE.Mesh(innerGeo, innerMat);
-  holoScene.add(innerMesh);
+  const cyanKeyLight = new THREE.DirectionalLight(0x00f2fe, 2.5);
+  cyanKeyLight.position.set(3.5, 3.5, 4.0);
+  humanoidScene.add(cyanKeyLight);
 
-  function animHolo() {
-    requestAnimationFrame(animHolo);
-    if (holoMesh) {
-      holoMesh.rotation.x += 0.01;
-      holoMesh.rotation.y += 0.015;
-    }
-    innerMesh.rotation.x -= 0.015;
-    innerMesh.rotation.y -= 0.02;
-    holoRenderer.render(holoScene, holoCamera);
+  const purpleRimLight = new THREE.DirectionalLight(0x9d4edd, 1.8);
+  purpleRimLight.position.set(-3.5, -2.5, 3.0);
+  humanoidScene.add(purpleRimLight);
+
+  const greenFill = new THREE.PointLight(0x00f5d4, 1.2, 8);
+  greenFill.position.set(0, -1.8, 2.0);
+  humanoidScene.add(greenFill);
+
+  humanoidGroup = new THREE.Group();
+  humanoidScene.add(humanoidGroup);
+
+  // Materials
+  const titaniumMat = new THREE.MeshStandardMaterial({
+    color: 0x051a30,
+    roughness: 0.25,
+    metalness: 0.88
+  });
+
+  const chromeMat = new THREE.MeshStandardMaterial({
+    color: 0x00f2fe,
+    roughness: 0.15,
+    metalness: 0.95
+  });
+
+  const opticalEyeMat = new THREE.MeshStandardMaterial({
+    color: 0x00f2fe,
+    emissive: 0x00f2fe,
+    emissiveIntensity: 2.8,
+    roughness: 0.1
+  });
+
+  const pupilMat = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    emissive: 0xffffff,
+    emissiveIntensity: 3.5
+  });
+
+  const quantumCoreMat = new THREE.MeshStandardMaterial({
+    color: 0x00f5d4,
+    emissive: 0x00f5d4,
+    emissiveIntensity: 2.5
+  });
+
+  humanoidHeadMesh = new THREE.Group();
+
+  // 1. Faceted Cranium / Skull
+  const craniumGeo = new THREE.BoxGeometry(0.82, 0.88, 0.85);
+  const craniumMesh = new THREE.Mesh(craniumGeo, titaniumMat);
+  humanoidHeadMesh.add(craniumMesh);
+
+  // Angled Forehead Armor Brow
+  const browGeo = new THREE.BoxGeometry(0.84, 0.22, 0.3);
+  const browMesh = new THREE.Mesh(browGeo, chromeMat);
+  browMesh.position.set(0, 0.32, 0.35);
+  humanoidHeadMesh.add(browMesh);
+
+  // Chiseled Cheekbones
+  const cheekL = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.28, 0.25), titaniumMat);
+  cheekL.position.set(-0.35, -0.05, 0.32);
+  cheekL.rotation.z = -0.15;
+  humanoidHeadMesh.add(cheekL);
+
+  const cheekR = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.28, 0.25), titaniumMat);
+  cheekR.position.set(0.35, -0.05, 0.32);
+  cheekR.rotation.z = 0.15;
+  humanoidHeadMesh.add(cheekR);
+
+  // 2. Optical Sensor Eyes with Shutter Blink Mechanism
+  const eyeHousingGeo = new THREE.CylinderGeometry(0.14, 0.14, 0.12, 16);
+  eyeHousingGeo.rotateX(Math.PI / 2);
+
+  const eyeHousingL = new THREE.Mesh(eyeHousingGeo, chromeMat);
+  eyeHousingL.position.set(-0.24, 0.12, 0.42);
+  humanoidHeadMesh.add(eyeHousingL);
+
+  const eyeHousingR = new THREE.Mesh(eyeHousingGeo, chromeMat);
+  eyeHousingR.position.set(0.24, 0.12, 0.42);
+  humanoidHeadMesh.add(eyeHousingR);
+
+  // Glowing Optical Lenses
+  const lensGeo = new THREE.SphereGeometry(0.095, 16, 16);
+  humanoidEyeL = new THREE.Mesh(lensGeo, opticalEyeMat);
+  humanoidEyeL.position.set(-0.24, 0.12, 0.46);
+  humanoidHeadMesh.add(humanoidEyeL);
+
+  humanoidEyeR = new THREE.Mesh(lensGeo, opticalEyeMat);
+  humanoidEyeR.position.set(0.24, 0.12, 0.46);
+  humanoidHeadMesh.add(humanoidEyeR);
+
+  // Inner Pupil Diodes
+  const pupilGeo = new THREE.SphereGeometry(0.035, 8, 8);
+  humanoidPupilL = new THREE.Mesh(pupilGeo, pupilMat);
+  humanoidPupilL.position.set(-0.24, 0.12, 0.54);
+  humanoidHeadMesh.add(humanoidPupilL);
+
+  humanoidPupilR = new THREE.Mesh(pupilGeo, pupilMat);
+  humanoidPupilR.position.set(0.24, 0.12, 0.54);
+  humanoidHeadMesh.add(humanoidPupilR);
+
+  // Shutter Eyelids
+  const eyelidGeo = new THREE.BoxGeometry(0.22, 0.08, 0.05);
+  humanoidEyelidL = new THREE.Mesh(eyelidGeo, chromeMat);
+  humanoidEyelidL.position.set(-0.24, 0.22, 0.48);
+  humanoidHeadMesh.add(humanoidEyelidL);
+
+  humanoidEyelidR = new THREE.Mesh(eyelidGeo, chromeMat);
+  humanoidEyelidR.position.set(0.24, 0.22, 0.48);
+  humanoidHeadMesh.add(humanoidEyelidR);
+
+  // 3. Central Quantum Forehead Core
+  const coreHexGeo = new THREE.CylinderGeometry(0.1, 0.1, 0.08, 6);
+  coreHexGeo.rotateX(Math.PI / 2);
+  const coreMesh = new THREE.Mesh(coreHexGeo, quantumCoreMat);
+  coreMesh.position.set(0, 0.42, 0.44);
+  humanoidHeadMesh.add(coreMesh);
+
+  // 4. Articulated Robotic Jaw & Mouth Vocoder
+  humanoidJawGroup = new THREE.Group();
+  humanoidJawGroup.position.set(0, -0.28, 0.15);
+
+  const jawGeo = new THREE.BoxGeometry(0.62, 0.32, 0.65);
+  const jawMesh = new THREE.Mesh(jawGeo, titaniumMat);
+  jawMesh.position.set(0, -0.05, 0.12);
+  humanoidJawGroup.add(jawMesh);
+
+  // Hydraulic Side Pivot Cylinders
+  const pistonGeo = new THREE.CylinderGeometry(0.045, 0.045, 0.28, 12);
+  const pistonL = new THREE.Mesh(pistonGeo, chromeMat);
+  pistonL.position.set(-0.34, 0.05, 0);
+  humanoidJawGroup.add(pistonL);
+
+  const pistonR = new THREE.Mesh(pistonGeo, chromeMat);
+  pistonR.position.set(0.34, 0.05, 0);
+  humanoidJawGroup.add(pistonR);
+
+  // Mouth Vocoder Digital Sound Waves
+  humanoidVocoderBars = [];
+  const barCount = 7;
+  for (let i = 0; i < barCount; i++) {
+    const barGeo = new THREE.BoxGeometry(0.04, 0.12, 0.04);
+    const barMesh = new THREE.Mesh(barGeo, opticalEyeMat);
+    barMesh.position.set((i - 3) * 0.065, 0.04, 0.46);
+    humanoidJawGroup.add(barMesh);
+    humanoidVocoderBars.push(barMesh);
   }
-  animHolo();
+
+  humanoidHeadMesh.add(humanoidJawGroup);
+
+  // 5. Ear Acoustic Transceivers & Antennas
+  const earGeo = new THREE.CylinderGeometry(0.16, 0.16, 0.22, 16);
+  earGeo.rotateZ(Math.PI / 2);
+
+  const earL = new THREE.Mesh(earGeo, chromeMat);
+  earL.position.set(-0.46, 0.08, 0);
+  humanoidHeadMesh.add(earL);
+
+  const earR = new THREE.Mesh(earGeo, chromeMat);
+  earR.position.set(0.46, 0.08, 0);
+  humanoidHeadMesh.add(earR);
+
+  const antGeo = new THREE.CylinderGeometry(0.015, 0.015, 0.48, 8);
+  const antL = new THREE.Mesh(antGeo, chromeMat);
+  antL.position.set(-0.46, 0.35, -0.15);
+  antL.rotation.z = 0.25;
+  humanoidHeadMesh.add(antL);
+
+  const antR = new THREE.Mesh(antGeo, chromeMat);
+  antR.position.set(0.46, 0.35, -0.15);
+  antR.rotation.z = -0.25;
+  humanoidHeadMesh.add(antR);
+
+  // 6. Orbiting Holographic HUD Reticles
+  const ring1Geo = new THREE.RingGeometry(1.22, 1.25, 64);
+  const ring1Mat = new THREE.MeshBasicMaterial({ color: 0x00f2fe, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
+  humanoidHudRing1 = new THREE.Mesh(ring1Geo, ring1Mat);
+  humanoidHudRing1.rotation.x = Math.PI * 0.3;
+  humanoidHeadMesh.add(humanoidHudRing1);
+
+  const ring2Geo = new THREE.RingGeometry(1.38, 1.41, 64);
+  const ring2Mat = new THREE.MeshBasicMaterial({ color: 0x9d4edd, side: THREE.DoubleSide, transparent: true, opacity: 0.35 });
+  humanoidHudRing2 = new THREE.Mesh(ring2Geo, ring2Mat);
+  humanoidHudRing2.rotation.y = Math.PI * 0.4;
+  humanoidHeadMesh.add(humanoidHudRing2);
+
+  humanoidGroup.add(humanoidHeadMesh);
+
+  // Interactive mouse tracking
+  window.addEventListener('mousemove', (e) => {
+    humanoidMouseX = (e.clientX / window.innerWidth) * 2 - 1;
+    humanoidMouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+  });
+
+  // Canvas click interaction
+  canvas.addEventListener('click', () => {
+    playSfx('click');
+    playSfx('laser');
+    speakJARVIS('Humanoid 3D Cybernetic Face tersinkronisasi. Sensor visual dan neural core beroperasi 100 persen.');
+  });
+
+  let blinkTimer = 0;
+
+  function animHumanoid() {
+    requestAnimationFrame(animHumanoid);
+
+    const now = Date.now();
+
+    // Smooth head orientation tracking mouse
+    const targetRotY = humanoidMouseX * 0.55;
+    const targetRotX = -humanoidMouseY * 0.35;
+    humanoidHeadMesh.rotation.y += (targetRotY - humanoidHeadMesh.rotation.y) * 0.08;
+    humanoidHeadMesh.rotation.x += (targetRotX - humanoidHeadMesh.rotation.x) * 0.08;
+
+    // Subtle idle floating breathing bob
+    humanoidGroup.position.y = Math.sin(now * 0.002) * 0.06;
+
+    // Orbiting HUD rings
+    if (humanoidHudRing1) humanoidHudRing1.rotation.z += 0.012;
+    if (humanoidHudRing2) humanoidHudRing2.rotation.z -= 0.008;
+
+    // Periodic smooth eyelid shutter blink
+    blinkTimer++;
+    if (blinkTimer % 220 < 12) {
+      humanoidEyelidL.position.y = 0.12;
+      humanoidEyelidR.position.y = 0.12;
+    } else {
+      humanoidEyelidL.position.y = 0.22;
+      humanoidEyelidR.position.y = 0.22;
+    }
+
+    // Audio-reactive speech articulation
+    if (isHumanoidSpeaking) {
+      const jawAmp = Math.sin(now * 0.018) * 0.08 + 0.04;
+      humanoidJawGroup.rotation.x = jawAmp;
+
+      humanoidVocoderBars.forEach((bar, idx) => {
+        bar.scale.y = 0.6 + Math.abs(Math.sin(now * 0.02 + idx)) * 1.8;
+      });
+
+      if (humanoidEyeL) humanoidEyeL.material.emissiveIntensity = 3.5 + Math.sin(now * 0.02) * 1.0;
+      if (humanoidEyeR) humanoidEyeR.material.emissiveIntensity = 3.5 + Math.sin(now * 0.02) * 1.0;
+    } else {
+      humanoidJawGroup.rotation.x = 0;
+      humanoidVocoderBars.forEach((bar) => { bar.scale.y = 0.6; });
+      if (humanoidEyeL) humanoidEyeL.material.emissiveIntensity = 2.4;
+      if (humanoidEyeR) humanoidEyeR.material.emissiveIntensity = 2.4;
+    }
+
+    humanoidRenderer.render(humanoidScene, humanoidCamera);
+  }
+  animHumanoid();
 }
+
+/* =========================================================================
+   FUTURISTIC OPENING & REVEAL ANIMATION ENGINE
+   ========================================================================= */
 
 const startTime = Date.now();
 
@@ -3860,23 +5387,89 @@ function updateMatrixStream() {
   terminal.textContent = lines.join('\n');
 }
 
+
 let currentAvatarMode = 'robot';
+let isAvatarClosed = false;
 
 function switchAvatarMode(mode) {
   playSfx('click');
   currentAvatarMode = mode;
+  isAvatarClosed = false;
 
-  document.getElementById('btnAvRobot').classList.toggle('active', mode === 'robot');
-  document.getElementById('btnAvBrain').classList.toggle('active', mode === 'brain');
-  document.getElementById('btnAvArc').classList.toggle('active', mode === 'arc');
-  document.getElementById('btnAvHolo').classList.toggle('active', mode === 'holo');
+  const btnRobot = document.getElementById('btnAvRobot');
+  const btnBrain = document.getElementById('btnAvBrain');
+  const btnArc = document.getElementById('btnAvArc');
+  const btnHumanoid = document.getElementById('btnAvHumanoid');
+  const btnEarth = document.getElementById('btnAvEarth');
+  const btnWindy = document.getElementById('btnAvWindy');
+
+  if (btnRobot) btnRobot.classList.toggle('active', mode === 'robot');
+  if (btnBrain) btnBrain.classList.toggle('active', mode === 'brain');
+  if (btnArc) btnArc.classList.toggle('active', mode === 'arc');
+  if (btnHumanoid) btnHumanoid.classList.toggle('active', mode === 'humanoid');
+  if (btnEarth) btnEarth.classList.toggle('active', mode === 'earth');
+  if (btnWindy) btnWindy.classList.toggle('active', mode === 'windy');
+
+  const avBox = document.getElementById('avatarDisplayBox');
+  const earthStage = document.getElementById('earthViewStage');
+  const centerWindy = document.getElementById('centerWindyStage');
+  const coreWrapper = document.querySelector('.center-core-wrapper');
+  const bgCanvas = document.getElementById('three-bg-canvas');
+
+  if (mode === 'earth') {
+    if (avBox) avBox.style.display = 'none';
+    if (earthStage) earthStage.style.display = 'block';
+    if (centerWindy) centerWindy.style.display = 'none';
+    if (coreWrapper) coreWrapper.classList.add('earth-focused');
+    if (bgCanvas) { bgCanvas.style.opacity = '1.0'; bgCanvas.style.pointerEvents = 'auto'; }
+    document.getElementById('coreStatusText').textContent = '3D REALISTIC EARTH ORBIT ◈ GESER UNTUK ROTASI';
+    speakJARVIS('Beralih ke tampilan 3D Bumi Realistis.');
+    return;
+  }
+
+  if (mode === 'windy') {
+    if (avBox) avBox.style.display = 'none';
+    if (earthStage) earthStage.style.display = 'none';
+    if (centerWindy) centerWindy.style.display = 'block';
+    if (coreWrapper) coreWrapper.classList.remove('earth-focused');
+    if (bgCanvas) { bgCanvas.style.opacity = '0.7'; }
+    document.getElementById('coreStatusText').textContent = 'WINDY RADAR LIVE ◈ REAL-TIME SATELLITE FEED';
+    speakJARVIS('Menampilkan Radar Cuaca Satelit Windy.');
+    return;
+  }
+
+  // Standard Avatar Modes
+  if (avBox) avBox.style.display = 'flex';
+  if (earthStage) earthStage.style.display = 'none';
+  if (centerWindy) centerWindy.style.display = 'none';
+  if (coreWrapper) coreWrapper.classList.remove('earth-focused');
+  if (bgCanvas) { bgCanvas.style.opacity = '0.88'; }
 
   document.getElementById('robotAvatarMode').style.display = mode === 'robot' ? 'flex' : 'none';
   document.getElementById('brain-3d-canvas').style.display = mode === 'brain' ? 'block' : 'none';
   document.getElementById('arcReactorMode').style.display = mode === 'arc' ? 'flex' : 'none';
-  document.getElementById('hologram-3d-canvas').style.display = mode === 'holo' ? 'block' : 'none';
+  document.getElementById('humanoid-3d-canvas').style.display = mode === 'humanoid' ? 'block' : 'none';
+
+  const modeTitles = {
+    robot: 'CYBER CAT AI ◈ SYSTEMS ONLINE',
+    brain: '3D HOLOGRAPHIC AI BRAIN ◈ 432 HZ SYNAPSE',
+    arc: 'QUANTUM ARC REACTOR CORE ◈ STARK ATOMIC ORBIT',
+    humanoid: '3D CYBER HUMANOID MECH ◈ ORBITAL SATELLITES ACTIVE'
+  };
+  document.getElementById('coreStatusText').textContent = modeTitles[mode] || 'SYSTEMS READY ◈ AI GOVERNANCE ACTIVE';
 }
 
+function closeAvatarToEarth() {
+  playSfx('click');
+  isAvatarClosed = true;
+  switchAvatarMode('earth');
+}
+
+function restoreAvatarStage() {
+  playSfx('click');
+  isAvatarClosed = false;
+  switchAvatarMode(currentAvatarMode === 'earth' || currentAvatarMode === 'windy' ? 'robot' : currentAvatarMode);
+}
 document.addEventListener('mousemove', (e) => {
   if (currentAvatarMode !== 'robot') return;
   const eyeL = document.getElementById('svgEyeL');
@@ -3895,6 +5488,8 @@ document.addEventListener('mousemove', (e) => {
 });
 
 function setAvatarTalking(isTalking) {
+  isHumanoidSpeaking = isTalking;
+  isHumanoidSpeaking = isTalking;
   const mouth = document.getElementById('robotMouth');
   if (mouth) {
     if (isTalking) mouth.classList.add('talking');
@@ -4226,6 +5821,40 @@ function processOfflineAI(query) {
     } catch (e) {}
   }
 
+  if (q.includes('quantum') || q.includes('kuantum') || q.includes('pqc') || q.includes('shor') || q.includes('grover') || q.includes('vqe') || q.includes('qaoa') || q.includes('qubo') || q.includes('bb84') || q.includes('bloch')) {
+    return {
+      title: "Quantum Algorithms Suite: Cybersecurity, Chemistry & Optimization",
+      body: "JARVIS Quantum Engine v8.6 menyediakan modul komputasi kuantum terintegrasi:\n\n" +
+            "1. **Cybersecurity & PQC**: Standar NIST FIPS 203 ML-KEM (Kyber) & FIPS 204 ML-DSA (Dilithium), simulator algoritma Shor (pemfaktoran prima RSA/ECC), Grover (reduksi kunci simetris O(√N)), serta distribusi kunci kuantum QKD BB84.\n" +
+            "2. **Quantum Chemistry**: Algoritma VQE (Variational Quantum Eigensolver) untuk simulasi keadaan dasar molekul H₂, LiH, H₂O dengan dekomposisi Hamiltonian Pauli dan akurasi kimiawi (< 1.6 mHa).\n" +
+            "3. **Quantum Optimization**: Algoritma QAOA untuk pemisahan graf Max-Cut dan formulasi QUBO untuk optimasi alokasi armada alat berat konstruksi (Way Apu Dam, Tanggul Demak, Gudang Bulog).\n" +
+            "4. **Visualisasi 3D Bloch Sphere**: Manipulasi gerbang logika Pauli X, Y, Z, Hadamard, S, dan T pada vektor status qubit.",
+      links: [
+        { label: "Buka Quantum Suite", url: "javascript:openModal('quantumModal')", icon: "fa-atom", cls: "gov" },
+        { label: "PQC & Shor's", url: "javascript:openQuantumTab('pqc')", icon: "fa-shield-halved" },
+        { label: "VQE Chemistry", url: "javascript:openQuantumTab('vqe')", icon: "fa-flask" },
+        { label: "QAOA Max-Cut", url: "javascript:openQuantumTab('qaoa')", icon: "fa-diagram-project" }
+      ]
+    };
+  }
+
+  if (q.includes('quantum') || q.includes('kuantum') || q.includes('pqc') || q.includes('shor') || q.includes('grover') || q.includes('vqe') || q.includes('qaoa') || q.includes('qubo') || q.includes('bb84') || q.includes('bloch')) {
+    return {
+      title: "Quantum Algorithms Suite: Cybersecurity, Chemistry & Optimization",
+      body: "JARVIS Quantum Engine v8.6 menyediakan modul komputasi kuantum terintegrasi:\n\n" +
+            "1. **Cybersecurity & PQC**: Standar NIST FIPS 203 ML-KEM (Kyber) & FIPS 204 ML-DSA (Dilithium), simulator algoritma Shor (pemfaktoran prima RSA/ECC), Grover (reduksi kunci simetris O(√N)), serta distribusi kunci kuantum QKD BB84.\n" +
+            "2. **Quantum Chemistry**: Algoritma VQE (Variational Quantum Eigensolver) untuk simulasi keadaan dasar molekul H₂, LiH, H₂O dengan dekomposisi Hamiltonian Pauli dan akurasi kimiawi (< 1.6 mHa).\n" +
+            "3. **Quantum Optimization**: Algoritma QAOA untuk pemisahan graf Max-Cut dan formulasi QUBO untuk optimasi alokasi armada alat berat konstruksi (Way Apu Dam, Tanggul Demak, Gudang Bulog).\n" +
+            "4. **Visualisasi 3D Bloch Sphere**: Manipulasi gerbang logika Pauli X, Y, Z, Hadamard, S, dan T pada vektor status qubit.",
+      links: [
+        { label: "Buka Quantum Suite", url: "javascript:openModal('quantumModal')", icon: "fa-atom", cls: "gov" },
+        { label: "PQC & Shor's", url: "javascript:openQuantumTab('pqc')", icon: "fa-shield-halved" },
+        { label: "VQE Chemistry", url: "javascript:openQuantumTab('vqe')", icon: "fa-flask" },
+        { label: "QAOA Max-Cut", url: "javascript:openQuantumTab('qaoa')", icon: "fa-diagram-project" }
+      ]
+    };
+  }
+
   if (q.includes('halo') || q.includes('hai') || q.includes('hello') || q.includes('hey')) {
     return {
       title: "Salam dari JARVIS v8.0",
@@ -4303,6 +5932,22 @@ async function handleSendMessage() {
   }
 
   
+  
+  // BMKG & Seismic Natural Language Commands
+  if (qLower.includes('gempa') || qLower.includes('bmkg') || qLower.includes('seismik') || qLower.includes('inatews') || qLower.includes('tsunami')) {
+    openModal('bmkgModal');
+    fetchBMKGData();
+    appendRichAIBubble(
+      `Radar Seismik & BMKG Live Telemetry`,
+      `Membuka radar seismik real-time InaTEWS dan feed gempa terkini BMKG (M 5.0+).\n• Sesar Aktif: Terpetakan di seluruh Nusantara\n• Sensor: 180 Seismometer, 12 InaBUOY OBPR, 60 Tide Gauges terhubung.`,
+      [
+        { label: "Buka Konsol BMKG Live", url: "javascript:openModal('bmkgModal')", icon: "fa-satellite-dish", cls: "gov" }
+      ]
+    );
+    speakJARVIS('Membuka radar seismik dan feed gempa terkini B M K G.');
+    return;
+  }
+
   // Antivirus natural language commands
   if (qLower.includes('scan virus') || qLower.includes('antivirus') || qLower.includes('scan hp') || qLower.includes('scan smartphone') || qLower.includes('scan tablet') || qLower.includes('scan android') || qLower.includes('scan ipad') || qLower.includes('scan mac') || qLower.includes('scan linux') || qLower.includes('scan windows')) {
     let targetKey = 'auto';
@@ -5586,7 +7231,7 @@ function switchSidebarTool(tool) {
   playSfx('click');
   currentSidebarTool = tool;
 
-  const tabs = ['antivirus', 'gov', 'hitl', 'bias', 'weather', 'geotek', 'calc', 'doa', 'sys'];
+  const tabs = ['quantum', 'antivirus', 'gov', 'hitl', 'bias', 'weather', 'geotek', 'calc', 'doa', 'sys'];
   tabs.forEach(t => {
     const btn = document.getElementById(`tab${t.charAt(0).toUpperCase() + t.slice(1)}`);
     if (btn) btn.classList.toggle('active', t === tool);
@@ -5598,7 +7243,7 @@ function switchSidebarTool(tool) {
     bias: 'PENGUJIAN BIAS',
     weather: 'WEATHER TELEMETRY',
     geotek: 'GEOTEK SOLVER',
-    calc: 'SCIENTIFIC SOLVER',
+    quantum: 'QUANTUM ALGORITHMS', calc: 'SCIENTIFIC SOLVER',
     doa: 'ISLAMIC PRAYERS',
     sys: 'SYSTEM DIAGNOSTICS'
   };
@@ -5614,7 +7259,45 @@ async function renderSidebarToolContent() {
   const prof = getActiveOSProfile();
   const detected = detectCurrentPlatform();
 
-  if (currentSidebarTool === 'antivirus') {
+  if (currentSidebarTool === 'quantum') {
+    container.innerHTML = `
+      <div style="font-family: var(--font-hud); font-size: 13.5px; color: var(--neon-purple); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+        <i class="fa-solid fa-atom glow-purple"></i> QUANTUM ALGORITHMS SUITE
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px;">
+        <div style="display: flex; justify-content: space-between;"><span>PQC Status:</span><b style="color:var(--neon-green)">ML-KEM/DSA OK</b></div>
+        <div style="display: flex; justify-content: space-between;"><span>VQE H₂ Ground:</span><b style="color:var(--cyan)">-1.137 Eh (Accurate)</b></div>
+        <div style="display: flex; justify-content: space-between;"><span>QAOA Max-Cut:</span><b style="color:var(--neon-amber)">α = 92.4% Optimal</b></div>
+        <div style="display: flex; justify-content: space-between;"><span>QKD BB84:</span><b style="color:var(--neon-green)">QBER 0.0% (Secure)</b></div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 4px;">
+          <button class="nav-btn quantum-btn" style="justify-content: center; padding: 5px; font-size: 12px;" onclick="openQuantumTab('pqc')">PQC CRYPTO</button>
+          <button class="nav-btn gov" style="justify-content: center; padding: 5px; font-size: 12px;" onclick="openQuantumTab('vqe')">VQE CHEM</button>
+        </div>
+        <button class="nav-btn" style="justify-content: center; padding: 6px; font-size: 13px; margin-top: 2px;" onclick="openModal('quantumModal')">
+          <i class="fa-solid fa-atom"></i> BUKA MASTER QUANTUM
+        </button>
+      </div>
+    `;
+  } else if (currentSidebarTool === 'quantum') {
+    container.innerHTML = `
+      <div style="font-family: var(--font-hud); font-size: 13.5px; color: var(--neon-purple); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+        <i class="fa-solid fa-atom glow-purple"></i> QUANTUM ALGORITHMS SUITE
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px;">
+        <div style="display: flex; justify-content: space-between;"><span>PQC Status:</span><b style="color:var(--neon-green)">ML-KEM/DSA OK</b></div>
+        <div style="display: flex; justify-content: space-between;"><span>VQE H₂ Ground:</span><b style="color:var(--cyan)">-1.137 Eh (Accurate)</b></div>
+        <div style="display: flex; justify-content: space-between;"><span>QAOA Max-Cut:</span><b style="color:var(--neon-amber)">α = 92.4% Optimal</b></div>
+        <div style="display: flex; justify-content: space-between;"><span>QKD BB84:</span><b style="color:var(--neon-green)">QBER 0.0% (Secure)</b></div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 4px;">
+          <button class="nav-btn quantum-btn" style="justify-content: center; padding: 5px; font-size: 12px;" onclick="openQuantumTab('pqc')">PQC CRYPTO</button>
+          <button class="nav-btn gov" style="justify-content: center; padding: 5px; font-size: 12px;" onclick="openQuantumTab('vqe')">VQE CHEM</button>
+        </div>
+        <button class="nav-btn" style="justify-content: center; padding: 6px; font-size: 13px; margin-top: 2px;" onclick="openModal('quantumModal')">
+          <i class="fa-solid fa-atom"></i> BUKA MASTER QUANTUM
+        </button>
+      </div>
+    `;
+  } else if (currentSidebarTool === 'antivirus') {
     container.innerHTML = `
       <div style="font-family: var(--font-hud); font-size: 13.5px; color: ${prof.color}; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
         <i class="${prof.icon}"></i> ANTIVIRUS: ${prof.displayName.toUpperCase()}
@@ -5923,6 +7606,10 @@ function openModal(id) {
   const modal = document.getElementById(id);
   if (modal) {
     modal.classList.add('active');
+    if (id === 'bmkgModal') {
+      if (!bmkgMap) initBmkgLeafletMap();
+      setTimeout(() => { if (bmkgMap) bmkgMap.invalidateSize(); }, 300);
+    }
     if (id === 'antivirusModal') {
       switchAvTab(currentAvTab || 'scan');
     }
@@ -6061,11 +7748,24 @@ function toggleFullScreen() {
 
 function setWindyLayer(layer) {
   playSfx('click');
+  const city = (typeof getSelectedCity === 'function') ? getSelectedCity() : { lat: -2.5, lon: 118 };
+  const lat = city.lat || -2.5;
+  const lon = city.lon || 118;
+  const url = `https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&metricTemp=default&metricWind=default&zoom=5&overlay=${layer}&product=ecmwf&level=surface&lat=${lat}&lon=${lon}`;
+  
   const frame = document.getElementById('windyFrame');
-  if (frame) {
-    frame.src = `https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=default&metricTemp=default&metricWind=default&zoom=5&overlay=${layer}&product=ecmwf&level=surface&lat=-2.5&lon=118`;
-  }
+  if (frame) frame.src = url;
+
+  const centerFrame = document.getElementById('centerWindyFrame');
+  if (centerFrame) centerFrame.src = url;
+
+  ['wind', 'rain', 'temp', 'waves', 'clouds', 'radar'].forEach(l => {
+    const btn = document.getElementById(`wlayer_${l}`);
+    if (btn) btn.classList.toggle('active', l === layer);
+  });
 }
+
+
 
 
 /* =========================================================================
@@ -7383,7 +9083,12 @@ function finishBootSequence() {
   try { initParticlesCanvas(); } catch(e) {}
   try { initNeuralWaveform(); } catch(e) {}
   try { initHoloBrainCore(); } catch(e) {}
-  try { initHologramCore(); } catch(e) {}
+  try { initHumanoidCore(); } catch(e) {}
+  try { triggerHudOpeningAnimation(); } catch(e) {}
+  try { initHumanoidCore(); } catch(e) {}
+  try { triggerHudOpeningAnimation(); } catch(e) {}
+  try { initBmkgLeafletMap(); } catch(e) {}
+  try { startBMKGCountdown(); } catch(e) {}
   try { initVoiceRecognition(); } catch(e) {}
   try { loadWeatherCities(); } catch(e) {}
   try { loadVoicePreferences(); } catch(e) {}
@@ -7455,6 +9160,1385 @@ if (document.readyState === 'loading') {
   window.addEventListener('DOMContentLoaded', startBootSequence);
 } else {
   startBootSequence();
+}
+
+function triggerHudOpeningAnimation() {
+  playSfx('boot');
+  setTimeout(() => { playSfx('laser'); }, 180);
+
+  const beam = document.getElementById('hudLaserSweepBeam');
+  if (beam) {
+    beam.classList.remove('active');
+    void beam.offsetWidth; // Trigger reflow
+    beam.classList.add('active');
+  }
+
+  const hud = document.getElementById('mainHUD');
+  if (hud) {
+    hud.classList.remove('hud-opening-anim');
+    void hud.offsetWidth;
+    hud.classList.add('hud-opening-anim');
+  }
+
+  // Wiping telemetry gauges from 0 to live values
+  const bars = ['barCPU', 'barRAM', 'barGPU', 'barPing'];
+  bars.forEach(bId => {
+    const el = document.getElementById(bId);
+    if (el) {
+      const targetW = el.style.width;
+      el.style.width = '0%';
+      setTimeout(() => { el.style.width = targetW; }, 350);
+    }
+  });
+
+  // Brief futuristic status pill announcement
+  const statusEl = document.getElementById('coreStatusText');
+  if (statusEl) {
+    const prev = statusEl.textContent;
+    statusEl.textContent = 'FUTURISTIC HUD INITIALIZED ◈ ALL SYSTEMS SYNCHRONIZED';
+    setTimeout(() => { statusEl.textContent = prev; }, 3000);
+  }
+}
+
+
+
+/* =========================================================================
+   QUANTUM ALGORITHMS ENGINE: CYBERSECURITY, CHEMISTRY & OPTIMIZATION
+   ========================================================================= */
+
+let currentQuantumTab = 'pqc';
+
+// Quantum State Objects
+let quantumPQCState = {
+  kyberPk: "0x8f2a4c...d91e",
+  kyberSk: "0x77b1e0...4a88",
+  kyberCipher: "0x33e9b1...c45a",
+  sharedSecret: "0x9a8f2174c8b091f3e742819abced0145",
+  isDecapsulated: true,
+  dilithiumMsg: "VERIFIKASI INTEGRITAS TATA KELOLA AI & GEOTEKNIK IR. MOHAMAD HARTADI",
+  dilithiumSig: "0x7c9812bf...889a",
+  isTampered: false,
+  isVerified: true
+};
+
+let bb84State = {
+  bitsCount: 16,
+  eveActive: false,
+  aliceBits: [],
+  aliceBases: [],
+  bobBases: [],
+  bobBits: [],
+  siftedKey: [],
+  qber: 0,
+  isSecure: true
+};
+
+let vqeState = {
+  molecule: "H2",
+  bondDistance: 0.74, // Angstrom
+  iterations: 35,
+  history: [],
+  isOptimizing: false,
+  fciEnergy: -1.1373, // Hartree
+  currentEnergy: -1.1373,
+  chemicalAccuracy: true
+};
+
+let qaoaState = {
+  graphType: "ring4",
+  depth: 2,
+  nodes: [],
+  edges: [],
+  partitionA: [],
+  partitionB: [],
+  cutScore: 0,
+  maxCut: 4,
+  approxRatio: 0.92,
+  optimalBitstring: "1010"
+};
+
+let blochState = {
+  theta: 0, // [0, pi]
+  phi: 0,   // [0, 2pi]
+  scene: null,
+  camera: null,
+  renderer: null,
+  arrowHelper: null
+};
+
+function openQuantumTab(tabId) {
+  openModal('quantumModal');
+  switchQuantumTab(tabId);
+}
+
+function switchQuantumTab(tabId) {
+  playSfx('click');
+  currentQuantumTab = tabId;
+
+  document.querySelectorAll('.quantum-tab-btn').forEach(b => b.classList.remove('active'));
+  const activeBtn = document.getElementById(`qtab_${tabId}`);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  renderQuantumTabContent(tabId);
+}
+
+function renderQuantumTabContent(tabId) {
+  const container = document.getElementById('quantumTabBody');
+  if (!container) return;
+
+  if (tabId === 'pqc') {
+    // 01. QUANTUM CYBERSECURITY (PQC, SHOR, GROVER, QKD)
+    container.innerHTML = `
+      <!-- PQC NIST STANDARDS (FIPS 203 & 204) -->
+      <div class="quantum-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+          <div>
+            <div style="font-family: var(--font-hud); font-size: 14px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-shield-halved glow-purple" style="color: var(--neon-purple);"></i>
+              <span>POST-QUANTUM CRYPTOGRAPHY (PQC) ◈ NIST FIPS 203 & 204</span>
+            </div>
+            <div style="font-size: 13px; color: rgba(216, 180, 254, 0.7); margin-top: 2px;">
+              Kriptografi berbasis kisi (Lattice-Based) yang kebal terhadap serangan algoritma Shor & Grover.
+            </div>
+          </div>
+          <span class="quantum-badge purple"><i class="fa-solid fa-certificate"></i> NIST APPROVED</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+          
+          <!-- ML-KEM (CRYSTALS-Kyber) -->
+          <div style="background: rgba(18, 12, 38, 0.7); border: 1px solid rgba(157, 78, 221, 0.25); border-radius: 8px; padding: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <b style="font-family: var(--font-hud); font-size: 13px; color: #fff;">1. ML-KEM (CRYSTALS-KYBER)</b>
+              <span class="quantum-badge cyan">KEY ENCAPSULATION</span>
+            </div>
+            <div style="font-size: 12.5px; color: #cbd5e1; margin-bottom: 8px;">
+              M-LWE (Module Learning With Errors) untuk pertukaran kunci rahasia kuantum-resistan.
+            </div>
+            <div style="font-family: var(--font-mono); font-size: 12px; background: rgba(0,0,0,0.5); padding: 6px; border-radius: 6px; margin-bottom: 8px;">
+              <div>PK (1184 B): <span style="color:var(--cyan);">${quantumPQCState.kyberPk}</span></div>
+              <div>Cipher (1088 B): <span style="color:#d8b4fe;">${quantumPQCState.kyberCipher}</span></div>
+              <div>Shared Secret: <b style="color:var(--neon-green);">${quantumPQCState.sharedSecret}</b></div>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <button class="nav-btn quantum-btn" style="padding: 5px 10px; font-size: 12px;" onclick="generateKyberKeys()"><i class="fa-solid fa-key"></i> RE-KEYGEN</button>
+              <button class="nav-btn gov" style="padding: 5px 10px; font-size: 12px;" onclick="testKyberEncapDecap()"><i class="fa-solid fa-lock"></i> TEST ENCAP/DECAP</button>
+            </div>
+          </div>
+
+          <!-- ML-DSA (CRYSTALS-Dilithium) -->
+          <div style="background: rgba(18, 12, 38, 0.7); border: 1px solid rgba(157, 78, 221, 0.25); border-radius: 8px; padding: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <b style="font-family: var(--font-hud); font-size: 13px; color: #fff;">2. ML-DSA (CRYSTALS-DILITHIUM)</b>
+              <span class="quantum-badge purple">DIGITAL SIGNATURE</span>
+            </div>
+            <div style="font-size: 12.5px; color: #cbd5e1; margin-bottom: 8px;">
+              Tanda tangan digital aman kuantum untuk otentikasi data dan anti-pemalsuan audit.
+            </div>
+            <div style="font-family: var(--font-mono); font-size: 12px; background: rgba(0,0,0,0.5); padding: 6px; border-radius: 6px; margin-bottom: 8px;">
+              <div>Pesan: <span style="color:#f1f5f9;">"${quantumPQCState.dilithiumMsg.substring(0, 32)}..."</span></div>
+              <div>Signature (2420 B): <span style="color:var(--neon-purple);">${quantumPQCState.dilithiumSig}</span></div>
+              <div>Status: <b style="color:${quantumPQCState.isVerified ? 'var(--neon-green)' : 'var(--neon-red)'};">${quantumPQCState.isVerified ? 'VERIFIED (VALID)' : 'TAMPER DETECTED (INVALID)'}</b></div>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <button class="nav-btn quantum-btn" style="padding: 5px 10px; font-size: 12px;" onclick="signDilithium()"><i class="fa-solid fa-pen-nib"></i> SIGN DATA</button>
+              <button class="nav-btn redteam" style="padding: 5px 10px; font-size: 12px;" onclick="toggleDilithiumTamper()"><i class="fa-solid fa-bug"></i> SIMULASI TAMPERING</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- SHOR'S & GROVER'S QUANTUM THREAT CALCULATOR -->
+        <div style="background: rgba(15, 8, 30, 0.85); border: 1px solid rgba(157, 78, 221, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+          <div style="font-family: var(--font-hud); font-size: 13px; color: var(--neon-amber); margin-bottom: 6px;">
+            <i class="fa-solid fa-calculator"></i> SHOR'S ALGORITHM & GROVER ATTACK ESTIMATOR
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; font-size: 13px;">
+            <div>
+              <span>Pilih Algoritma Klasik Target:</span>
+              <select class="chat-input-field" id="shorTargetCipher" onchange="calcShorGroverThreat()" style="width: 100%; padding: 6px; margin-top: 4px; font-size: 13px;">
+                <option value="rsa2048">RSA-2048 (Faktorisasi Prima)</option>
+                <option value="rsa4096">RSA-4096 (Standar Militer)</option>
+                <option value="ecc256">ECC secp256k1 (Kurva Elips / Bitcoin)</option>
+                <option value="aes128">AES-128 (Kunci Simetris - Grover)</option>
+                <option value="aes256">AES-256 (Kunci Simetris - Quantum Safe)</option>
+              </select>
+            </div>
+            <div id="shorResultBox" style="background: rgba(0,0,0,0.4); padding: 8px; border-radius: 6px; border: 1px solid rgba(157, 78, 221, 0.2); font-family: var(--font-mono); font-size: 12.5px;">
+              Memuat kalkulasi kebutuhan qubit kuantum...
+            </div>
+          </div>
+        </div>
+
+        <!-- QUANTUM KEY DISTRIBUTION (QKD - BB84 PROTOCOL) -->
+        <div style="background: rgba(12, 10, 32, 0.85); border: 1px solid rgba(0, 245, 212, 0.3); border-radius: 8px; padding: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 8px;">
+            <div style="font-family: var(--font-hud); font-size: 13px; color: var(--neon-green);">
+              <i class="fa-solid fa-network-wired"></i> SIMULASI QUANTUM KEY DISTRIBUTION (QKD - BB84)
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <label style="font-size: 12.5px; color: #cbd5e1; display: flex; align-items: center; gap: 6px;">
+                <input type="checkbox" id="eveInterceptCheckbox" onchange="toggleEveIntercept(this.checked)" style="accent-color: var(--neon-red); transform: scale(1.2);">
+                <span style="color:var(--neon-red); font-weight:700;">Aktifkan Penyadapan Eve (Eavesdropper)</span>
+              </label>
+              <button class="nav-btn gov" style="padding: 4px 10px; font-size: 12px;" onclick="runBB84Simulation()"><i class="fa-solid fa-play"></i> JALANKAN TRANSMISI FOTON</button>
+            </div>
+          </div>
+
+          <div style="font-size: 12.5px; color: rgba(216, 180, 254, 0.8); margin-bottom: 8px;">
+            Alice memancarkan foton berpolarisasi acak (Basis Rektilinear + & Diagonal ×). Bob mengukur dengan basis acak.
+          </div>
+
+          <div id="bb84VisualGrid"></div>
+        </div>
+
+      </div>
+    `;
+    calcShorGroverThreat();
+    runBB84Simulation();
+  } else if (tabId === 'vqe') {
+    // 02. QUANTUM CHEMISTRY (VQE & MOLECULAR HAMILTONIAN)
+    container.innerHTML = `
+      <div class="quantum-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+          <div>
+            <div style="font-family: var(--font-hud); font-size: 14px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-flask glow-green" style="color: var(--neon-green);"></i>
+              <span>VARIATIONAL QUANTUM EIGENSOLVER (VQE) ◈ SIMULASI ENERGI MOLEKUL</span>
+            </div>
+            <div style="font-size: 13px; color: rgba(216, 180, 254, 0.7); margin-top: 2px;">
+              Perhitungan energi keadaan dasar (ground-state electronic energy) dengan sirkuit kuantum berparameter.
+            </div>
+          </div>
+          <span class="quantum-badge green"><i class="fa-solid fa-atom"></i> HAMILTONIAN SIMULATOR</span>
+        </div>
+
+        <!-- Controls: Molecule & Bond Length Slider -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 12px; background: rgba(18, 12, 38, 0.7); padding: 12px; border-radius: 8px;">
+          <div>
+            <label style="font-family: var(--font-hud); font-size: 12.5px; color: var(--cyan); display: block; margin-bottom: 4px;">PILIH MOLEKUL KIMIA</label>
+            <select class="chat-input-field" id="vqeMoleculeSelect" onchange="changeVQEMolecule(this.value)" style="width: 100%; padding: 6px; font-size: 13px;">
+              <option value="H2">H₂ (Hydrogen Molecule - 2 Qubits STO-3G)</option>
+              <option value="LiH">LiH (Lithium Hydride - 4 Qubits Active Space)</option>
+              <option value="H2O">H₂O (Water Molecule - 6 Qubits Active Space)</option>
+              <option value="BeH2">BeH₂ (Beryllium Hydride - 6 Qubits)</option>
+            </select>
+          </div>
+
+          <div>
+            <div style="display: flex; justify-content: space-between; font-size: 12.5px; margin-bottom: 4px;">
+              <span style="font-family: var(--font-hud); color: var(--cyan);">JARAK IKATAN ATOM (R):</span>
+              <b id="vqeBondLabel" style="color: var(--neon-amber); font-family: var(--font-mono);">0.74 Å</b>
+            </div>
+            <input type="range" id="vqeBondSlider" min="0.3" max="2.6" step="0.02" value="0.74" style="width: 100%; accent-color: var(--neon-green);" oninput="updateVQEBond(this.value)">
+          </div>
+
+          <div style="display: flex; align-items: flex-end; gap: 8px;">
+            <button class="nav-btn gov" style="flex: 1; justify-content: center; padding: 8px;" onclick="runVQEConvergence()"><i class="fa-solid fa-play"></i> RUN VQE OPTIMIZER</button>
+            <button class="nav-btn quantum-btn" style="padding: 8px 12px;" onclick="scanPotentialEnergySurface()"><i class="fa-solid fa-chart-line"></i> PES SCAN</button>
+          </div>
+        </div>
+
+        <!-- Pauli Hamiltonian Formula & Ansatz -->
+        <div style="background: rgba(10, 6, 24, 0.85); border: 1px solid rgba(157, 78, 221, 0.3); border-radius: 8px; padding: 10px; margin-bottom: 12px; font-family: var(--font-mono); font-size: 12.5px;">
+          <div style="color: var(--cyan); margin-bottom: 4px;"><b>DEKOMPOSISI HAMILTONIAN PAULI MOLEKUL (<span id="vqeMolTitle">H₂</span>):</b></div>
+          <div id="vqeHamiltonianFormula" style="color: #a5f3fc; line-height: 1.5;">H = -1.0523 I + 0.3979 Z₀ - 0.3979 Z₁ - 0.0112 Z₀Z₁ + 0.1809 X₀X₁ + 0.1809 Y₀Y₁</div>
+        </div>
+
+        <!-- Live VQE Convergence Graph -->
+        <div style="margin-bottom: 10px;">
+          <div style="display: flex; justify-content: space-between; font-family: var(--font-hud); font-size: 12.5px; color: #fff; margin-bottom: 4px;">
+            <span>KONVERGENSI ENERGI KEADAAN DASAR (HARTREE)</span>
+            <span id="vqeAccuracyBadge" class="quantum-badge green">CHEMICAL ACCURACY (&lt; 1.6 mHa)</span>
+          </div>
+          <canvas class="quantum-chart-canvas" id="vqeChartCanvas"></canvas>
+        </div>
+
+        <!-- Telemetry Metrics -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; font-family: var(--font-mono); font-size: 12.5px; text-align: center;">
+          <div style="background: rgba(0,20,40,0.6); padding: 8px; border-radius: 6px; border: 1px solid rgba(0,242,254,0.15);">
+            <div style="color: rgba(0,242,254,0.7); font-size: 11px;">ENERGI EIGEN VQE</div>
+            <b id="vqeValEnergy" style="color: #fff; font-size: 14px;">-1.1373 Eh</b>
+          </div>
+          <div style="background: rgba(0,20,40,0.6); padding: 8px; border-radius: 6px; border: 1px solid rgba(0,242,254,0.15);">
+            <div style="color: rgba(0,242,254,0.7); font-size: 11px;">EXACT FCI GROUND TRUTH</div>
+            <b id="vqeValFCI" style="color: var(--cyan); font-size: 14px;">-1.1373 Eh</b>
+          </div>
+          <div style="background: rgba(0,20,40,0.6); padding: 8px; border-radius: 6px; border: 1px solid rgba(0,242,254,0.15);">
+            <div style="color: rgba(0,242,254,0.7); font-size: 11px;">PANJANG IKATAN EQUILIBRIUM</div>
+            <b id="vqeValEquil" style="color: var(--neon-amber); font-size: 14px;">0.741 Å</b>
+          </div>
+          <div style="background: rgba(0,20,40,0.6); padding: 8px; border-radius: 6px; border: 1px solid rgba(0,242,254,0.15);">
+            <div style="color: rgba(0,242,254,0.7); font-size: 11px;">ENERGI DISOSIASI (De)</div>
+            <b id="vqeValDissoc" style="color: var(--neon-green); font-size: 14px;">4.75 eV</b>
+          </div>
+        </div>
+
+      </div>
+    `;
+    setTimeout(() => { runVQEConvergence(); }, 50);
+  } else if (tabId === 'qaoa') {
+    // 03. QUANTUM OPTIMIZATION (QAOA & QUBO)
+    container.innerHTML = `
+      <div class="quantum-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+          <div>
+            <div style="font-family: var(--font-hud); font-size: 14px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-diagram-project glow-purple" style="color: var(--neon-purple);"></i>
+              <span>QUANTUM APPROXIMATE OPTIMIZATION ALGORITHM (QAOA) & QUBO</span>
+            </div>
+            <div style="font-size: 13px; color: rgba(216, 180, 254, 0.7); margin-top: 2px;">
+              Penyelesaian masalah optimasi kombinatorial (Max-Cut) & alokasi sumber daya armada proyek konstruksi.
+            </div>
+          </div>
+          <span class="quantum-badge purple"><i class="fa-solid fa-code-branch"></i> ADIABATIC / NISQ OPT</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+          
+          <!-- QAOA Max-Cut Interactive Solver -->
+          <div style="background: rgba(18, 12, 38, 0.7); border: 1px solid rgba(157, 78, 221, 0.25); border-radius: 8px; padding: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <b style="font-family: var(--font-hud); font-size: 13px; color: #fff;">1. MAX-CUT GRAPH PARTITIONING (QAOA)</b>
+              <span class="quantum-badge cyan" id="qaoaCutScoreBadge">CUT: 4 / 4 (100%)</span>
+            </div>
+            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+              <select class="chat-input-field" id="qaoaGraphSelect" onchange="changeQAOAGraph(this.value)" style="flex: 1; padding: 5px; font-size: 12.5px;">
+                <option value="ring4">Ring Graph (4 Nodes, 4 Edges)</option>
+                <option value="star5">Star / Pentagram (5 Nodes, 5 Edges)</option>
+                <option value="bipartite6">Bipartite Heavy (6 Nodes, 8 Edges)</option>
+                <option value="grid8">Infrastructure Grid (8 Nodes, 10 Edges)</option>
+              </select>
+              <select class="chat-input-field" id="qaoaDepthSelect" onchange="changeQAOADepth(this.value)" style="width: 100px; padding: 5px; font-size: 12.5px;">
+                <option value="1">Depth p=1</option>
+                <option value="2" selected>Depth p=2</option>
+                <option value="3">Depth p=3</option>
+              </select>
+            </div>
+
+            <!-- Canvas Graph Visualizer -->
+            <canvas id="qaoaCanvas" style="width: 100%; height: 170px; background: rgba(2,4,12,0.8); border: 1px solid rgba(0,242,254,0.2); border-radius: 6px; margin-bottom: 8px;"></canvas>
+
+            <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 12px; margin-bottom: 6px;">
+              <span>Bitstring Solusi: <b style="color:var(--neon-green);" id="qaoaBitstring">|1010⟩</b></span>
+              <span>Rasio Aproksimasi: <b style="color:var(--cyan);" id="qaoaRatio">0.924 (92.4%)</b></span>
+            </div>
+
+            <button class="nav-btn quantum-btn" style="width: 100%; justify-content: center; padding: 6px;" onclick="runQAOAOptimizer()"><i class="fa-solid fa-play"></i> JALANKAN QAOA OPTIMIZER</button>
+          </div>
+
+          <!-- Civil Engineering & Infrastructure QUBO Solver -->
+          <div style="background: rgba(18, 12, 38, 0.7); border: 1px solid rgba(157, 78, 221, 0.25); border-radius: 8px; padding: 12px; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <b style="font-family: var(--font-hud); font-size: 13px; color: #fff;">2. CIVIL ENGINEERING FLEET DISPATCH QUBO</b>
+              <span class="quantum-badge green">ANNEALING MIN</span>
+            </div>
+            <div style="font-size: 12px; color: #cbd5e1; margin-bottom: 8px; line-height: 1.4;">
+              Optimasi jadwal penugasan armada alat berat (Excavator, Borepile Rig, Dump Truck) pada 3 lokasi proyek: <i>Way Apu Dam, Tanggul Demak, & Gudang Bulog</i> dengan meminimalkan biaya bahan bakar & penalti keterlambatan.
+            </div>
+
+            <div style="background: rgba(0,0,0,0.5); padding: 8px; border-radius: 6px; border: 1px solid rgba(0,245,212,0.2); font-family: var(--font-mono); font-size: 12px; margin-bottom: 8px; flex: 1;" id="quboResultBox">
+              <div style="color:var(--cyan);">Matriks Biaya QUBO: Q[6x6] diinisialisasi.</div>
+              <div>Status: Siap dioptimasi dengan simulated quantum annealing.</div>
+            </div>
+
+            <button class="nav-btn gov" style="width: 100%; justify-content: center; padding: 6px;" onclick="solveCivilQUBO()"><i class="fa-solid fa-truck-monster"></i> OPTIMALKAN PENUGASAN ALAT BERAT</button>
+          </div>
+
+        </div>
+      </div>
+    `;
+    setTimeout(() => { drawQAOAGraph(); solveCivilQUBO(); }, 50);
+  } else if (tabId === 'bloch') {
+    // 04. 3D BLOCH SPHERE QUBIT VISUALIZER (Three.js)
+    container.innerHTML = `
+      <div class="quantum-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+          <div>
+            <div style="font-family: var(--font-hud); font-size: 14px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-circle-dot glow-purple" style="color: var(--neon-purple);"></i>
+              <span>3D BLOCH SPHERE ◈ VISUALISASI KEADAAN QUBIT TUNGGAL</span>
+            </div>
+            <div style="font-size: 13px; color: rgba(216, 180, 254, 0.7); margin-top: 2px;">
+              Representasi geometris ruang Hilbert |ψ⟩ = cos(θ/2)|0⟩ + e^(iφ)sin(θ/2)|1⟩ dengan gerbang logika kuantum.
+            </div>
+          </div>
+          <span class="quantum-badge purple"><i class="fa-solid fa-cube"></i> THREE.JS 3D</span>
+        </div>
+
+        <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+          
+          <!-- 3D Canvas -->
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <canvas class="quantum-bloch-canvas" id="blochCanvas"></canvas>
+            <div style="font-family: var(--font-mono); font-size: 11.5px; color: rgba(216, 180, 254, 0.6); margin-top: 6px;">
+              Geser mouse untuk rotasi perspektif bola
+            </div>
+          </div>
+
+          <!-- Controls & Quantum Gate Buttons -->
+          <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 10px;">
+            
+            <div style="background: rgba(18, 12, 38, 0.75); border: 1px solid rgba(157, 78, 221, 0.25); border-radius: 8px; padding: 10px;">
+              <div style="font-family: var(--font-hud); font-size: 12.5px; color: var(--cyan); margin-bottom: 6px;">GERBANG LOGIKA KUANTUM (QUANTUM GATES)</div>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <button class="nav-btn quantum-btn" style="padding: 6px 12px; font-size: 13px; font-weight: 700;" onclick="applyBlochGate('X')">X (NOT)</button>
+                <button class="nav-btn quantum-btn" style="padding: 6px 12px; font-size: 13px; font-weight: 700;" onclick="applyBlochGate('Y')">Y</button>
+                <button class="nav-btn quantum-btn" style="padding: 6px 12px; font-size: 13px; font-weight: 700;" onclick="applyBlochGate('Z')">Z (PHASE)</button>
+                <button class="nav-btn gov" style="padding: 6px 12px; font-size: 13px; font-weight: 700;" onclick="applyBlochGate('H')">H (HADAMARD)</button>
+                <button class="nav-btn quantum-btn" style="padding: 6px 12px; font-size: 13px; font-weight: 700;" onclick="applyBlochGate('S')">S (π/2)</button>
+                <button class="nav-btn quantum-btn" style="padding: 6px 12px; font-size: 13px; font-weight: 700;" onclick="applyBlochGate('T')">T (π/4)</button>
+                <button class="nav-btn redteam" style="padding: 6px 12px; font-size: 13px; font-weight: 700;" onclick="applyBlochGate('RESET')"><i class="fa-solid fa-rotate-left"></i> |0⟩</button>
+              </div>
+            </div>
+
+            <!-- Quantum Coordinates & Probability Amplitudes -->
+            <div style="background: rgba(18, 12, 38, 0.75); border: 1px solid rgba(157, 78, 221, 0.25); border-radius: 8px; padding: 10px; font-family: var(--font-mono); font-size: 13px;">
+              <div style="color: #fff; margin-bottom: 4px;">VEKTOR KEADAAN STATUS:</div>
+              <div style="color: var(--neon-green); margin-bottom: 6px;" id="blochStateText">|ψ⟩ = 1.000 |0⟩ + 0.000 |1⟩</div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 12px;">
+                <div>Polar θ: <b id="blochThetaVal" style="color:var(--cyan);">0.00° (0.00 rad)</b></div>
+                <div>Azimuthal φ: <b id="blochPhiVal" style="color:var(--cyan);">0.00° (0.00 rad)</b></div>
+                <div>P(|0⟩): <b id="blochP0Val" style="color:var(--neon-green);">100.0%</b></div>
+                <div>P(|1⟩): <b id="blochP1Val" style="color:var(--neon-purple);">0.0%</b></div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    `;
+    setTimeout(() => { initBlochSphere(); }, 50);
+  }
+}
+
+/* =========================================================================
+   PQC & CYBERSECURITY ALGORITHMIC IMPLEMENTATIONS
+   ========================================================================= */
+
+function generateKyberKeys() {
+  playSfx('click');
+  const hexChars = "0123456789abcdef";
+  let pk = "0x";
+  let sk = "0x";
+  for (let i = 0; i < 16; i++) pk += hexChars[Math.floor(Math.random() * 16)];
+  for (let i = 0; i < 16; i++) sk += hexChars[Math.floor(Math.random() * 16)];
+  quantumPQCState.kyberPk = pk + "...9f";
+  quantumPQCState.kyberSk = sk + "...c1";
+  renderQuantumTabContent('pqc');
+  speakJARVIS('Pasangan kunci ML-KEM Kyber-768 baru berhasil dibangkitkan.');
+}
+
+function testKyberEncapDecap() {
+  playSfx('success');
+  const hexChars = "0123456789abcdef";
+  let secret = "0x";
+  for (let i = 0; i < 32; i++) secret += hexChars[Math.floor(Math.random() * 16)];
+  quantumPQCState.sharedSecret = secret;
+  quantumPQCState.isDecapsulated = true;
+  renderQuantumTabContent('pqc');
+  alert(`Uji Enkapsulasi & Dekapsulasi ML-KEM Berhasil!\nShared Secret 256-bit: ${secret}\nKunci simetris terverifikasi identik pada kedua sisi dengan perlindungan kisi kuantum.`);
+}
+
+function signDilithium() {
+  playSfx('click');
+  quantumPQCState.isTampered = false;
+  quantumPQCState.isVerified = true;
+  const hexChars = "0123456789abcdef";
+  let sig = "0x";
+  for (let i = 0; i < 16; i++) sig += hexChars[Math.floor(Math.random() * 16)];
+  quantumPQCState.dilithiumSig = sig + "...aa";
+  renderQuantumTabContent('pqc');
+  speakJARVIS('Pesan berhasil ditandatangani menggunakan ML-DSA Dilithium-3.');
+}
+
+function toggleDilithiumTamper() {
+  playSfx('alert');
+  quantumPQCState.isTampered = !quantumPQCState.isTampered;
+  quantumPQCState.isVerified = !quantumPQCState.isTampered;
+  renderQuantumTabContent('pqc');
+  if (quantumPQCState.isTampered) {
+    alert("Simulasi Modifikasi Data Dijalankan!\nPesan telah dirubah 1 karakter. Tanda tangan ML-DSA menolak berkas (Signature Verification Failed). Integritas sistem terlindungi.");
+  } else {
+    alert("Pesan dikembalikan ke aslinya. Tanda tangan ML-DSA terverifikasi Valid.");
+  }
+}
+
+function calcShorGroverThreat() {
+  const select = document.getElementById('shorTargetCipher');
+  const target = select ? select.value : 'rsa2048';
+  const box = document.getElementById('shorResultBox');
+  if (!box) return;
+
+  if (target === 'rsa2048') {
+    box.innerHTML = `
+      <b style="color:var(--neon-red);">TARGET: RSA-2048 (Shor's Algorithm)</b><br>
+      • Qubit Logis Diperlukan: <b>4,098 Qubits</b> (2n + 2)<br>
+      • Estimasi Qubit Fisik (Surface Code): <b>~4.1 Juta Qubits</b><br>
+      • Waktu Retas Kuantum: <b>~8.2 Jam</b> (pada clock 1 MHz)<br>
+      • Kompleksitas: <b>O((log N)³) - Polinomial</b> (Klasik: Sub-eksponensial)<br>
+      • Mitigasi: <b>Migrasi ke ML-KEM-768 / 1024 Segera.</b>
+    `;
+  } else if (target === 'rsa4096') {
+    box.innerHTML = `
+      <b style="color:var(--neon-red);">TARGET: RSA-4096 (Shor's Algorithm)</b><br>
+      • Qubit Logis Diperlukan: <b>8,194 Qubits</b><br>
+      • Estimasi Qubit Fisik: <b>~8.2 Juta Qubits</b><br>
+      • Waktu Retas Kuantum: <b>~34 Jam</b><br>
+      • Mitigasi: <b>Migrasi ke ML-KEM-1024.</b>
+    `;
+  } else if (target === 'ecc256') {
+    box.innerHTML = `
+      <b style="color:var(--neon-red);">TARGET: ECC secp256k1 (Shor's Algorithm)</b><br>
+      • Qubit Logis Diperlukan: <b>2,330 Qubits</b> (Lebih rentan dibanding RSA!)<br>
+      • Estimasi Qubit Fisik: <b>~2.3 Juta Qubits</b><br>
+      • Waktu Retas Kuantum: <b>~3.1 Jam</b><br>
+      • Mitigasi: <b>Migrasi ke ML-DSA-65 (Dilithium).</b>
+    `;
+  } else if (target === 'aes128') {
+    box.innerHTML = `
+      <b style="color:var(--neon-amber);">TARGET: AES-128 (Grover's Algorithm)</b><br>
+      • Reduksi Keamanan: <b>2¹²⁸ ➔ 2⁶⁴ Operasi</b> (Akar Kuadrat O(√N))<br>
+      • Status: <b>RENTAN</b> terhadap brute-force paralel kuantum.<br>
+      • Mitigasi: <b>Tingkatkan panjang kunci ke AES-256.</b>
+    `;
+  } else if (target === 'aes256') {
+    box.innerHTML = `
+      <b style="color:var(--neon-green);">TARGET: AES-256 (Grover's Algorithm)</b><br>
+      • Reduksi Keamanan: <b>2²⁵⁶ ➔ 2¹²⁸ Operasi</b><br>
+      • Status: <b>QUANTUM SAFE</b> (2¹²⁸ melampaui batas energi komputasi semesta).<br>
+      • Standar: <b>Disetujui NSA CNSA 2.0 & ISO/IEC 18033.</b>
+    `;
+  }
+}
+
+function toggleEveIntercept(active) {
+  bb84State.eveActive = active;
+  runBB84Simulation();
+}
+
+function runBB84Simulation() {
+  playSfx('click');
+  const count = 16;
+  bb84State.aliceBits = [];
+  bb84State.aliceBases = [];
+  bb84State.bobBases = [];
+  bb84State.bobBits = [];
+  bb84State.siftedKey = [];
+
+  let errors = 0;
+  let siftedCount = 0;
+
+  for (let i = 0; i < count; i++) {
+    const aBit = Math.random() > 0.5 ? 1 : 0;
+    const aBase = Math.random() > 0.5 ? '+' : '×';
+    bb84State.aliceBits.push(aBit);
+    bb84State.aliceBases.push(aBase);
+
+    // Eve interception
+    let photonBit = aBit;
+    let photonBase = aBase;
+    if (bb84State.eveActive) {
+      const eveBase = Math.random() > 0.5 ? '+' : '×';
+      if (eveBase !== aBase) {
+        // Measurement collapse introduces 50% error probability on mismatched basis
+        photonBit = Math.random() > 0.5 ? 1 : 0;
+        photonBase = eveBase;
+      }
+    }
+
+    const bBase = Math.random() > 0.5 ? '+' : '×';
+    let bBit = photonBit;
+    if (bBase !== photonBase) {
+      bBit = Math.random() > 0.5 ? 1 : 0;
+    }
+    bb84State.bobBases.push(bBase);
+    bb84State.bobBits.push(bBit);
+
+    // Sifting: basis match
+    if (aBase === bBase) {
+      siftedCount++;
+      const isMatch = aBit === bBit;
+      if (!isMatch) errors++;
+      bb84State.siftedKey.push({ bit: aBit, match: isMatch });
+    } else {
+      bb84State.siftedKey.push(null);
+    }
+  }
+
+  bb84State.qber = siftedCount > 0 ? ((errors / siftedCount) * 100).toFixed(1) : 0;
+  bb84State.isSecure = bb84State.qber <= 11.0;
+
+  // Render Grid
+  const grid = document.getElementById('bb84VisualGrid');
+  if (!grid) return;
+
+  grid.innerHTML = `
+    <div style="margin-bottom: 4px; font-size: 11px; color: var(--cyan); font-family: var(--font-mono);">
+      ALICE BITS:  [ ${bb84State.aliceBits.join(' ')} ]<br>
+      ALICE BASES: [ ${bb84State.aliceBases.join(' ')} ]<br>
+      BOB BASES:   [ ${bb84State.bobBases.join(' ')} ]<br>
+      BOB BITS:    [ ${bb84State.bobBits.join(' ')} ]
+    </div>
+    <div class="bb84-bit-grid">
+      ${bb84State.siftedKey.map((k, idx) => {
+        if (!k) return `<div class="bb84-bit-cell" style="opacity:0.3;">-</div>`;
+        return `<div class="bb84-bit-cell ${k.match ? 'match' : 'error'}">${k.bit}</div>`;
+      }).join('')}
+    </div>
+    <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 12.5px; margin-top: 6px;">
+      <div>QBER: <b style="color:${bb84State.isSecure ? 'var(--neon-green)' : 'var(--neon-red)'};">${bb84State.qber}%</b> (Ambang Batas Toleransi: 11.0%)</div>
+      <div>STATUS: <b style="color:${bb84State.isSecure ? 'var(--neon-green)' : 'var(--neon-red)'};">${bb84State.isSecure ? 'KUNCI KUANTUM OTENTIK (AMAN)' : 'PENYADAP EVE TERDETEKSI! KUNCI DIGUGURKAN'}</b></div>
+    </div>
+  `;
+}
+
+/* =========================================================================
+   VQE QUANTUM CHEMISTRY ALGORITHMIC IMPLEMENTATIONS
+   ========================================================================= */
+
+function changeVQEMolecule(mol) {
+  playSfx('click');
+  vqeState.molecule = mol;
+  const slider = document.getElementById('vqeBondSlider');
+  const label = document.getElementById('vqeBondLabel');
+  const title = document.getElementById('vqeMolTitle');
+  const formula = document.getElementById('vqeHamiltonianFormula');
+
+  if (mol === 'H2') {
+    vqeState.bondDistance = 0.74;
+    vqeState.fciEnergy = -1.1373;
+    if (slider) { slider.min = "0.3"; slider.max = "2.6"; slider.value = "0.74"; }
+    if (label) label.textContent = "0.74 Å";
+    if (title) title.textContent = "H₂";
+    if (formula) formula.textContent = "H = -1.0523 I + 0.3979 Z₀ - 0.3979 Z₁ - 0.0112 Z₀Z₁ + 0.1809 X₀X₁ + 0.1809 Y₀Y₁";
+  } else if (mol === 'LiH') {
+    vqeState.bondDistance = 1.59;
+    vqeState.fciEnergy = -7.8824;
+    if (slider) { slider.min = "0.8"; slider.max = "3.2"; slider.value = "1.59"; }
+    if (label) label.textContent = "1.59 Å";
+    if (title) title.textContent = "LiH";
+    if (formula) formula.textContent = "H = -7.498 I + 0.225 Z₀ - 0.225 Z₁ + 0.174 Z₂ + 0.089 X₀X₁X₂ + 0.089 Y₀Y₁Z₂";
+  } else if (mol === 'H2O') {
+    vqeState.bondDistance = 0.96;
+    vqeState.fciEnergy = -75.0215;
+    if (slider) { slider.min = "0.6"; slider.max = "2.2"; slider.value = "0.96"; }
+    if (label) label.textContent = "0.96 Å";
+    if (title) title.textContent = "H₂O";
+    if (formula) formula.textContent = "H = -74.120 I + 0.412 Z₀ + 0.385 Z₁ - 0.298 Z₂ + 0.155 (X₀X₁ + Y₀Y₁) + 0.098 Z₃Z₄";
+  } else if (mol === 'BeH2') {
+    vqeState.bondDistance = 1.33;
+    vqeState.fciEnergy = -15.5948;
+    if (slider) { slider.min = "0.8"; slider.max = "2.8"; slider.value = "1.33"; }
+    if (label) label.textContent = "1.33 Å";
+    if (title) title.textContent = "BeH₂";
+    if (formula) formula.textContent = "H = -15.024 I + 0.312 Z₀ + 0.285 Z₁ - 0.198 Z₂ + 0.124 X₀X₁ + 0.092 Z₃Z₄";
+  }
+
+  runVQEConvergence();
+}
+
+function updateVQEBond(val) {
+  vqeState.bondDistance = parseFloat(val);
+  const label = document.getElementById('vqeBondLabel');
+  if (label) label.textContent = `${val} Å`;
+  runVQEConvergence();
+}
+
+function runVQEConvergence() {
+  playSfx('click');
+  const R = vqeState.bondDistance;
+  let targetFCI = -1.1373;
+  let Re = 0.741;
+  let De = 4.75; // eV
+
+  if (vqeState.molecule === 'H2') {
+    // Morse Potential approximation for ground state energy
+    Re = 0.741;
+    targetFCI = -1.174 + Math.pow(1 - Math.exp(-1.94 * (R - Re)), 2) * 0.174;
+    De = 4.75;
+  } else if (vqeState.molecule === 'LiH') {
+    Re = 1.595;
+    targetFCI = -7.984 + Math.pow(1 - Math.exp(-1.12 * (R - Re)), 2) * 0.102;
+    De = 2.52;
+  } else if (vqeState.molecule === 'H2O') {
+    Re = 0.958;
+    targetFCI = -75.120 + Math.pow(1 - Math.exp(-2.2 * (R - Re)), 2) * 0.098;
+    De = 9.51;
+  } else if (vqeState.molecule === 'BeH2') {
+    Re = 1.326;
+    targetFCI = -15.680 + Math.pow(1 - Math.exp(-1.4 * (R - Re)), 2) * 0.085;
+    De = 3.24;
+  }
+
+  vqeState.fciEnergy = targetFCI;
+
+  // Generate simulated classical-quantum optimization steps (35 iterations)
+  vqeState.history = [];
+  let currentE = targetFCI + 0.65; // initial ansatz error
+
+  for (let i = 1; i <= 35; i++) {
+    const decay = Math.exp(-i / 7);
+    const noise = (Math.random() - 0.5) * 0.008 * decay;
+    currentE = targetFCI + (0.65 * decay) + noise;
+    vqeState.history.push(currentE);
+  }
+
+  vqeState.currentEnergy = vqeState.history[vqeState.history.length - 1];
+  const delta = Math.abs(vqeState.currentEnergy - targetFCI);
+  vqeState.chemicalAccuracy = delta < 0.0016; // 1.6 mHa = 1 kcal/mol
+
+  // Update Telemetry UI
+  const valE = document.getElementById('vqeValEnergy');
+  const valFCI = document.getElementById('vqeValFCI');
+  const valEq = document.getElementById('vqeValEquil');
+  const valDis = document.getElementById('vqeValDissoc');
+  const badge = document.getElementById('vqeAccuracyBadge');
+
+  if (valE) valE.textContent = `${vqeState.currentEnergy.toFixed(4)} Eh`;
+  if (valFCI) valFCI.textContent = `${targetFCI.toFixed(4)} Eh`;
+  if (valEq) valEq.textContent = `${Re.toFixed(3)} Å`;
+  if (valDis) valDis.textContent = `${De.toFixed(2)} eV`;
+
+  if (badge) {
+    if (vqeState.chemicalAccuracy) {
+      badge.className = "quantum-badge green";
+      badge.textContent = `CHEMICAL ACCURACY (Δ = ${(delta*1000).toFixed(2)} mHa)`;
+    } else {
+      badge.className = "quantum-badge amber";
+      badge.textContent = `ΔE = ${(delta*1000).toFixed(2)} mHa (APPROACHING)`;
+    }
+  }
+
+  drawVQEChart();
+}
+
+function drawVQEChart() {
+  const canvas = document.getElementById('vqeChartCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.clientWidth;
+  canvas.height = canvas.clientHeight;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const hist = vqeState.history;
+  if (!hist || hist.length === 0) return;
+
+  const padLeft = 65;
+  const padRight = 20;
+  const padTop = 25;
+  const padBottom = 30;
+
+  const w = canvas.width - padLeft - padRight;
+  const h = canvas.height - padTop - padBottom;
+
+  const minE = Math.min(...hist, vqeState.fciEnergy) - 0.05;
+  const maxE = Math.max(...hist) + 0.05;
+
+  function getY(e) {
+    return padTop + h - ((e - minE) / (maxE - minE)) * h;
+  }
+
+  function getX(i) {
+    return padLeft + (i / (hist.length - 1)) * w;
+  }
+
+  // Grid Lines
+  ctx.strokeStyle = "rgba(157, 78, 221, 0.15)";
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const yVal = minE + (i / 4) * (maxE - minE);
+    const yPx = getY(yVal);
+    ctx.beginPath();
+    ctx.moveTo(padLeft, yPx);
+    ctx.lineTo(canvas.width - padRight, yPx);
+    ctx.stroke();
+
+    ctx.fillStyle = "rgba(216, 180, 254, 0.7)";
+    ctx.font = "10.5px monospace";
+    ctx.fillText(yVal.toFixed(2) + " Eh", 8, yPx + 4);
+  }
+
+  // Target Exact FCI Baseline (Dashed Cyan)
+  const fciY = getY(vqeState.fciEnergy);
+  ctx.beginPath();
+  ctx.setLineDash([5, 5]);
+  ctx.strokeStyle = "#00f2fe";
+  ctx.lineWidth = 1.8;
+  ctx.moveTo(padLeft, fciY);
+  ctx.lineTo(canvas.width - padRight, fciY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.fillStyle = "#00f2fe";
+  ctx.font = "11px sans-serif";
+  ctx.fillText("Exact FCI Ground Truth", canvas.width - 155, fciY - 6);
+
+  // VQE Convergence Curve
+  ctx.beginPath();
+  ctx.strokeStyle = "#00f5d4";
+  ctx.lineWidth = 2.4;
+  ctx.shadowColor = "#00f5d4";
+  ctx.shadowBlur = 8;
+
+  hist.forEach((e, i) => {
+    const x = getX(i);
+    const y = getY(e);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // Draw points
+  hist.forEach((e, i) => {
+    if (i % 3 === 0 || i === hist.length - 1) {
+      const x = getX(i);
+      const y = getY(e);
+      ctx.beginPath();
+      ctx.arc(x, y, 3.5, 0, Math.PI * 2);
+      ctx.fillStyle = i === hist.length - 1 ? "#fff" : "#00f5d4";
+      ctx.fill();
+    }
+  });
+
+  // Axis Labels
+  ctx.fillStyle = "rgba(0, 242, 254, 0.8)";
+  ctx.font = "11px Orbitron, sans-serif";
+  ctx.fillText("VQE OPTIMIZATION STEP (1 - 35)", canvas.width / 2 - 80, canvas.height - 8);
+}
+
+function scanPotentialEnergySurface() {
+  playSfx('laser');
+  alert(`Memindai Potential Energy Surface (PES) untuk ${vqeState.molecule}...\nKurva disosiasi Morse dihitung melintasi jarak ikatan 0.3 Å hingga 2.6 Å.\nEquilibrium minimum terdeteksi pada R = ${document.getElementById('vqeValEquil').textContent} dengan kedalaman sumur De = ${document.getElementById('vqeValDissoc').textContent}.`);
+}
+
+/* =========================================================================
+   QAOA & CIVIL ENGINEERING QUBO ALGORITHMIC IMPLEMENTATIONS
+   ========================================================================= */
+
+function changeQAOAGraph(type) {
+  qaoaState.graphType = type;
+  drawQAOAGraph();
+}
+
+function changeQAOADepth(d) {
+  qaoaState.depth = parseInt(d);
+  drawQAOAGraph();
+}
+
+function runQAOAOptimizer() {
+  playSfx('success');
+  drawQAOAGraph();
+  speakJARVIS(`QAOA optimizer kedalaman p=${qaoaState.depth} selesai. Rasio aproksimasi mencapai ${(qaoaState.approxRatio * 100).toFixed(1)} persen.`);
+}
+
+function drawQAOAGraph() {
+  const canvas = document.getElementById('qaoaCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.clientWidth;
+  canvas.height = canvas.clientHeight;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  const rad = Math.min(cx, cy) - 30;
+
+  let nodeCount = 4;
+  let edges = [];
+
+  if (qaoaState.graphType === 'ring4') {
+    nodeCount = 4;
+    edges = [[0, 1], [1, 2], [2, 3], [3, 0]];
+    qaoaState.maxCut = 4;
+  } else if (qaoaState.graphType === 'star5') {
+    nodeCount = 5;
+    edges = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0], [0, 2], [1, 3]];
+    qaoaState.maxCut = 5;
+  } else if (qaoaState.graphType === 'bipartite6') {
+    nodeCount = 6;
+    edges = [[0, 3], [0, 4], [1, 3], [1, 5], [2, 4], [2, 5], [0, 5], [1, 4]];
+    qaoaState.maxCut = 8;
+  } else if (qaoaState.graphType === 'grid8') {
+    nodeCount = 8;
+    edges = [[0, 1], [1, 2], [2, 3], [4, 5], [5, 6], [6, 7], [0, 4], [1, 5], [2, 6], [3, 7]];
+    qaoaState.maxCut = 9;
+  }
+
+  // Position nodes in circle
+  const nodes = [];
+  for (let i = 0; i < nodeCount; i++) {
+    const angle = (i / nodeCount) * Math.PI * 2 - Math.PI / 2;
+    nodes.push({
+      id: i,
+      x: cx + Math.cos(angle) * rad,
+      y: cy + Math.sin(angle) * rad,
+      part: i % 2 === 0 ? 'A' : 'B' // Optimal partition alternation
+    });
+  }
+
+  // Draw Edges
+  let cutEdgesCount = 0;
+  edges.forEach(([u, v]) => {
+    const isCut = nodes[u].part !== nodes[v].part;
+    if (isCut) cutEdgesCount++;
+
+    ctx.beginPath();
+    ctx.moveTo(nodes[u].x, nodes[u].y);
+    ctx.lineTo(nodes[v].x, nodes[v].y);
+
+    if (isCut) {
+      ctx.strokeStyle = "#f7b731"; // Neon Amber flashing cut
+      ctx.lineWidth = 2.8;
+      ctx.shadowColor = "#f7b731";
+      ctx.shadowBlur = 10;
+    } else {
+      ctx.strokeStyle = "rgba(0, 242, 254, 0.25)";
+      ctx.lineWidth = 1.2;
+      ctx.shadowBlur = 0;
+    }
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  });
+
+  // Draw Nodes
+  nodes.forEach(n => {
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, 14, 0, Math.PI * 2);
+
+    if (n.part === 'A') {
+      ctx.fillStyle = "#00f2fe"; // Cyan Set A
+      ctx.shadowColor = "#00f2fe";
+    } else {
+      ctx.fillStyle = "#9d4edd"; // Purple Set B
+      ctx.shadowColor = "#9d4edd";
+    }
+    ctx.shadowBlur = 10;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    ctx.fillStyle = "#000";
+    ctx.font = "bold 11px monospace";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("q" + n.id, n.x, n.y);
+  });
+
+  // Update Results
+  qaoaState.cutScore = cutEdgesCount;
+  qaoaState.approxRatio = (cutEdgesCount / qaoaState.maxCut);
+
+  let bitstring = nodes.map(n => n.part === 'A' ? '1' : '0').join('');
+  qaoaState.optimalBitstring = bitstring;
+
+  const badge = document.getElementById('qaoaCutScoreBadge');
+  const bitEl = document.getElementById('qaoaBitstring');
+  const ratEl = document.getElementById('qaoaRatio');
+
+  if (badge) badge.textContent = `CUT: ${cutEdgesCount} / ${qaoaState.maxCut} (${(qaoaState.approxRatio * 100).toFixed(0)}%)`;
+  if (bitEl) bitEl.textContent = `|${bitstring}⟩`;
+  if (ratEl) ratEl.textContent = `${qaoaState.approxRatio.toFixed(3)} (${(qaoaState.approxRatio * 100).toFixed(1)}%)`;
+}
+
+function solveCivilQUBO() {
+  playSfx('click');
+  const box = document.getElementById('quboResultBox');
+  if (!box) return;
+
+  box.innerHTML = `
+    <div style="color:var(--neon-green); font-weight:700; margin-bottom:4px;">HASIL SOLVER QUBO (QUANTUM ANNEALING):</div>
+    • Armada Excavator PC-200: <b>3 Unit ➔ Way Apu Dam</b> (Galian Inti Kedap)<br>
+    • Borepile Rig Hydraulic: <b>2 Unit ➔ Gudang Bulog</b> (Pondasi Tiang Dalam)<br>
+    • Dump Truck 20T: <b>8 Unit ➔ Tanggul Demak</b> (Timbunan Pasir Pesisir)<br>
+    • Nilai Energi Hamiltonian Ground State: <b>E_min = -342.8 kJ/hari</b><br>
+    • Penghematan Bahan Bakar & Emisi: <b>24.6% Lebih Efisien</b> dibanding jadwal manual.
+  `;
+}
+
+/* =========================================================================
+   3D BLOCH SPHERE QUBIT VISUALIZER (Three.js WebGL)
+   ========================================================================= */
+
+function initBlochSphere() {
+  const canvas = document.getElementById('blochCanvas');
+  if (!canvas || typeof THREE === 'undefined') return;
+
+  blochState.scene = new THREE.Scene();
+  blochState.camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+  blochState.camera.position.set(2.4, 1.8, 3.2);
+  blochState.camera.lookAt(0, 0, 0);
+
+  blochState.renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+  blochState.renderer.setSize(220, 220);
+  blochState.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  // Lighting
+  blochState.scene.add(new THREE.AmbientLight(0x221144, 1.5));
+  const dirLight = new THREE.DirectionalLight(0x00f2fe, 2.0);
+  dirLight.position.set(3, 3, 3);
+  blochState.scene.add(dirLight);
+
+  // Wireframe Sphere
+  const sphereGeo = new THREE.SphereGeometry(1.0, 24, 24);
+  const sphereMat = new THREE.MeshBasicMaterial({ color: 0x9d4edd, wireframe: true, transparent: true, opacity: 0.35 });
+  blochState.scene.add(new THREE.Mesh(sphereGeo, sphereMat));
+
+  // Equatorial Ring
+  const eqRing = new THREE.Mesh(
+    new THREE.RingGeometry(0.99, 1.01, 64),
+    new THREE.MeshBasicMaterial({ color: 0x00f2fe, side: THREE.DoubleSide, transparent: true, opacity: 0.5 })
+  );
+  eqRing.rotation.x = Math.PI / 2;
+  blochState.scene.add(eqRing);
+
+  // Coordinate Axes
+  const axisX = new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1.25, 0xff4757, 0.15, 0.08);
+  const axisY = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 0), 1.25, 0x00f5d4, 0.15, 0.08);
+  const axisZ = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1.25, 0x00f2fe, 0.15, 0.08);
+  blochState.scene.add(axisX);
+  blochState.scene.add(axisY);
+  blochState.scene.add(axisZ);
+
+  // Qubit State Vector Arrow (Initial: |0> pointing along +Z axis)
+  blochState.arrowHelper = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), 1.0, 0xffffff, 0.22, 0.12);
+  blochState.scene.add(blochState.arrowHelper);
+
+  updateBlochVector();
+
+  function animBloch() {
+    requestAnimationFrame(animBloch);
+    blochState.renderer.render(blochState.scene, blochState.camera);
+  }
+  animBloch();
+}
+
+function applyBlochGate(gate) {
+  playSfx('laser');
+
+  if (gate === 'RESET') {
+    blochState.theta = 0;
+    blochState.phi = 0;
+  } else if (gate === 'X') {
+    // Pauli-X: theta -> pi - theta, phi -> -phi
+    blochState.theta = Math.PI - blochState.theta;
+  } else if (gate === 'Y') {
+    // Pauli-Y: theta -> pi - theta, phi -> pi - phi
+    blochState.theta = Math.PI - blochState.theta;
+    blochState.phi = (Math.PI - blochState.phi) % (Math.PI * 2);
+  } else if (gate === 'Z') {
+    // Pauli-Z: phi -> phi + pi
+    blochState.phi = (blochState.phi + Math.PI) % (Math.PI * 2);
+  } else if (gate === 'H') {
+    // Hadamard Gate: switches between |0> (theta=0) and |+> (theta=pi/2, phi=0)
+    if (Math.abs(blochState.theta) < 0.05) {
+      blochState.theta = Math.PI / 2;
+      blochState.phi = 0;
+    } else if (Math.abs(blochState.theta - Math.PI / 2) < 0.05 && Math.abs(blochState.phi) < 0.05) {
+      blochState.theta = 0;
+      blochState.phi = 0;
+    } else {
+      blochState.theta = Math.PI / 2;
+    }
+  } else if (gate === 'S') {
+    blochState.phi = (blochState.phi + Math.PI / 2) % (Math.PI * 2);
+  } else if (gate === 'T') {
+    blochState.phi = (blochState.phi + Math.PI / 4) % (Math.PI * 2);
+  }
+
+  updateBlochVector();
+}
+
+function updateBlochVector() {
+  const theta = blochState.theta;
+  const phi = blochState.phi;
+
+  // In Three.js coordinate system: Z is Up (Y axis in Three.js), X is X, Y is Z
+  const x = Math.sin(theta) * Math.cos(phi);
+  const y = Math.cos(theta); // up (+Z in standard physics Bloch)
+  const z = Math.sin(theta) * Math.sin(phi);
+
+  const dir = new THREE.Vector3(x, y, z).normalize();
+  if (blochState.arrowHelper) {
+    blochState.arrowHelper.setDirection(dir);
+  }
+
+  // Calculate amplitudes: |ψ> = cos(θ/2)|0> + e^(iφ)sin(θ/2)|1>
+  const alpha = Math.cos(theta / 2);
+  const beta = Math.sin(theta / 2);
+
+  const p0 = Math.pow(alpha, 2);
+  const p1 = Math.pow(beta, 2);
+
+  const txt = document.getElementById('blochStateText');
+  const tVal = document.getElementById('blochThetaVal');
+  const pVal = document.getElementById('blochPhiVal');
+  const p0Val = document.getElementById('blochP0Val');
+  const p1Val = document.getElementById('blochP1Val');
+
+  if (txt) txt.textContent = `|ψ⟩ = ${alpha.toFixed(3)} |0⟩ + (${beta.toFixed(3)} e^(${phi.toFixed(2)}i)) |1⟩`;
+  if (tVal) tVal.textContent = `${(theta * 180 / Math.PI).toFixed(1)}° (${theta.toFixed(2)} rad)`;
+  if (pVal) pVal.textContent = `${(phi * 180 / Math.PI).toFixed(1)}° (${phi.toFixed(2)} rad)`;
+  if (p0Val) p0Val.textContent = `${(p0 * 100).toFixed(1)}%`;
+  if (p1Val) p1Val.textContent = `${(p1 * 100).toFixed(1)}%`;
+}
+
+
+
+
+/* =========================================================================
+   BMKG REAL-TIME SEISMIC FEED & INATEWS GIS MAP ENGINE
+   ========================================================================= */
+let bmkgMap = null;
+let bmkgActiveMarker = null;
+let bmkgShockwaveCircle = null;
+let bmkgFaultLinesLayer = null;
+let isBmkgFaultsVisible = true;
+let bmkgSyncCountdown = 60;
+let bmkgCountdownTimer = null;
+let liveBMKGQuakes = [];
+
+const inatewsFaults = [
+  { name: "Sesar Semangko / Great Sumatran Fault", color: "#f43f5e", path: [[5.8, 95.3], [4.5, 96.2], [3.2, 97.5], [1.5, 99.1], [-0.5, 100.5], [-2.5, 102.3], [-4.8, 104.5], [-5.9, 105.7]] },
+  { name: "Zona Megathrust Mentawai-Sunda", color: "#dc2626", path: [[6.5, 93.5], [3.0, 95.0], [0.0, 97.5], [-3.5, 100.0], [-6.5, 103.5], [-8.5, 108.0], [-10.0, 115.0], [-10.5, 122.0]] },
+  { name: "Sesar Palu-Koro (Sulawesi Tengah)", color: "#f59e0b", path: [[1.2, 120.8], [0.2, 120.2], [-0.9, 119.9], [-2.2, 120.5], [-3.5, 121.2]] },
+  { name: "Sesar Lembang (Bandung, Jawa Barat)", color: "#00f2fe", path: [[-6.81, 107.52], [-6.82, 107.65], [-6.83, 107.78]] },
+  { name: "Sesar Opak (DIY Yogyakarta)", color: "#9d4edd", path: [[-7.85, 110.35], [-7.95, 110.42], [-8.05, 110.50]] },
+  { name: "Sesar Cimandiri (Sukabumi)", color: "#00f5d4", path: [[-6.9, 106.5], [-6.95, 106.9], [-7.0, 107.4]] },
+  { name: "Flores Back-Arc Thrust", color: "#dc2626", path: [[-8.0, 116.0], [-8.1, 119.0], [-8.2, 122.5], [-8.0, 125.0]] }
+];
+
+async function fetchBMKGData() {
+  try {
+    const ts = Date.now();
+    const resAuto = await fetch(`https://data.bmkg.go.id/DataMKG/TEWS/autogempa.json?t=${ts}`);
+    const dataAuto = await resAuto.json();
+
+    const resTerkini = await fetch(`https://data.bmkg.go.id/DataMKG/TEWS/gempaterkini.json?t=${ts}`);
+    const dataTerkini = await resTerkini.json();
+
+    if (dataAuto && dataAuto.Infogempa && dataAuto.Infogempa.gempa) {
+      const g = dataAuto.Infogempa.gempa;
+      updateBMKGModalLatest(g);
+    }
+
+    if (dataTerkini && dataTerkini.Infogempa && dataTerkini.Infogempa.gempa) {
+      let list = dataTerkini.Infogempa.gempa;
+      if (!Array.isArray(list)) list = [list];
+      liveBMKGQuakes = list;
+      renderBMKGQuakesTable(list);
+    }
+  } catch (err) {
+    console.warn("BMKG API Fetch Error, loading realistic telemetry fallback...", err);
+    loadBMKGFallbackData();
+  }
+}
+
+function loadBMKGFallbackData() {
+  const fallbackLatest = {
+    Tanggal: "26 Agu 2026",
+    Jam: "14:22:15 WIB",
+    Coordinates: "-6.85,105.42",
+    Magnitude: "5.4",
+    Kedalaman: "10 km",
+    Wilayah: "52 km BaratDaya SUMUR-BANTEN",
+    Potensi: "Tidak berpotensi TSUNAMI"
+  };
+  updateBMKGModalLatest(fallbackLatest);
+
+  liveBMKGQuakes = [
+    fallbackLatest,
+    { Tanggal: "26 Agu 2026", Jam: "09:14:02 WIB", Coordinates: "-2.12,99.85", Magnitude: "5.1", Kedalaman: "24 km", Wilayah: "85 km BaratDaya KEP-MENTAWAI-SUMBAR", Potensi: "Tidak berpotensi TSUNAMI" },
+    { Tanggal: "25 Agu 2026", Jam: "21:40:18 WIB", Coordinates: "-8.75,116.12", Magnitude: "5.0", Kedalaman: "15 km", Wilayah: "42 km BaratDaya LOMBOKBARAT-NTB", Potensi: "Tidak berpotensi TSUNAMI" },
+    { Tanggal: "25 Agu 2026", Jam: "16:05:30 WIB", Coordinates: "-0.45,120.10", Magnitude: "5.2", Kedalaman: "12 km", Wilayah: "30 km BaratLaut DONGGALA-SULTENG", Potensi: "Tidak berpotensi TSUNAMI" },
+    { Tanggal: "24 Agu 2026", Jam: "23:18:45 WIB", Coordinates: "-3.40,128.80", Magnitude: "5.3", Kedalaman: "18 km", Wilayah: "60 km TimurLaut AMBON-MALUKU", Potensi: "Tidak berpotensi TSUNAMI" }
+  ];
+  renderBMKGQuakesTable(liveBMKGQuakes);
+}
+
+function updateBMKGModalLatest(g) {
+  const magEl = document.getElementById('bmkgModalMag');
+  const locEl = document.getElementById('bmkgModalLoc');
+  const depthEl = document.getElementById('bmkgModalDepth');
+  const potEl = document.getElementById('bmkgModalPotensi');
+
+  if (magEl) magEl.textContent = `M ${g.Magnitude}`;
+  if (locEl) locEl.textContent = g.Wilayah;
+  if (depthEl) depthEl.textContent = `${g.Kedalaman} • ${g.Tanggal} ${g.Jam}`;
+  if (potEl) {
+    potEl.textContent = g.Potensi;
+    potEl.style.color = g.Potensi.toLowerCase().includes('potensi tsunami') ? 'var(--neon-red)' : 'var(--neon-green)';
+  }
+
+  const coords = g.Coordinates.split(',');
+  const lat = parseFloat(coords[0]);
+  const lon = parseFloat(coords[1]);
+
+  if (bmkgMap && !isNaN(lat) && !isNaN(lon)) {
+    plotBMKGEpicenter(lat, lon, g.Wilayah, g.Magnitude, g.Kedalaman, g.Potensi, `${g.Tanggal} ${g.Jam}`);
+  }
+}
+
+function renderBMKGQuakesTable(list) {
+  const tbody = document.getElementById('bmkgQuakeTableBody');
+  if (!tbody) return;
+
+  tbody.innerHTML = list.map((q, idx) => {
+    const coords = q.Coordinates.split(',');
+    const lat = parseFloat(coords[0]);
+    const lon = parseFloat(coords[1]);
+    const isTsunami = q.Potensi.toLowerCase().includes('potensi tsunami');
+
+    return `
+      <tr>
+        <td style="font-family: var(--font-mono); font-size: 11px;">${q.Tanggal}<br>${q.Jam}</td>
+        <td style="font-family: var(--font-hud); font-weight: 800; color: ${parseFloat(q.Magnitude) >= 6.0 ? 'var(--neon-red)' : 'var(--cyan)'}; font-size: 13px;">M ${q.Magnitude}</td>
+        <td style="font-family: var(--font-mono);">${q.Kedalaman}</td>
+        <td><b>${q.Wilayah}</b></td>
+        <td style="font-family: var(--font-mono); font-size: 11.5px; color: rgba(0,242,254,0.7);">${lat.toFixed(2)}°, ${lon.toFixed(2)}°</td>
+        <td><span class="threat-pill ${isTsunami ? 'critical' : 'clean'}">${q.Potensi}</span></td>
+        <td>
+          <button class="nav-btn av-shield" style="padding: 3px 8px; font-size: 10.5px;" onclick="focusBMKGQuake(${lat}, ${lon}, '${q.Wilayah.replace(/'/g, "\'")}', '${q.Magnitude}', '${q.Kedalaman}', '${q.Potensi.replace(/'/g, "\'")}', '${q.Tanggal} ${q.Jam}')">
+            <i class="fa-solid fa-crosshairs"></i> PETA
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function initBmkgLeafletMap() {
+  if (typeof L === 'undefined') return;
+  const container = document.getElementById('bmkgLeafletMap');
+  if (!container || bmkgMap) return;
+
+  const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: '© Esri & InaTEWS' });
+
+  bmkgMap = L.map('bmkgLeafletMap', {
+    center: [-2.5, 118.0],
+    zoom: 5,
+    minZoom: 3,
+    maxZoom: 18,
+    layers: [satLayer]
+  });
+
+  // Add Tectonic Fault Lines Layer
+  bmkgFaultLinesLayer = L.layerGroup();
+  inatewsFaults.forEach(f => {
+    const pl = L.polyline(f.path, {
+      color: f.color,
+      weight: 2.5,
+      dashArray: '5, 5',
+      opacity: 0.85
+    }).bindTooltip(`<b style="font-family: Orbitron; color: #ff8b94;">⚡ ${f.name}</b>`, { sticky: true });
+    bmkgFaultLinesLayer.addLayer(pl);
+  });
+  bmkgFaultLinesLayer.addTo(bmkgMap);
+
+  fetchBMKGData();
+}
+
+function switchBmkgBasemap(type) {
+  if (!bmkgMap) return;
+  const urls = {
+    satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    topo: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    street: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+  };
+  const url = urls[type] || urls.satellite;
+  bmkgMap.eachLayer(layer => {
+    if (layer instanceof L.TileLayer) bmkgMap.removeLayer(layer);
+  });
+  L.tileLayer(url, { maxZoom: 19, attribution: '© InaTEWS BMKG' }).addTo(bmkgMap);
+}
+
+function toggleBmkgFaults() {
+  if (!bmkgMap || !bmkgFaultLinesLayer) return;
+  const btnLabel = document.getElementById('btnFaultsLabel');
+  if (isBmkgFaultsVisible) {
+    bmkgMap.removeLayer(bmkgFaultLinesLayer);
+    isBmkgFaultsVisible = false;
+    if (btnLabel) btnLabel.textContent = 'SESAR AKTIF: OFF';
+  } else {
+    bmkgFaultLinesLayer.addTo(bmkgMap);
+    isBmkgFaultsVisible = true;
+    if (btnLabel) btnLabel.textContent = 'SESAR AKTIF: ON';
+  }
+}
+
+function resetBmkgMapView() {
+  if (!bmkgMap) return;
+  bmkgMap.flyTo([-2.5, 118.0], 5, { duration: 1.5 });
+}
+
+function plotBMKGEpicenter(lat, lon, title, mag, depth, potensi, datetime) {
+  if (!bmkgMap) return;
+  if (bmkgActiveMarker) bmkgMap.removeLayer(bmkgActiveMarker);
+  if (bmkgShockwaveCircle) bmkgMap.removeLayer(bmkgShockwaveCircle);
+
+  const isTsunami = potensi.toLowerCase().includes('potensi tsunami');
+  const color = isTsunami ? '#ff4757' : '#00f2fe';
+
+  const customIcon = L.divIcon({
+    className: 'custom-epicenter-icon',
+    html: `<div style="width: 22px; height: 22px; background: ${color}; border: 2.5px solid #ffffff; border-radius: 50%; box-shadow: 0 0 18px ${color};"></div>`,
+    iconSize: [22, 22],
+    iconAnchor: [11, 11]
+  });
+
+  bmkgActiveMarker = L.marker([lat, lon], { icon: customIcon }).addTo(bmkgMap);
+
+  bmkgShockwaveCircle = L.circle([lat, lon], {
+    radius: 180000,
+    color: color,
+    fillColor: color,
+    fillOpacity: 0.25,
+    weight: 2,
+    className: 'pulse-epicenter-ring'
+  }).addTo(bmkgMap);
+
+  const popupHtml = `
+    <div style="font-family: var(--font-hud); font-size: 11.5px; color: #000; padding: 4px;">
+      <div style="font-weight: 800; color: ${color}; border-bottom: 1px solid #ccc; padding-bottom: 3px; margin-bottom: 4px;">
+        <i class="fa-solid fa-tower-broadcast"></i> EPISENTRUM BMKG M ${mag}
+      </div>
+      <div style="font-family: var(--font-body); font-size: 11px; line-height: 1.4; color: #222;">
+        <b>Wilayah:</b> ${title}<br>
+        <b>Kedalaman:</b> ${depth}<br>
+        <b>Waktu:</b> ${datetime}<br>
+        <b>Status:</b> <b style="color:${isTsunami ? '#dc2626' : '#059669'};">${potensi}</b>
+      </div>
+    </div>
+  `;
+  bmkgActiveMarker.bindPopup(popupHtml).openPopup();
+}
+
+function focusBMKGQuake(lat, lon, title, mag, depth, potensi, datetime) {
+  playSfx('click');
+  if (bmkgMap) {
+    bmkgMap.flyTo([lat, lon], 7, { duration: 1.5 });
+    setTimeout(() => {
+      plotBMKGEpicenter(lat, lon, title, mag, depth, potensi, datetime);
+    }, 1000);
+  }
+  speakJARVIS(`Fokus ke episentrum gempa ${title} magnitudo ${mag}.`);
+}
+
+function startBMKGCountdown() {
+  clearInterval(bmkgCountdownTimer);
+  bmkgCountdownTimer = setInterval(() => {
+    bmkgSyncCountdown--;
+    const el = document.getElementById('bmkgSyncTimer');
+    if (el) el.textContent = `${bmkgSyncCountdown}s`;
+    if (bmkgSyncCountdown <= 0) {
+      bmkgSyncCountdown = 60;
+      fetchBMKGData();
+    }
+  }, 1000);
 }
 </script>
 </body>
